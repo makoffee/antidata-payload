@@ -20,3 +20,24 @@ node_modules/
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+.env*
+
+# Local environment & secrets
+.env
+.env*.local
+.env.production
+
+# Next.js build & cache
+.next/
+out/
+
+# Payload & local media
+public/media/
+.payload/
+
+# Dependencies & IDEs
+node_modules/
+.vscode/
+.cursor/
+*.log
+.DS_Store
