@@ -62,6 +62,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   let height: number | undefined
   let alt = altFromProps
   let src: StaticImageData | string = srcFromProps || ''
+  let isSvg = false
 
   if (!src && resource && typeof resource === 'object') {
     const { alt: altFromResource, height: fullHeight, url, width: fullWidth } = resource
@@ -69,6 +70,14 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
     width = fullWidth!
     height = fullHeight!
     alt = altFromResource || ''
+
+    // Next's image optimizer rejects SVG, so vector uploads are served as-is
+    isSvg = resource.mimeType === 'image/svg+xml'
+    // Some SVGs have no intrinsic size; give NextImage a default so it can still render
+    if (isSvg) {
+      width = width || 1200
+      height = height || 800
+    }
 
     const cacheTag = resource.updatedAt
 
@@ -91,13 +100,14 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         className={cn(imgClassName)}
         fill={fill}
         height={!fill ? height : undefined}
-        placeholder="blur"
-        blurDataURL={placeholderBlur}
+        placeholder={isSvg ? 'empty' : 'blur'}
+        blurDataURL={isSvg ? undefined : placeholderBlur}
         priority={priority}
         quality={100}
         loading={loading}
         sizes={sizes}
         src={src}
+        unoptimized={isSvg}
         width={!fill ? width : undefined}
       />
     </picture>

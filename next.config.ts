@@ -14,7 +14,10 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 const nextConfig: NextConfig = {
   images: {
     qualities: [100],
+    // Next 16 blocks optimizing images from localhost/private IPs; allow it for local dev only
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [
+      { protocol: 'http', hostname: 'localhost' },
       ...[NEXT_PUBLIC_SERVER_URL /* 'https://example.com' */].map((item) => {
         const url = new URL(item)
 

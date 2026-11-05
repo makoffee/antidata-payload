@@ -1,4 +1,5 @@
 {
+  "buildCommand": "npm run ci",
   "crons": [
     {
       "path": "/api/payload-jobs/run",

@@ -41,3 +41,9 @@ node_modules/
 .cursor/
 *.log
 .DS_Store
+
+# Content backups from `npm run backup`
+backups/
+
+# Personal Claude Code settings
+.claude/settings.local.json
