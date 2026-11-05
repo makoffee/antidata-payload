@@ -68,10 +68,15 @@ export default buildConfig({
   plugins: [
     ...plugins,
     vercelBlobStorage({
+      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       collections: {
         media: true,
       },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      // Bypass Vercel's 4.5MB serverless upload limit; files go straight to Blob.
+      clientUploads: true,
+      // Avoid filename collisions between local and production uploads.
+      addRandomSuffix: true,
     }),
   ],
   globals: [Header, Footer],

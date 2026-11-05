@@ -40,7 +40,8 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    // Upload to the public/media directory in Next.js making them publicly accessible even outside of Payload
+    // Fallback when BLOB_READ_WRITE_TOKEN is unset. The Vercel Blob plugin
+    // sets disableLocalStorage when the token is present, so files go to Blob.
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,
