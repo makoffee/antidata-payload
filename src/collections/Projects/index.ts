@@ -99,6 +99,16 @@ export const Projects: CollectionConfig<'projects'> = {
               },
             },
             {
+              name: 'storyImage',
+              type: 'upload',
+              relationTo: 'media',
+              label: 'Story card image (optional)',
+              admin: {
+                description:
+                  'A tall 9:16 image (e.g. 1080×1920) for the homepage story cards. Without one, the card crops the cover image to fit.',
+              },
+            },
+            {
               name: 'content',
               type: 'richText',
               label: 'Case study',

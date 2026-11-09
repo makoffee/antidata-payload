@@ -51,6 +51,16 @@ export const LogoWall: Block = {
           ],
         },
         {
+          name: 'logoDark',
+          type: 'upload',
+          relationTo: 'media',
+          label: 'Dark mode logo (optional)',
+          admin: {
+            description:
+              'A light/white version shown when the site is in dark mode. Leave empty to use the main logo in both themes.',
+          },
+        },
+        {
           name: 'url',
           type: 'text',
           label: 'Link (optional)',

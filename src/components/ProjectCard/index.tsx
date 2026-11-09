@@ -8,7 +8,7 @@ import { cn } from '@/utilities/ui'
 
 export type ProjectCardData = Pick<
   Project,
-  'slug' | 'title' | 'summary' | 'coverImage' | 'client' | 'year'
+  'slug' | 'title' | 'summary' | 'coverImage' | 'storyImage' | 'client' | 'year'
 >
 
 export const ProjectCard: React.FC<{

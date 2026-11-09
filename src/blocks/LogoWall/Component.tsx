@@ -27,31 +27,51 @@ export const LogoWallBlock: React.FC<LogoWallBlockProps & { id?: string }> = ({
 
       {items.length > 0 && (
         // Flex-wrap (not grid) so a partly filled last row stays centred
-        <ul className="flex flex-wrap justify-center gap-y-4">
-          {items.map(({ id: itemId, logo, name, url }) => {
+        <ul className="flex flex-wrap justify-center md:gap-y-4">
+          {items.map(({ id: itemId, logo, logoDark, name, url }) => {
             if (!logo || typeof logo !== 'object') return null
+            const dark = logoDark && typeof logoDark === 'object' ? logoDark : null
 
-            // Plain <img> so SVG logos render as-is (Next's image optimizer rejects SVG)
+            const imgClass = cn(
+              'max-h-7 sm:max-h-10 md:max-h-12 w-auto max-w-[85%] sm:max-w-[70%] object-contain transition duration-300',
+              // Muted: grey and squeezed toward mid-tone so black, white and colourful logos
+              // sit at a similar strength. Hover restores the real colours.
+              monochrome &&
+                'grayscale contrast-[.3] group-hover:grayscale-0 group-hover:contrast-100',
+            )
+
+            // Plain <img> so SVG logos render as-is (Next's image optimizer rejects SVG).
+            // With a dark-mode version, each theme shows its own file.
             const image = (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                alt={name}
-                className={cn(
-                  'max-h-10 md:max-h-12 w-auto max-w-[70%] object-contain transition duration-300',
-                  monochrome && 'grayscale group-hover:grayscale-0',
+              <>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  alt={name}
+                  className={cn(imgClass, dark && 'dark:hidden')}
+                  height={logo.height || undefined}
+                  loading="lazy"
+                  src={getMediaUrl(logo.url, logo.updatedAt)}
+                  width={logo.width || undefined}
+                />
+                {dark && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    alt={name}
+                    className={cn(imgClass, 'hidden dark:block')}
+                    height={dark.height || undefined}
+                    loading="lazy"
+                    src={getMediaUrl(dark.url, dark.updatedAt)}
+                    width={dark.width || undefined}
+                  />
                 )}
-                height={logo.height || undefined}
-                loading="lazy"
-                src={getMediaUrl(logo.url, logo.updatedAt)}
-                width={logo.width || undefined}
-              />
+              </>
             )
 
             const cellClass =
-              'group flex aspect-[3/2] items-center justify-center p-6'
+              'group flex aspect-[2/1] sm:aspect-[3/2] items-center justify-center p-2 sm:p-6'
 
             return (
-              <li className="w-1/2 sm:w-1/3 lg:w-1/5" key={itemId}>
+              <li className="w-1/3 md:w-1/4 lg:w-1/5" key={itemId}>
                 {url ? (
                   <a
                     aria-label={name}

@@ -171,6 +171,10 @@ export interface Project {
    * Used on the project page and on cards across the site.
    */
   coverImage: number | Media;
+  /**
+   * A tall 9:16 image (e.g. 1080×1920) for the homepage story cards. Without one, the card crops the cover image to fit.
+   */
+  storyImage?: (number | null) | Media;
   content?: {
     root: {
       type: string;
@@ -660,6 +664,10 @@ export interface CardGridBlock {
   heading?: string | null;
   text?: string | null;
   /**
+   * Turns the section into a full-width banner with frosted-glass cards. Abstract or dark images work best.
+   */
+  backgroundImage?: (number | null) | Media;
+  /**
    * Cards per row on desktop.
    */
   columns?: ('2' | '3' | '4') | null;
@@ -755,6 +763,10 @@ export interface LogoWallBlock {
          * Brand name, used as the image’s alt text.
          */
         name: string;
+        /**
+         * A light/white version shown when the site is in dark mode. Leave empty to use the main logo in both themes.
+         */
+        logoDark?: (number | null) | Media;
         url?: string | null;
         id?: string | null;
       }[]
@@ -1298,6 +1310,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   title?: T;
   summary?: T;
   coverImage?: T;
+  storyImage?: T;
   content?: T;
   gallery?:
     | T
@@ -1447,6 +1460,7 @@ export interface ContentBlockSelect<T extends boolean = true> {
 export interface CardGridBlockSelect<T extends boolean = true> {
   heading?: T;
   text?: T;
+  backgroundImage?: T;
   columns?: T;
   cards?:
     | T
@@ -1494,6 +1508,7 @@ export interface LogoWallBlockSelect<T extends boolean = true> {
     | {
         logo?: T;
         name?: T;
+        logoDark?: T;
         url?: T;
         id?: T;
       };

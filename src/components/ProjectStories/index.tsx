@@ -43,20 +43,27 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
   project,
   priority,
 }) => {
-  const { slug, title, summary, coverImage, client, year } = project
+  const { slug, title, summary, coverImage, storyImage, client, year } = project
   const meta = [client, year].filter(Boolean).join(' · ')
+  // Prefer the purpose-made tall image; fall back to the (landscape) cover, cropped to fit
+  const image =
+    storyImage && typeof storyImage === 'object'
+      ? storyImage
+      : coverImage && typeof coverImage === 'object'
+        ? coverImage
+        : null
 
   return (
     <Link
       className="group relative block aspect-[9/16] overflow-hidden rounded-xl bg-muted focus-visible:outline-2 focus-visible:outline-offset-2"
       href={`/portfolio/${slug}`}
     >
-      {coverImage && typeof coverImage === 'object' && (
+      {image && (
         <Media
           fill
           imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
           priority={priority}
-          resource={coverImage}
+          resource={image}
           size="(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 25vw"
         />
       )}

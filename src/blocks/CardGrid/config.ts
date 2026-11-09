@@ -20,6 +20,16 @@ export const CardGrid: Block = {
       label: 'Supporting text',
     },
     {
+      name: 'backgroundImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Background image (optional)',
+      admin: {
+        description:
+          'Turns the section into a full-width banner with frosted-glass cards. Abstract or dark images work best.',
+      },
+    },
+    {
       name: 'columns',
       type: 'select',
       defaultValue: '3',

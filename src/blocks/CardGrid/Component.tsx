@@ -4,6 +4,7 @@ import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
+import { Media } from '@/components/Media'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { cn } from '@/utilities/ui'
 
@@ -19,77 +20,117 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
   id,
   heading,
   text,
+  backgroundImage,
   columns,
   cards,
 }) => {
   if (!cards?.length && !heading) return null
 
+  const background = backgroundImage && typeof backgroundImage === 'object' ? backgroundImage : null
+
   return (
-    <section className="container" id={`block-${id}`}>
-      {(heading || text) && (
-        <div className="mb-12 max-w-[40rem]">
-          {heading && (
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{heading}</h2>
-          )}
-          {text && <p className="mt-4 text-lg text-muted-foreground">{text}</p>}
-        </div>
+    <section
+      className={cn(background && 'relative isolate overflow-hidden py-20 md:py-28 mb-16 md:mb-24')}
+      id={`block-${id}`}
+    >
+      {background && (
+        <>
+          <div aria-hidden className="absolute inset-0 -z-20">
+            {/* Light mode flips a dark image into a bright one (invert + hue-rotate keeps its colours) */}
+            <Media
+              fill
+              imgClassName="object-cover invert hue-rotate-180 dark:invert-0 dark:hue-rotate-0"
+              resource={background}
+              size="100vw"
+            />
+          </div>
+          {/* Theme tint keeps the heading readable on any image */}
+          <div
+            aria-hidden
+            className="absolute inset-0 -z-10 bg-background/30 dark:bg-background/45"
+          />
+        </>
       )}
 
-      {cards && cards.length > 0 && (
-        <ul className={cn('grid gap-6', columnClasses[columns || '3'])}>
-          {cards.map(({ id: cardId, title, description, icon, url }) => {
-            const Icon = icon ? cardIcons[icon as CardIconName]?.Icon : null
-            const isExternal = Boolean(url && /^https?:\/\//.test(url))
+      <div className="container">
+        {(heading || text) && (
+          <div className="mb-12 max-w-[40rem]">
+            {heading && (
+              <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{heading}</h2>
+            )}
+            {text && <p className="mt-4 text-lg text-muted-foreground">{text}</p>}
+          </div>
+        )}
 
-            const card = (
-              <Card
-                className={cn(
-                  'group relative h-full transition duration-300 ease-out',
-                  'hover:-translate-y-1 hover:border-foreground/20 hover:shadow-lg',
-                )}
-              >
-                <CardHeader className="gap-4">
-                  <div className="flex items-start justify-between">
-                    {Icon && (
-                      <span className="inline-flex size-11 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background">
-                        <Icon aria-hidden className="size-5" />
-                      </span>
-                    )}
-                    {url && (
-                      <ArrowUpRight
-                        aria-hidden
-                        className="ml-auto size-5 text-muted-foreground opacity-0 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
-                      />
-                    )}
-                  </div>
-                  <CardTitle className="text-xl font-medium">{title}</CardTitle>
-                  {description && (
-                    <CardDescription className="text-base leading-relaxed">
-                      {description}
-                    </CardDescription>
+        {cards && cards.length > 0 && (
+          <ul className={cn('grid gap-6', columnClasses[columns || '3'])}>
+            {cards.map(({ id: cardId, title, description, icon, url }) => {
+              const Icon = icon ? cardIcons[icon as CardIconName]?.Icon : null
+              const isExternal = Boolean(url && /^https?:\/\//.test(url))
+
+              const card = (
+                <Card
+                  className={cn(
+                    'group relative h-full transition duration-300 ease-out',
+                    'hover:-translate-y-1 hover:border-foreground/20 hover:shadow-lg',
+                    // Frosted glass over the background image, light or dark with the theme
+                    background &&
+                      'border-white/60 bg-white/45 shadow-sm backdrop-blur-xl backdrop-saturate-150 hover:bg-white/60 dark:border-white/10 dark:bg-white/[0.06] dark:hover:bg-white/[0.1]',
                   )}
-                </CardHeader>
-              </Card>
-            )
+                >
+                  <CardHeader className="gap-4">
+                    <div className="flex items-start justify-between">
+                      {Icon && (
+                        <span
+                          className={cn(
+                            'inline-flex size-11 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background',
+                            background && 'bg-white/70 dark:bg-white/10',
+                          )}
+                        >
+                          <Icon aria-hidden className="size-5" />
+                        </span>
+                      )}
+                      {url && (
+                        <ArrowUpRight
+                          aria-hidden
+                          className="ml-auto size-5 text-muted-foreground opacity-0 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+                        />
+                      )}
+                    </div>
+                    <CardTitle className="text-xl font-medium">{title}</CardTitle>
+                    {description && (
+                      <CardDescription
+                        className={cn(
+                          'text-base leading-relaxed',
+                          background && 'text-foreground/75',
+                        )}
+                      >
+                        {description}
+                      </CardDescription>
+                    )}
+                  </CardHeader>
+                </Card>
+              )
 
-            return (
-              <li key={cardId}>
-                {url ? (
-                  <Link
-                    className="block h-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
-                    href={url}
-                    {...(isExternal ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
-                  >
-                    {card}
-                  </Link>
-                ) : (
-                  card
-                )}
-              </li>
-            )
-          })}
-        </ul>
-      )}
+              return (
+                <li key={cardId}>
+                  {url ? (
+                    <Link
+                      className="block h-full rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2"
+                      href={url}
+                      {...(isExternal ? { rel: 'noopener noreferrer', target: '_blank' } : {})}
+                    >
+                      {card}
+                    </Link>
+                  ) : (
+                    card
+                  )}
+                </li>
+              )
+            })}
+          </ul>
+        )}
+      </div>
     </section>
   )
 }
