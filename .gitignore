@@ -48,3 +48,7 @@ backups/
 # Personal Claude Code settings
 .claude/settings.local.json
 *.tsbuildinfo
+ghost-export/
+
+# Private case-study source material (briefs, quotes, artifacts)
+/portfolio/
