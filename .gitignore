@@ -47,3 +47,4 @@ backups/
 
 # Personal Claude Code settings
 .claude/settings.local.json
+*.tsbuildinfo

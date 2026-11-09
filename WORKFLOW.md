@@ -22,6 +22,10 @@ git add -A && git commit -m "…" && git push   # Vercel deploys main automatica
 
 For bigger changes push a separate git branch first; Vercel gives it a preview URL.
 
+**Node version:** `.nvmrc` and `engines` in `package.json` pin Node 24 for both local and Vercel.
+The shell switches automatically when you `cd` into the folder; in an editor terminal that
+didn't, run `nvm use`. To upgrade later, change both places together.
+
 ## Changing fields or collections (database structure)
 
 Dev mode does **not** change the database on its own (`push: false`). After editing a collection:
