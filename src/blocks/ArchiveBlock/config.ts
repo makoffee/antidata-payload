@@ -81,6 +81,31 @@ export const Archive: Block = {
       label: 'Limit',
     },
     {
+      name: 'projectLayout',
+      type: 'select',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData.populateBy === 'selection' || siblingData.relationTo === 'projects',
+        description: 'How portfolio projects are shown. Stories swipe sideways on mobile.',
+      },
+      defaultValue: 'grid',
+      label: 'Project layout',
+      options: [
+        { label: 'Grid', value: 'grid' },
+        { label: 'Stories (tall cards)', value: 'stories' },
+      ],
+    },
+    {
+      name: 'showViewAll',
+      type: 'checkbox',
+      admin: {
+        condition: (_, siblingData) =>
+          siblingData.populateBy === 'selection' || siblingData.relationTo === 'projects',
+      },
+      defaultValue: false,
+      label: 'Show "View all projects" button',
+    },
+    {
       name: 'selectedDocs',
       type: 'relationship',
       admin: {

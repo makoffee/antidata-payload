@@ -784,6 +784,11 @@ export interface ArchiveBlock {
   relationTo?: ('posts' | 'projects') | null;
   categories?: (number | Category)[] | null;
   limit?: number | null;
+  /**
+   * How portfolio projects are shown. Stories swipe sideways on mobile.
+   */
+  projectLayout?: ('grid' | 'stories') | null;
+  showViewAll?: boolean | null;
   selectedDocs?:
     | (
         | {
@@ -1501,6 +1506,8 @@ export interface ArchiveBlockSelect<T extends boolean = true> {
   relationTo?: T;
   categories?: T;
   limit?: T;
+  projectLayout?: T;
+  showViewAll?: T;
   selectedDocs?: T;
   id?: T;
   blockName?: T;

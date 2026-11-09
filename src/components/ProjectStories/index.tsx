@@ -1,0 +1,73 @@
+import Link from 'next/link'
+import React from 'react'
+
+import type { ProjectCardData } from '@/components/ProjectCard'
+
+import { Media } from '@/components/Media'
+import { cn } from '@/utilities/ui'
+
+// Tall "story" cards: cover image fills the card, text sits in a bottom overlay.
+// Below lg the row scrolls sideways with snap points (bleeding to the screen edge);
+// from lg up it becomes a 4-column grid.
+export const ProjectStories: React.FC<{
+  className?: string
+  projects: (ProjectCardData & { id: number | string })[]
+}> = ({ className, projects }) => {
+  if (!projects.length) {
+    return <p className="text-muted-foreground">No projects published yet.</p>
+  }
+
+  return (
+    <ul
+      className={cn(
+        'flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain',
+        '-mx-4 px-4 scroll-px-4 md:-mx-8 md:px-8 md:scroll-px-8',
+        '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
+        'lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0',
+        className,
+      )}
+    >
+      {projects.map((project, index) => (
+        <li
+          className="w-[78%] shrink-0 snap-start sm:w-[45%] md:w-[38%] lg:w-auto"
+          key={project.id}
+        >
+          <ProjectStoryCard priority={index < 2} project={project} />
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean }> = ({
+  project,
+  priority,
+}) => {
+  const { slug, title, summary, coverImage, client, year } = project
+  const meta = [client, year].filter(Boolean).join(' · ')
+
+  return (
+    <Link
+      className="group relative block aspect-[9/16] overflow-hidden rounded-xl bg-muted focus-visible:outline-2 focus-visible:outline-offset-2"
+      href={`/portfolio/${slug}`}
+    >
+      {coverImage && typeof coverImage === 'object' && (
+        <Media
+          fill
+          imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          priority={priority}
+          resource={coverImage}
+          size="(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 25vw"
+        />
+      )}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+      <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+        <h3 className="text-xl font-medium leading-tight">{title}</h3>
+        {meta && <p className="mt-1 text-sm text-white/70">{meta}</p>}
+        {summary && (
+          <p className="mt-3 text-sm leading-relaxed text-white/85 line-clamp-3">{summary}</p>
+        )}
+      </div>
+    </Link>
+  )
+}

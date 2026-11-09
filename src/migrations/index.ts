@@ -4,6 +4,7 @@ import * as migration_20261105_200144_add_logo_wall from './20261105_200144_add_
 import * as migration_20261105_202957_archive_portfolio_option from './20261105_202957_archive_portfolio_option';
 import * as migration_20261105_204014_add_card_grid from './20261105_204014_add_card_grid';
 import * as migration_20261105_204643_card_icons_blocks from './20261105_204643_card_icons_blocks';
+import * as migration_20261109_101722_archive_project_layout from './20261109_101722_archive_project_layout';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261105_204643_card_icons_blocks.up,
     down: migration_20261105_204643_card_icons_blocks.down,
-    name: '20261105_204643_card_icons_blocks'
+    name: '20261105_204643_card_icons_blocks',
+  },
+  {
+    up: migration_20261109_101722_archive_project_layout.up,
+    down: migration_20261109_101722_archive_project_layout.down,
+    name: '20261109_101722_archive_project_layout'
   },
 ];

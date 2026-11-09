@@ -1,12 +1,16 @@
 import type { Post, Project, ArchiveBlock as ArchiveBlockProps } from '@/payload-types'
 
 import configPromise from '@payload-config'
+import { ArrowRight } from 'lucide-react'
+import Link from 'next/link'
 import { getPayload } from 'payload'
 import React from 'react'
 import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
 import { ProjectGrid } from '@/components/ProjectGrid'
+import { ProjectStories } from '@/components/ProjectStories'
+import { Button } from '@/components/ui/button'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
@@ -19,8 +23,10 @@ export const ArchiveBlock: React.FC<
     introContent,
     limit: limitFromProps,
     populateBy,
+    projectLayout,
     relationTo,
     selectedDocs,
+    showViewAll,
   } = props
 
   const limit = limitFromProps || 3
@@ -79,7 +85,21 @@ export const ArchiveBlock: React.FC<
       )}
       {projects.length > 0 && (
         <div className="container">
-          <ProjectGrid projects={projects} />
+          {projectLayout === 'stories' ? (
+            <ProjectStories projects={projects} />
+          ) : (
+            <ProjectGrid projects={projects} />
+          )}
+          {showViewAll && (
+            <div className="mt-10 flex justify-center">
+              <Button asChild size="lg" variant="outline">
+                <Link href="/portfolio">
+                  View all projects
+                  <ArrowRight aria-hidden />
+                </Link>
+              </Button>
+            </div>
+          )}
         </div>
       )}
       {posts.length > 0 && <CollectionArchive posts={posts} />}
