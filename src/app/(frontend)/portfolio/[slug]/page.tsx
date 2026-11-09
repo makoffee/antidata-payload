@@ -80,6 +80,26 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         </div>
       )}
 
+      {project.skills && project.skills.length > 0 && (
+        <section className="container mt-16" aria-labelledby="project-skills">
+          <div className="max-w-[48rem] mx-auto border-t border-border pt-6">
+            <h2 className="text-sm text-muted-foreground" id="project-skills">
+              Skills
+            </h2>
+            <ul className="mt-4 flex flex-wrap gap-2">
+              {project.skills.map((skill) => (
+                <li
+                  className="rounded-full border border-border bg-muted/50 px-3 py-1 text-sm"
+                  key={skill}
+                >
+                  {skill}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+      )}
+
       {project.credits && project.credits.length > 0 && (
         <div className="container mt-16">
           <dl className="max-w-[48rem] mx-auto grid grid-cols-[auto_1fr] gap-x-8 gap-y-2 border-t border-border pt-6">

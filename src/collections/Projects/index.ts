@@ -187,6 +187,15 @@ export const Projects: CollectionConfig<'projects'> = {
               },
             },
             {
+              name: 'skills',
+              type: 'text',
+              hasMany: true,
+              admin: {
+                description:
+                  'Skills as listed for this project on LinkedIn. Shown as tags at the end of the case study (keeps the wording consistent for recruiters and ATS). Press Enter after each.',
+              },
+            },
+            {
               name: 'projectUrl',
               type: 'text',
               label: 'Live project URL',

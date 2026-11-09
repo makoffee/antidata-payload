@@ -203,6 +203,10 @@ export interface Project {
    * e.g. Branding, Web design, Art direction. Press Enter after each.
    */
   services?: string[] | null;
+  /**
+   * Skills as listed for this project on LinkedIn. Shown as tags at the end of the case study (keeps the wording consistent for recruiters and ATS). Press Enter after each.
+   */
+  skills?: string[] | null;
   projectUrl?: string | null;
   /**
    * Collaborators and their roles.
@@ -1306,6 +1310,7 @@ export interface ProjectsSelect<T extends boolean = true> {
   client?: T;
   year?: T;
   services?: T;
+  skills?: T;
   projectUrl?: T;
   credits?:
     | T
