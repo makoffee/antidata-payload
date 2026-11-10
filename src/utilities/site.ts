@@ -7,7 +7,7 @@ export const SITE_DESCRIPTION = 'Matt Coffee | Design Studio Berlin. A design po
 // Public URL prefix for each routable collection. Keep in sync with the folders in src/app/(frontend).
 export const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
   pages: '',
-  posts: '/posts',
+  posts: '/blog',
   projects: '/portfolio',
 }
 
