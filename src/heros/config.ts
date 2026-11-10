@@ -39,6 +39,24 @@ export const hero: Field = {
       required: true,
     },
     {
+      name: 'animation',
+      type: 'select',
+      label: 'Intro animation',
+      defaultValue: 'fadeSlide',
+      admin: {
+        condition: (_, { type } = {}) => type === 'highImpact',
+        description: 'How the hero appears when the page loads.',
+      },
+      options: [
+        {
+          label: 'Fade & slide (background fades in, text slides in from the left)',
+          value: 'fadeSlide',
+        },
+        { label: 'Fade only', value: 'fade' },
+        { label: 'None', value: 'none' },
+      ],
+    },
+    {
       name: 'richText',
       type: 'richText',
       editor: lexicalEditor({

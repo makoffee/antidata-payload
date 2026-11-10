@@ -5,6 +5,8 @@ import { ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { getPayload } from 'payload'
 import React from 'react'
+
+import { Reveal } from '@/components/Reveal'
 import RichText from '@/components/RichText'
 
 import { CollectionArchive } from '@/components/CollectionArchive'
@@ -93,7 +95,7 @@ export const ArchiveBlock: React.FC<
   return (
     <div className="my-16 pb-12 md:pb-16" id={`block-${id}`}>
       {(introContent || showViewAll) && (
-        <div className="container mb-12 md:mb-16">
+        <Reveal className="container mb-12 md:mb-16">
           {introContent && (
             <RichText
               className={cn('ms-0 max-w-[48rem]', sectionRichTextClass)}
@@ -103,7 +105,7 @@ export const ArchiveBlock: React.FC<
           )}
           {/* On desktop the link sits above the cards so it's visible without scrolling past them */}
           {viewAll('mt-8 hidden md:block')}
-        </div>
+        </Reveal>
       )}
       {projects.length > 0 && (
         <div className="container">

@@ -1,5 +1,7 @@
 import React, { Fragment } from 'react'
 
+import { Reveal } from '@/components/Reveal'
+
 import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
@@ -10,6 +12,9 @@ import { MediaBlock } from '@/blocks/MediaBlock/Component'
 import { ProjectsBlockComponent } from '@/blocks/ProjectsBlock/Component'
 import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { CardGridBlock } from '@/blocks/CardGrid/Component'
+
+// These blocks animate their own heading and cards on scroll
+const selfRevealing = new Set(['archive', 'cardGrid', 'logoWall'])
 
 const blockComponents = {
   archive: ArchiveBlock,
@@ -41,8 +46,15 @@ export const RenderBlocks: React.FC<{
             if (Block) {
               return (
                 <div className="my-16" key={index}>
-                  {/* @ts-expect-error there may be some mismatch between the expected types here */}
-                  <Block {...block} disableInnerContainer />
+                  {selfRevealing.has(blockType) ? (
+                    // @ts-expect-error there may be some mismatch between the expected types here
+                    <Block {...block} disableInnerContainer />
+                  ) : (
+                    <Reveal>
+                      {/* @ts-expect-error there may be some mismatch between the expected types here */}
+                      <Block {...block} disableInnerContainer />
+                    </Reveal>
+                  )}
                 </div>
               )
             }

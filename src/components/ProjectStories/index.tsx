@@ -1,12 +1,14 @@
 import Link from 'next/link'
 import React from 'react'
 
+import { Reveal } from '@/components/Reveal'
+
 import type { ProjectCardData } from '@/components/ProjectCard'
 
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 
-// Tall "story" cards: cover image fills the card, text sits in a bottom overlay.
+// Tall "story" cards: square artwork fading into a blurred, colour-matched text area.
 // Below lg the row scrolls sideways with snap points (bleeding to the screen edge);
 // from lg up it becomes a 4-column grid.
 export const ProjectStories: React.FC<{
@@ -32,7 +34,9 @@ export const ProjectStories: React.FC<{
           className="w-[78%] shrink-0 snap-start sm:w-[45%] md:w-[38%] lg:w-auto"
           key={project.id}
         >
-          <ProjectStoryCard priority={index < 2} project={project} />
+          <Reveal delay={(index % 4) * 0.06}>
+            <ProjectStoryCard priority={index < 2} project={project} />
+          </Reveal>
         </li>
       ))}
     </ul>
@@ -45,34 +49,52 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
 }) => {
   const { slug, title, summary, coverImage, storyImage, client, year } = project
   const meta = [client, year].filter(Boolean).join(' · ')
-  // Prefer the purpose-made tall image; fall back to the (landscape) cover, cropped to fit
-  const image =
-    storyImage && typeof storyImage === 'object'
-      ? storyImage
-      : coverImage && typeof coverImage === 'object'
-        ? coverImage
-        : null
+  const story = storyImage && typeof storyImage === 'object' ? storyImage : null
+  const cover = coverImage && typeof coverImage === 'object' ? coverImage : null
+  const cardSize = '(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 25vw'
+  const zoom = 'transition-transform duration-700 ease-out group-hover:scale-105'
 
   return (
     <Link
-      className="group relative block aspect-[9/16] overflow-hidden rounded-xl bg-muted focus-visible:outline-2 focus-visible:outline-offset-2"
+      className="group relative isolate block aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2"
       href={`/portfolio/${slug}`}
     >
-      {image && (
+      {story ? (
+        // A purpose-made tall image fills the whole card
         <Media
           fill
-          imgClassName="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+          imgClassName={cn('object-cover', zoom)}
           priority={priority}
-          resource={image}
-          size="(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 25vw"
+          resource={story}
+          size={cardSize}
         />
+      ) : (
+        cover && (
+          <>
+            {/* "App of the Day" style: a heavily blurred copy colours the card… */}
+            <div aria-hidden className="absolute inset-0 -z-10 scale-150 blur-3xl saturate-150">
+              <Media fill imgClassName="object-cover" resource={cover} size="160px" />
+            </div>
+            {/* …and the artwork sits in a square safe zone that dissolves into it */}
+            <div className="absolute inset-x-0 top-0 aspect-square overflow-hidden [mask-image:linear-gradient(to_bottom,black_60%,transparent)]">
+              <Media
+                fill
+                imgClassName={cn('object-cover', zoom)}
+                priority={priority}
+                resource={cover}
+                size={cardSize}
+              />
+            </div>
+          </>
+        )
       )}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+      {/* Keeps the text readable on any colour */}
+      <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-5 text-white">
         <h3 className="text-xl font-medium leading-tight">{title}</h3>
         {meta && <p className="mt-1 text-sm text-white/70">{meta}</p>}
         {summary && (
-          <p className="mt-3 text-sm leading-relaxed text-white/85 line-clamp-3">{summary}</p>
+          <p className="mt-3 text-sm leading-relaxed text-white/85 line-clamp-2">{summary}</p>
         )}
       </div>
     </Link>

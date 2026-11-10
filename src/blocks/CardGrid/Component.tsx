@@ -4,12 +4,15 @@ import { ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 
+import { Reveal } from '@/components/Reveal'
+
 import { Media } from '@/components/Media'
-import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { sectionHeadingClass, sectionTextClass } from '@/utilities/sectionHeading'
 import { cn } from '@/utilities/ui'
 
 import { cardIcons, type CardIconName } from './icons'
+import { RevealCard } from './RevealCard'
 
 const columnClasses = {
   '2': 'md:grid-cols-2',
@@ -55,22 +58,24 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
 
       <div className="container">
         {(heading || text) && (
-          <div className="mb-12 max-w-[48rem]">
+          <Reveal className="mb-12 max-w-[48rem]">
             {heading && <h2 className={sectionHeadingClass}>{heading}</h2>}
             {text && <p className={sectionTextClass}>{text}</p>}
-          </div>
+          </Reveal>
         )}
 
         {cards && cards.length > 0 && (
           <ul className={cn('grid gap-6', columnClasses[columns || '3'])}>
-            {cards.map(({ id: cardId, title, description, icon, url }) => {
+            {cards.map(({ id: cardId, title, description, icon, url }, index) => {
               const Icon = icon ? cardIcons[icon as CardIconName]?.Icon : null
               const isExternal = Boolean(url && /^https?:\/\//.test(url))
 
               const card = (
-                <Card
+                <RevealCard
+                  delay={(index % 3) * 0.06}
                   className={cn(
-                    'group relative h-full transition duration-300 ease-out',
+                    // Hover transition only; opacity is left to the scroll fade
+                    'group relative h-full transition-[translate,box-shadow,border-color,background-color] duration-300 ease-out',
                     'hover:-translate-y-1 hover:border-foreground/20 hover:shadow-lg',
                     // Frosted glass over the background image, light or dark with the theme
                     background &&
@@ -108,7 +113,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                       </CardDescription>
                     )}
                   </CardHeader>
-                </Card>
+                </RevealCard>
               )
 
               return (

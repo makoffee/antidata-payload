@@ -401,6 +401,10 @@ export interface Page {
   title: string;
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
+    /**
+     * How the hero appears when the page loads.
+     */
+    animation?: ('fadeSlide' | 'fade' | 'none') | null;
     richText?: {
       root: {
         type: string;
@@ -1359,6 +1363,7 @@ export interface PagesSelect<T extends boolean = true> {
     | T
     | {
         type?: T;
+        animation?: T;
         richText?: T;
         links?:
           | T

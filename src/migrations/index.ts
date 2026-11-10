@@ -8,6 +8,7 @@ import * as migration_20261109_101722_archive_project_layout from './20261109_10
 import * as migration_20261109_115717_logo_wall_dark_logos from './20261109_115717_logo_wall_dark_logos';
 import * as migration_20261109_122803_card_grid_background from './20261109_122803_card_grid_background';
 import * as migration_20261109_124729_project_story_image from './20261109_124729_project_story_image';
+import * as migration_20261110_102131_hero_intro_animation from './20261110_102131_hero_intro_animation';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261109_124729_project_story_image.up,
     down: migration_20261109_124729_project_story_image.down,
-    name: '20261109_124729_project_story_image'
+    name: '20261109_124729_project_story_image',
+  },
+  {
+    up: migration_20261110_102131_hero_intro_animation.up,
+    down: migration_20261110_102131_hero_intro_animation.down,
+    name: '20261110_102131_hero_intro_animation'
   },
 ];

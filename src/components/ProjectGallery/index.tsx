@@ -1,5 +1,7 @@
 import React from 'react'
 
+import { Reveal } from '@/components/Reveal'
+
 import type { Project } from '@/payload-types'
 
 import { Media } from '@/components/Media'
@@ -17,16 +19,18 @@ export const ProjectGallery: React.FC<{
         if (!image || typeof image !== 'object') return null
 
         return (
-          <figure className={cn(size !== 'half' && 'md:col-span-2')} key={id}>
-            <Media
-              imgClassName="w-full h-auto rounded-lg"
-              resource={image}
-              size={size === 'half' ? '(max-width: 768px) 100vw, 50vw' : '100vw'}
-            />
-            {caption && (
-              <figcaption className="mt-3 text-sm text-muted-foreground">{caption}</figcaption>
-            )}
-          </figure>
+          <Reveal className={cn(size !== 'half' && 'md:col-span-2')} key={id}>
+            <figure>
+              <Media
+                imgClassName="w-full h-auto rounded-lg"
+                resource={image}
+                size={size === 'half' ? '(max-width: 768px) 100vw, 50vw' : '100vw'}
+              />
+              {caption && (
+                <figcaption className="mt-3 text-sm text-muted-foreground">{caption}</figcaption>
+              )}
+            </figure>
+          </Reveal>
         )
       })}
     </div>
