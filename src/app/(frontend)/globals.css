@@ -279,3 +279,27 @@ html[data-theme='dark'],
 html[data-theme='light'] {
   opacity: initial;
 }
+
+/* A short ring-ring wiggle, then a long rest, so it draws the eye without nagging */
+@theme {
+  --animate-ring: ring 4s ease-in-out infinite;
+
+  @keyframes ring {
+    0%,
+    18%,
+    100% {
+      rotate: 0deg;
+    }
+    3%,
+    9% {
+      rotate: -14deg;
+    }
+    6%,
+    12% {
+      rotate: 14deg;
+    }
+    15% {
+      rotate: -6deg;
+    }
+  }
+}

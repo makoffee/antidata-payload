@@ -83,11 +83,12 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                   )}
                 >
                   <CardHeader className="gap-4">
-                    <div className="flex items-start justify-between">
+                    {/* Icon box and title share one row */}
+                    <div className="flex items-center gap-4">
                       {Icon && (
                         <span
                           className={cn(
-                            'inline-flex size-11 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background',
+                            'inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background',
                             background &&
                               'bg-white/70 dark:bg-white/10 dark:group-hover:bg-white dark:group-hover:text-black',
                           )}
@@ -95,14 +96,14 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                           <Icon aria-hidden className="size-5" />
                         </span>
                       )}
+                      <CardTitle className="text-xl font-medium">{title}</CardTitle>
                       {url && (
                         <ArrowUpRight
                           aria-hidden
-                          className="ml-auto size-5 text-muted-foreground opacity-0 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
+                          className="ml-auto size-5 shrink-0 self-start text-muted-foreground opacity-0 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
                         />
                       )}
                     </div>
-                    <CardTitle className="text-xl font-medium">{title}</CardTitle>
                     {description && (
                       <CardDescription
                         className={cn(

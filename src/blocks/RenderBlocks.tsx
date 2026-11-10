@@ -14,7 +14,7 @@ import { LogoWallBlock } from '@/blocks/LogoWall/Component'
 import { CardGridBlock } from '@/blocks/CardGrid/Component'
 
 // These blocks animate their own heading and cards on scroll
-const selfRevealing = new Set(['archive', 'cardGrid', 'logoWall'])
+const selfRevealing = new Set(['archive', 'cardGrid', 'cta', 'logoWall'])
 
 const blockComponents = {
   archive: ArchiveBlock,
