@@ -52,7 +52,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
         <div className="container mb-8 z-10 relative flex items-center">
           <div className="max-w-[40rem] lg:max-w-none">
             {keywords && keywords.length > 0 && (
-              <motion.ul className="mb-6 flex flex-wrap gap-2" {...textIn(0.15)}>
+              <motion.ul className="mb-8 flex flex-wrap gap-2" {...textIn(0.15)}>
                 {keywords.map((keyword) => (
                   <li
                     className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/85 backdrop-blur-md"
@@ -67,7 +67,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               <motion.div {...textIn(0.25)}>
                 {/* One-line name on desktop; the subline keeps a readable width */}
                 <RichText
-                  className="mb-6 prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-[3.25rem] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem]"
+                  className="mb-10 prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-[3.25rem] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem]"
                   data={richText}
                   enableGutter={false}
                 />
