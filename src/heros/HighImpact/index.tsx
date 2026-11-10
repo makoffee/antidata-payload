@@ -102,6 +102,16 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               transition={{ duration: 1.2, ease: 'easeOut' }}
             >
               <Media fill imgClassName="object-cover" priority resource={media} />
+              {/* Scrim so bright photos never fight the white text: darkest behind the copy
+                  (left on desktop, everywhere on phones), plus a soft fade under the header */}
+              <div
+                aria-hidden
+                className="absolute inset-0 bg-black/45 md:bg-transparent md:bg-linear-to-r md:from-black/75 md:via-black/40 md:via-55% md:to-black/5"
+              />
+              <div
+                aria-hidden
+                className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-black/50 to-transparent"
+              />
             </motion.div>
           )}
         </div>
