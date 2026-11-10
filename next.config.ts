@@ -14,6 +14,9 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 const nextConfig: NextConfig = {
   images: {
     qualities: [100],
+    // Payload media is served relative (/api/media/file/x.jpg?<updatedAt>, see getMediaUrl); the
+    // query is a cache-buster, so allow any query there. Other local images: no query.
+    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/**', search: '' }],
     // Next 16 blocks optimizing images from localhost/private IPs; allow it for local dev only
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [

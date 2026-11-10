@@ -18,7 +18,14 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     return cacheTag ? `${url}?${cacheTag}` : url
   }
 
-  // Otherwise prepend client-side URL
+  // Keep Payload's own paths (/api/media/file/...) relative. Prepending a domain made the server
+  // (Vercel's production URL) and the browser (window.location) disagree after a domain change,
+  // and Next's optimizer then rejected the browser's version, so images vanished on hydration.
+  // Relative paths are the same everywhere and need no remotePatterns entry.
+  if (url.startsWith('/')) {
+    return cacheTag ? `${url}?${cacheTag}` : url
+  }
+
   const baseUrl = getClientSideURL()
   return cacheTag ? `${baseUrl}${url}?${cacheTag}` : `${baseUrl}${url}`
 }
