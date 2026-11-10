@@ -10,6 +10,7 @@ import * as migration_20261109_122803_card_grid_background from './20261109_1228
 import * as migration_20261109_124729_project_story_image from './20261109_124729_project_story_image';
 import * as migration_20261110_102131_hero_intro_animation from './20261110_102131_hero_intro_animation';
 import * as migration_20261110_110104_hero_keywords from './20261110_110104_hero_keywords';
+import * as migration_20261110_221809_cta_background_image from './20261110_221809_cta_background_image';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20261110_110104_hero_keywords.up,
     down: migration_20261110_110104_hero_keywords.down,
-    name: '20261110_110104_hero_keywords'
+    name: '20261110_110104_hero_keywords',
+  },
+  {
+    up: migration_20261110_221809_cta_background_image.up,
+    down: migration_20261110_221809_cta_background_image.down,
+    name: '20261110_221809_cta_background_image'
   },
 ];

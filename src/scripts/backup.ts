@@ -37,8 +37,11 @@ for (const collection of payload.config.collections) {
     backup.collections[collection.slug] = docs
     payload.logger.info(`Backed up ${docs.length} ${collection.slug}`)
   } catch (err) {
-    // e.g. a collection whose migration hasn't been run yet
-    payload.logger.warn(`Skipped ${collection.slug}: ${(err as Error).message}`)
+    // e.g. a field added in code before its migration has run. Stop rather than write a backup
+    // that quietly leaves this collection out
+    payload.logger.error(`Could not back up ${collection.slug}: ${(err as Error).message}`)
+    payload.logger.error('Backup aborted. Run pending migrations (npm run migrate) and try again.')
+    process.exit(1)
   }
 }
 

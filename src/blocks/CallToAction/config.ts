@@ -28,6 +28,16 @@ export const CallToAction: Block = {
       }),
       label: false,
     },
+    {
+      name: 'backgroundImage',
+      type: 'upload',
+      relationTo: 'media',
+      label: 'Background image (optional)',
+      admin: {
+        description:
+          'Full-width image behind the card, fading in from the page colour at the top. Abstract or dark images work best.',
+      },
+    },
     linkGroup({
       appearances: ['default', 'outline'],
       overrides: {

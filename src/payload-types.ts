@@ -578,6 +578,10 @@ export interface CallToActionBlock {
     };
     [k: string]: unknown;
   } | null;
+  /**
+   * Full-width image behind the card, fading in from the page colour at the top. Abstract or dark images work best.
+   */
+  backgroundImage?: (number | null) | Media;
   links?:
     | {
         link: {
@@ -1419,6 +1423,7 @@ export interface PagesSelect<T extends boolean = true> {
  */
 export interface CallToActionBlockSelect<T extends boolean = true> {
   richText?: T;
+  backgroundImage?: T;
   links?:
     | T
     | {
