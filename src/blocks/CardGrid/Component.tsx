@@ -106,7 +106,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                     {description && (
                       <CardDescription
                         className={cn(
-                          'text-base leading-relaxed',
+                          'text-base',
                           background && 'text-foreground/75',
                         )}
                       >

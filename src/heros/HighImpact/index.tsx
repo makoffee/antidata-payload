@@ -57,7 +57,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
               <motion.div {...textIn(0.15)}>
                 {/* One-line name on desktop; the subline keeps a readable width */}
                 <RichText
-                  className="mb-6 prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-[3.25rem] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem] lg:prose-p:max-w-none prose-p:text-xl md:prose-p:text-2xl prose-p:leading-snug prose-p:font-light prose-strong:font-semibold"
+                  className="mb-6 prose-h1:text-[clamp(2.25rem,1.5rem+2.9vw,3.25rem)] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem] lg:prose-p:max-w-none prose-p:text-[clamp(1.25rem,1.1rem+0.6vw,1.5rem)] prose-p:font-light prose-strong:font-semibold"
                   data={richText}
                   enableGutter={false}
                 />

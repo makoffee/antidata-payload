@@ -54,6 +54,15 @@
     padding-inline: 1rem;
   }
 
+  /* The container's width and gutter step at each breakpoint; let them glide like the type */
+  @media (prefers-reduced-motion: no-preference) {
+    .container {
+      transition-property: max-width, padding, margin;
+      transition-duration: 200ms;
+      transition-timing-function: ease-out;
+    }
+  }
+
   @variant sm {
     .container {
       max-width: var(--breakpoint-sm);
@@ -205,12 +214,60 @@
   --color-error: var(--error);
 }
 
+/* Golden-ratio leading: every line gets the same 0.618rem of air (φ − 1), so 16px body text sits
+   at exactly 1.618 and larger type tightens on its own (~1.5 at 20px, ~1.2 at 48px). Set per
+   element (not inherited) so `em` always means that element's own size. */
+:root {
+  --leading-golden: calc(1em + 0.618rem);
+}
+
+@theme {
+  --text-xs--line-height: var(--leading-golden);
+  --text-sm--line-height: var(--leading-golden);
+  --text-base--line-height: var(--leading-golden);
+  --text-lg--line-height: var(--leading-golden);
+  --text-xl--line-height: var(--leading-golden);
+  --text-2xl--line-height: var(--leading-golden);
+  --text-3xl--line-height: var(--leading-golden);
+  --text-4xl--line-height: var(--leading-golden);
+  --text-5xl--line-height: var(--leading-golden);
+  --text-6xl--line-height: var(--leading-golden);
+  --text-7xl--line-height: var(--leading-golden);
+  --text-8xl--line-height: var(--leading-golden);
+  --text-9xl--line-height: var(--leading-golden);
+}
+
+/* Rich text (the typography plugin) sets its own line-height per element; bring it into the
+   same system. Unlayered so it wins over the plugin; :where keeps it easy to override. */
+:where(.prose) :where(h1, h2, h3, h4, h5, h6, p, li, blockquote, figcaption, dd, dt, td, th) {
+  line-height: var(--leading-golden);
+}
+
 @layer base {
+  *,
+  ::before,
+  ::after {
+    line-height: var(--leading-golden);
+  }
   * {
     @apply border-border outline-ring/50;
   }
   body {
     @apply bg-background text-foreground min-h-[100vh] flex flex-col;
+  }
+
+  /* Sizes glide instead of snapping when a breakpoint flips (e.g. resizing the window).
+     Only size properties, so colours and theme switches stay instant; any element with its
+     own Tailwind transition-* utility overrides this. */
+  @media (prefers-reduced-motion: no-preference) {
+    *,
+    *::before,
+    *::after {
+      transition-property: font-size, line-height, letter-spacing, padding, margin, gap,
+        border-radius;
+      transition-duration: 200ms;
+      transition-timing-function: ease-out;
+    }
   }
 }
 

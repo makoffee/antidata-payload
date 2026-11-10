@@ -85,10 +85,10 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
       {/* Keeps the text readable on any colour */}
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-5 text-white">
-        <h3 className="text-xl font-medium leading-tight">{title}</h3>
+        <h3 className="text-xl font-medium">{title}</h3>
         {meta && <p className="mt-1 text-sm text-white/70">{meta}</p>}
         {summary && (
-          <p className="mt-3 text-sm leading-relaxed text-white/85 line-clamp-2">{summary}</p>
+          <p className="mt-3 text-sm text-white/85 line-clamp-2">{summary}</p>
         )}
       </div>
     </Link>
