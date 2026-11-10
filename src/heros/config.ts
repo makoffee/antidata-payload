@@ -49,7 +49,7 @@ export const hero: Field = {
       },
       options: [
         {
-          label: 'Fade & slide (background fades in, text slides in from the left)',
+          label: 'Fade & slide (background fades in, text slides in from the right)',
           value: 'fadeSlide',
         },
         { label: 'Fade only', value: 'fade' },
