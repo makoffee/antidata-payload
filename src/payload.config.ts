@@ -16,6 +16,7 @@ import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
 import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
+import { resendAdapter } from '@payloadcms/email-resend'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -86,6 +87,15 @@ export default buildConfig({
       // filenames unique (logo-1.svg) because local and live share one database.
     }),
   ],
+  // Contact form notifications and admin emails go out through Resend (EU region). Without a key,
+  // e.g. on a fresh local checkout, Payload just logs emails to the console instead.
+  email: process.env.RESEND_API_KEY
+    ? resendAdapter({
+        apiKey: process.env.RESEND_API_KEY,
+        defaultFromAddress: 'contact@antidata.net',
+        defaultFromName: 'antidata.net',
+      })
+    : undefined,
   globals: [Header, Footer],
   secret: process.env.PAYLOAD_SECRET,
   sharp,

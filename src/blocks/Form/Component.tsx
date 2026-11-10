@@ -1,6 +1,7 @@
 'use client'
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
@@ -154,6 +155,13 @@ export const FormBlock: React.FC<
               <Button form={formID} type="submit" variant="default">
                 {submitButtonLabel}
               </Button>
+              <p className="mt-4 text-sm text-muted-foreground">
+                Your message is used only to reply to you and is deleted after 12 months. See{' '}
+                <Link className="underline underline-offset-4" href="/data-protection">
+                  Data Protection
+                </Link>
+                .
+              </p>
             </form>
           )}
         </FormProvider>

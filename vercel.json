@@ -4,6 +4,10 @@
     {
       "path": "/api/payload-jobs/run",
       "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/next/prune-submissions",
+      "schedule": "30 3 * * *"
     }
   ]
 }
