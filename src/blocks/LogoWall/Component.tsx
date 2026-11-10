@@ -2,6 +2,7 @@ import type { LogoWallBlock as LogoWallBlockProps } from '@/payload-types'
 
 import React from 'react'
 
+import { sectionHeadingClass, sectionTextClass } from '@/utilities/sectionHeading'
 import { cn } from '@/utilities/ui'
 import { getMediaUrl } from '@/utilities/getMediaUrl'
 
@@ -17,11 +18,9 @@ export const LogoWallBlock: React.FC<LogoWallBlockProps & { id?: string }> = ({
   return (
     <section className="container" id={`block-${id}`}>
       {(heading || text) && (
-        <div className="mx-auto mb-12 max-w-[40rem] text-center">
-          {heading && (
-            <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{heading}</h2>
-          )}
-          {text && <p className="mt-4 text-lg text-muted-foreground">{text}</p>}
+        <div className="mx-auto mb-12 max-w-[48rem] text-center">
+          {heading && <h2 className={sectionHeadingClass}>{heading}</h2>}
+          {text && <p className={sectionTextClass}>{text}</p>}
         </div>
       )}
 

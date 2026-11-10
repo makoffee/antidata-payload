@@ -11,6 +11,8 @@ import { CollectionArchive } from '@/components/CollectionArchive'
 import { ProjectGrid } from '@/components/ProjectGrid'
 import { ProjectStories } from '@/components/ProjectStories'
 import { Button } from '@/components/ui/button'
+import { sectionRichTextClass } from '@/utilities/sectionHeading'
+import { cn } from '@/utilities/ui'
 
 export const ArchiveBlock: React.FC<
   ArchiveBlockProps & {
@@ -76,11 +78,31 @@ export const ArchiveBlock: React.FC<
     }
   }
 
+  const viewAll = (className?: string) =>
+    showViewAll && projects.length > 0 ? (
+      <div className={className}>
+        <Button asChild size="lg" variant="outline">
+          <Link href="/portfolio">
+            View all projects
+            <ArrowRight aria-hidden />
+          </Link>
+        </Button>
+      </div>
+    ) : null
+
   return (
     <div className="my-16 pb-12 md:pb-16" id={`block-${id}`}>
-      {introContent && (
-        <div className="container mb-16">
-          <RichText className="ms-0 max-w-[48rem]" data={introContent} enableGutter={false} />
+      {(introContent || showViewAll) && (
+        <div className="container mb-12 md:mb-16">
+          {introContent && (
+            <RichText
+              className={cn('ms-0 max-w-[48rem]', sectionRichTextClass)}
+              data={introContent}
+              enableGutter={false}
+            />
+          )}
+          {/* On desktop the link sits above the cards so it's visible without scrolling past them */}
+          {viewAll('mt-8 hidden md:block')}
         </div>
       )}
       {projects.length > 0 && (
@@ -90,16 +112,7 @@ export const ArchiveBlock: React.FC<
           ) : (
             <ProjectGrid projects={projects} />
           )}
-          {showViewAll && (
-            <div className="mt-10 flex justify-center">
-              <Button asChild size="lg" variant="outline">
-                <Link href="/portfolio">
-                  View all projects
-                  <ArrowRight aria-hidden />
-                </Link>
-              </Button>
-            </div>
-          )}
+          {viewAll('mt-10 flex justify-center md:hidden')}
         </div>
       )}
       {posts.length > 0 && <CollectionArchive posts={posts} />}

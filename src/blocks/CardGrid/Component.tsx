@@ -6,6 +6,7 @@ import React from 'react'
 
 import { Media } from '@/components/Media'
 import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { sectionHeadingClass, sectionTextClass } from '@/utilities/sectionHeading'
 import { cn } from '@/utilities/ui'
 
 import { cardIcons, type CardIconName } from './icons'
@@ -54,11 +55,9 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
 
       <div className="container">
         {(heading || text) && (
-          <div className="mb-12 max-w-[40rem]">
-            {heading && (
-              <h2 className="text-3xl md:text-4xl font-medium tracking-tight">{heading}</h2>
-            )}
-            {text && <p className="mt-4 text-lg text-muted-foreground">{text}</p>}
+          <div className="mb-12 max-w-[48rem]">
+            {heading && <h2 className={sectionHeadingClass}>{heading}</h2>}
+            {text && <p className={sectionTextClass}>{text}</p>}
           </div>
         )}
 
