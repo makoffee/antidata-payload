@@ -46,13 +46,26 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   return (
     <MotionConfig reducedMotion="user">
       <div
-        className="relative isolate -mt-[10.4rem] flex items-center justify-center bg-black text-white"
+        className="relative isolate -mt-[10.4rem] flex min-h-[90svh] flex-col bg-black text-white"
         data-theme="dark"
       >
-        <div className="container mb-8 z-10 relative flex items-center">
+        {/* The name sits just above the optical centre of the screen and everything else
+            hangs below it, rather than the whole block being centred */}
+        <div className="container relative z-10 pt-[30svh] pb-20 md:pt-[calc(41svh-2rem)] md:pb-24">
           <div className="max-w-[40rem] lg:max-w-none">
+            {richText && (
+              <motion.div {...textIn(0.15)}>
+                {/* One-line name on desktop; the subline keeps a readable width */}
+                <RichText
+                  className="mb-6 prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-[3.25rem] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem] lg:prose-p:max-w-none prose-p:text-xl md:prose-p:text-2xl prose-p:leading-snug prose-p:font-light prose-strong:font-semibold"
+                  data={richText}
+                  enableGutter={false}
+                />
+              </motion.div>
+            )}
+            {/* Glass keyword chips under the subline, so the name leads */}
             {keywords && keywords.length > 0 && (
-              <motion.ul className="mb-8 flex flex-wrap gap-2" {...textIn(0.15)}>
+              <motion.ul className="mb-10 flex flex-wrap gap-2 md:mb-16" {...textIn(0.3)}>
                 {keywords.map((keyword) => (
                   <li
                     className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/85 backdrop-blur-md"
@@ -63,22 +76,16 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                 ))}
               </motion.ul>
             )}
-            {richText && (
-              <motion.div {...textIn(0.25)}>
-                {/* One-line name on desktop; the subline keeps a readable width */}
-                <RichText
-                  className="mb-10 prose-h1:text-4xl md:prose-h1:text-5xl lg:prose-h1:text-[3.25rem] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem]"
-                  data={richText}
-                  enableGutter={false}
-                />
-              </motion.div>
-            )}
             {Array.isArray(links) && links.length > 0 && (
-              <motion.ul className="flex flex-wrap gap-4" {...textIn(0.45)}>
+              <motion.ul
+                className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-4"
+                {...textIn(0.45)}
+              >
+                {/* Full-width stacked buttons on phones, side by side from sm up */}
                 {links.map(({ link }, i) => {
                   return (
                     <li key={i}>
-                      <CMSLink {...link} />
+                      <CMSLink {...link} className="h-12 w-full sm:h-10 sm:w-auto" />
                     </li>
                   )
                 })}
@@ -86,7 +93,7 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             )}
           </div>
         </div>
-        <div className="min-h-[80vh] select-none">
+        <div className="select-none">
           {media && typeof media === 'object' && (
             <motion.div
               animate={{ opacity: 1, scale: 1 }}

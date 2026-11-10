@@ -66,7 +66,9 @@ export const StoryCarousel: React.FC<{ children: React.ReactNode; className?: st
       <div className="relative">
         <ul
           className={cn(
-            'flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain md:gap-6',
+            'flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden overscroll-x-contain md:gap-6',
+            // Room for the cards' 12px reveal slide, so it isn't clipped or turned into a vertical scroll
+            '-my-3 py-3',
             // Phones bleed to the screen edge so the next card peeks in
             '-mx-4 px-4 scroll-px-4 md:mx-0 md:px-0 md:scroll-px-0',
             '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',

@@ -1,51 +1,30 @@
 'use client'
 
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import React, { useState } from 'react'
-
-import type { Theme } from './types'
+import { Moon, Sun } from 'lucide-react'
+import React from 'react'
 
 import { useTheme } from '..'
-import { themeLocalStorageKey } from './types'
 
-export const ThemeSelector: React.FC = () => {
+// Sun / moon switch for the header. Which icon shows is keyed off the page's own theme on
+// <html> (not the header's local data-theme over dark heroes), so it renders the same on
+// the server and needs no client-only state.
+export const ThemeToggle: React.FC = () => {
   const { setTheme } = useTheme()
-  const [value, setValue] = useState('')
 
-  const onThemeChange = (themeToSet: Theme & 'auto') => {
-    if (themeToSet === 'auto') {
-      setTheme(null)
-      setValue('auto')
-    } else {
-      setTheme(themeToSet)
-      setValue(themeToSet)
-    }
+  const toggle = () => {
+    const current = document.documentElement.getAttribute('data-theme')
+    setTheme(current === 'dark' ? 'light' : 'dark')
   }
 
-  React.useEffect(() => {
-    const preference = window.localStorage.getItem(themeLocalStorageKey)
-    setValue(preference ?? 'auto')
-  }, [])
-
   return (
-    <Select onValueChange={onThemeChange} value={value}>
-      <SelectTrigger
-        aria-label="Select a theme"
-        className="w-auto bg-transparent gap-2 pl-0 md:pl-3 border-none"
-      >
-        <SelectValue placeholder="Theme" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectItem value="auto">Auto</SelectItem>
-        <SelectItem value="light">Light</SelectItem>
-        <SelectItem value="dark">Dark</SelectItem>
-      </SelectContent>
-    </Select>
+    <button
+      aria-label="Switch between light and dark mode"
+      className="relative flex size-5 items-center justify-center text-primary"
+      onClick={toggle}
+      type="button"
+    >
+      <Sun className="absolute w-5 transition-[rotate,scale] duration-300 [html[data-theme=dark]_&]:-rotate-90 [html[data-theme=dark]_&]:scale-0" />
+      <Moon className="absolute w-5 rotate-90 scale-0 transition-[rotate,scale] duration-300 [html[data-theme=dark]_&]:rotate-0 [html[data-theme=dark]_&]:scale-100" />
+    </button>
   )
 }
