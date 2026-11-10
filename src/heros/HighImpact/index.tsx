@@ -23,7 +23,13 @@ const textFrom: Record<Animation, TargetAndTransition | false> = {
   none: false,
 }
 
-export const HighImpactHero: React.FC<Page['hero']> = ({ animation, links, media, richText }) => {
+export const HighImpactHero: React.FC<Page['hero']> = ({
+  animation,
+  keywords,
+  links,
+  media,
+  richText,
+}) => {
   const { setHeaderTheme } = useHeaderTheme()
   const style: Animation = animation || 'fadeSlide'
 
@@ -45,6 +51,18 @@ export const HighImpactHero: React.FC<Page['hero']> = ({ animation, links, media
       >
         <div className="container mb-8 z-10 relative flex items-center">
           <div className="max-w-[40rem] lg:max-w-none">
+            {keywords && keywords.length > 0 && (
+              <motion.ul className="mb-6 flex flex-wrap gap-2" {...textIn(0.15)}>
+                {keywords.map((keyword) => (
+                  <li
+                    className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/85 backdrop-blur-md"
+                    key={keyword}
+                  >
+                    {keyword}
+                  </li>
+                ))}
+              </motion.ul>
+            )}
             {richText && (
               <motion.div {...textIn(0.25)}>
                 {/* One-line name on desktop; the subline keeps a readable width */}

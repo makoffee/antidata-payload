@@ -9,6 +9,7 @@ import * as migration_20261109_115717_logo_wall_dark_logos from './20261109_1157
 import * as migration_20261109_122803_card_grid_background from './20261109_122803_card_grid_background';
 import * as migration_20261109_124729_project_story_image from './20261109_124729_project_story_image';
 import * as migration_20261110_102131_hero_intro_animation from './20261110_102131_hero_intro_animation';
+import * as migration_20261110_110104_hero_keywords from './20261110_110104_hero_keywords';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261110_102131_hero_intro_animation.up,
     down: migration_20261110_102131_hero_intro_animation.down,
-    name: '20261110_102131_hero_intro_animation'
+    name: '20261110_102131_hero_intro_animation',
+  },
+  {
+    up: migration_20261110_110104_hero_keywords.up,
+    down: migration_20261110_110104_hero_keywords.down,
+    name: '20261110_110104_hero_keywords'
   },
 ];

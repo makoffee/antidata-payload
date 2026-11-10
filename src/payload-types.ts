@@ -405,6 +405,10 @@ export interface Page {
      * How the hero appears when the page loads.
      */
     animation?: ('fadeSlide' | 'fade' | 'none') | null;
+    /**
+     * Small chips shown above the heading, e.g. Design Consulting, UX Design. Also used in the SEO description. Press Enter after each.
+     */
+    keywords?: string[] | null;
     richText?: {
       root: {
         type: string;
@@ -1364,6 +1368,7 @@ export interface PagesSelect<T extends boolean = true> {
     | {
         type?: T;
         animation?: T;
+        keywords?: T;
         richText?: T;
         links?:
           | T

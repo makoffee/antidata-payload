@@ -57,6 +57,17 @@ export const hero: Field = {
       ],
     },
     {
+      name: 'keywords',
+      type: 'text',
+      hasMany: true,
+      label: 'Keywords',
+      admin: {
+        condition: (_, { type } = {}) => type === 'highImpact',
+        description:
+          'Small chips shown above the heading, e.g. Design Consulting, UX Design. Also used in the SEO description. Press Enter after each.',
+      },
+    },
+    {
       name: 'richText',
       type: 'richText',
       editor: lexicalEditor({
