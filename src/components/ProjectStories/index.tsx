@@ -8,9 +8,11 @@ import type { ProjectCardData } from '@/components/ProjectCard'
 import { Media } from '@/components/Media'
 import { cn } from '@/utilities/ui'
 
+import { StoryCarousel } from './StoryCarousel'
+
 // Tall "story" cards: square artwork fading into a blurred, colour-matched text area.
-// Below lg the row scrolls sideways with snap points (bleeding to the screen edge);
-// from lg up it becomes a 4-column grid.
+// A snap-scrolling row: 1 card (+ a peek of the next) on phones, 2 per view on tablets, 3 on
+// laptops and 4 on wide desktops (cards stay ~280px+), paged with hover arrows and dots.
 export const ProjectStories: React.FC<{
   className?: string
   projects: (ProjectCardData & { id: number | string })[]
@@ -20,26 +22,18 @@ export const ProjectStories: React.FC<{
   }
 
   return (
-    <ul
-      className={cn(
-        'flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain',
-        '-mx-4 px-4 scroll-px-4 md:-mx-8 md:px-8 md:scroll-px-8',
-        '[scrollbar-width:none] [&::-webkit-scrollbar]:hidden',
-        'lg:mx-0 lg:grid lg:grid-cols-4 lg:gap-6 lg:overflow-visible lg:px-0',
-        className,
-      )}
-    >
+    <StoryCarousel className={className}>
       {projects.map((project, index) => (
         <li
-          className="w-[78%] shrink-0 snap-start sm:w-[45%] md:w-[38%] lg:w-auto"
+          className="w-[78%] shrink-0 snap-start sm:w-[45%] md:w-[calc((100%-1.5rem)/2)] lg:w-[calc((100%-3rem)/3)] xl:w-[calc((100%-4.5rem)/4)]"
           key={project.id}
         >
           <Reveal delay={(index % 4) * 0.06}>
-            <ProjectStoryCard priority={index < 2} project={project} />
+            <ProjectStoryCard priority={index < 4} project={project} />
           </Reveal>
         </li>
       ))}
-    </ul>
+    </StoryCarousel>
   )
 }
 

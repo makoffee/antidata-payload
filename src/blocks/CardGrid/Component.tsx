@@ -88,7 +88,8 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                         <span
                           className={cn(
                             'inline-flex size-11 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background',
-                            background && 'bg-white/70 dark:bg-white/10',
+                            background &&
+                              'bg-white/70 dark:bg-white/10 dark:group-hover:bg-white dark:group-hover:text-black',
                           )}
                         >
                           <Icon aria-hidden className="size-5" />

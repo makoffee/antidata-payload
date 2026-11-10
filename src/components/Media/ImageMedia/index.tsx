@@ -98,7 +98,8 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
         .join(', ')
 
   return (
-    <picture className={cn(pictureClassName)}>
+    // With `fill` the <picture> wrapper must be positioned too, or Next warns about the img's parent
+    <picture className={cn(fill && 'absolute inset-0', pictureClassName)}>
       <NextImage
         alt={alt || ''}
         className={cn(
