@@ -1,12 +1,15 @@
-import Script from 'next/script'
+'use client'
+
 import React from 'react'
 
 import { defaultTheme, themeLocalStorageKey } from '../ThemeSelector/types'
 
 export const InitTheme: React.FC = () => {
   return (
-    // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
-    <Script
+    // Runs from the server HTML before first paint. When React re-renders the layout in the
+    // browser (it does on 404s) a script it creates can't run anyway, so it's marked as a data
+    // block there; otherwise React logs a "script tag" error
+    <script
       dangerouslySetInnerHTML={{
         __html: `
   (function () {
@@ -44,7 +47,8 @@ export const InitTheme: React.FC = () => {
   `,
       }}
       id="theme-script"
-      strategy="beforeInteractive"
+      suppressHydrationWarning
+      type={typeof window === 'undefined' ? undefined : 'text/plain'}
     />
   )
 }
