@@ -32,9 +32,11 @@ export type ExperiencePreviewProps = {
 
 // The live site renders at a real device width and is scaled down to fit, so "Desktop" shows
 // the actual desktop layout even beside the text block. Desktop is a 1280px laptop; mobile is
-// an iPhone (393×852).
+// an iPhone 12–14 (390×844 CSS points).
 const DESKTOP_WIDTH = 1280
-const PHONE = { width: 393, height: 852 }
+const PHONE = { width: 390, height: 844 }
+// iPhone 12–14 screen corner radius in points; scaled with the frame so the curve stays true
+const PHONE_RADIUS = 47.33
 const CHROME_HEIGHT = 36
 const BORDER = 2 // 1px on each side
 
@@ -230,12 +232,14 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
             <div
               className={cn(
                 'mx-auto overflow-hidden border border-border bg-background shadow-lg transition-[width,border-radius] duration-300 ease-out',
-                frameView === 'desktop' ? 'rounded-lg' : 'rounded-[1.75rem]',
+                frameView === 'desktop' && 'rounded-lg',
               )}
               // Hidden until measured so it never flashes at full device width and overflows
               style={{
                 width: screenWidth + BORDER,
                 height: frameHeight,
+                borderRadius:
+                  frameView === 'mobile' ? Math.round(PHONE_RADIUS * device.scale) + 1 : undefined,
                 visibility: measured ? undefined : 'hidden',
               }}
             >
