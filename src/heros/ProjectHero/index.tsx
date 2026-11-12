@@ -36,7 +36,7 @@ export const ProjectHero: React.FC<{
             ))}
             {hasDemo ? (
               <div>
-                <dt className="text-sm text-muted-foreground">Experience</dt>
+                <dt className="text-sm text-muted-foreground">The Experience</dt>
                 <dd className="mt-1">
                   <ScrollToLink
                     className="group inline-flex items-center gap-1 transition-colors hover:text-muted-foreground"
