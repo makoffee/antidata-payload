@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowUpRight, Monitor, Smartphone, X } from 'lucide-react'
-import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 
 import { Button } from '@/components/ui/button'
@@ -96,8 +96,6 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   const [stageWidth, setStageWidth] = useState(0)
   const [windowHeight, setWindowHeight] = useState(0)
   const [isPhone, setIsPhone] = useState(false)
-  // On phones the mobile view takes over the screen at the device's real width
-  const [fullscreen, setFullscreen] = useState(false)
   const closeRef = useRef<HTMLButtonElement>(null)
 
   const preferred =
@@ -108,32 +106,37 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   const src = active === 'figma' ? figmaUrl : liveUrl
   const showFrame = Boolean(src) && (active === 'figma' || embeddable)
 
-  // Phones get the mobile view first
+  // On a phone-sized screen, the mobile view IS the fullscreen overlay: it follows from the
+  // device size and the selected view, so it's right on load, on tap and on rotate
+  const fullscreen = showFrame && isPhone && view === 'mobile'
+  // Behind the overlay the in-page preview stays on desktop (no second mobile iframe)
+  const frameView: View = fullscreen ? 'desktop' : view
+
   useEffect(() => {
     const mq = window.matchMedia(PHONE_QUERY)
     setIsPhone(mq.matches)
-    if (mq.matches) setView('mobile')
     const onChange = (e: MediaQueryListEvent) => setIsPhone(e.matches)
     mq.addEventListener('change', onChange)
     return () => mq.removeEventListener('change', onChange)
   }, [])
 
-  const openFullscreen = useCallback(() => {
-    // A history entry, so the phone's back gesture closes the overlay instead of leaving the page
-    window.history.pushState({ [OVERLAY_STATE]: true }, '')
-    setFullscreen(true)
-  }, [])
-
-  const closeFullscreen = useCallback(() => {
-    if (window.history.state?.[OVERLAY_STATE])
-      window.history.back() // popstate below closes it
-    else setFullscreen(false)
-  }, [])
+  const selectView = (v: View) => {
+    if (v === view) return
+    if (v === 'mobile' && isPhone) {
+      // A history entry, so the phone's back gesture closes the overlay instead of leaving the page
+      window.history.pushState({ [OVERLAY_STATE]: true }, '')
+    }
+    if (v === 'desktop' && fullscreen && window.history.state?.[OVERLAY_STATE]) {
+      window.history.back() // popstate (below) switches back to desktop
+      return
+    }
+    setView(v)
+  }
 
   useEffect(() => {
     if (!fullscreen) return
-    const onPop = () => setFullscreen(false)
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeFullscreen()
+    const onPop = () => setView('desktop')
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && selectViewRef.current('desktop')
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     window.addEventListener('popstate', onPop)
@@ -144,13 +147,11 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
       window.removeEventListener('popstate', onPop)
       window.removeEventListener('keydown', onKey)
     }
-  }, [fullscreen, closeFullscreen])
+  }, [fullscreen])
 
-  const selectView = (v: View) => {
-    setView(v)
-    if (v === 'mobile' && isPhone && !fullscreen) openFullscreen()
-    if (v === 'desktop' && fullscreen) closeFullscreen()
-  }
+  // Latest selectView for the key handler without re-binding listeners each render
+  const selectViewRef = useRef(selectView)
+  selectViewRef.current = selectView
 
   useIsoLayoutEffect(() => {
     const el = stageRef.current
@@ -168,14 +169,14 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
 
   const measured = stageWidth > 0 && windowHeight > 0
   const frameHeight = measured ? frameHeightFor(stageWidth, windowHeight) : 0
-  const screenHeight = frameHeight - BORDER - (view === 'desktop' ? CHROME_HEIGHT : 0)
+  const screenHeight = frameHeight - BORDER - (frameView === 'desktop' ? CHROME_HEIGHT : 0)
   // Desktop fills the column; mobile takes an iPhone's proportions at the same height
   const screenWidth =
-    view === 'desktop'
+    frameView === 'desktop'
       ? stageWidth - BORDER
       : Math.round((screenHeight * PHONE.width) / PHONE.height)
   const device =
-    view === 'desktop'
+    frameView === 'desktop'
       ? { width: DESKTOP_WIDTH, scale: screenWidth / DESKTOP_WIDTH }
       : { width: PHONE.width, scale: screenHeight / PHONE.height }
 
@@ -218,7 +219,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
             <div
               className={cn(
                 'mx-auto overflow-hidden border border-border bg-background shadow-lg transition-[width,border-radius] duration-300 ease-out',
-                view === 'desktop' ? 'rounded-lg' : 'rounded-[1.75rem]',
+                frameView === 'desktop' ? 'rounded-lg' : 'rounded-[1.75rem]',
               )}
               // Hidden until measured so it never flashes at full device width and overflows
               style={{
@@ -227,7 +228,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                 visibility: measured ? undefined : 'hidden',
               }}
             >
-              {view === 'desktop' && (
+              {frameView === 'desktop' && (
                 <div
                   className="flex items-center gap-2 border-b border-border bg-muted px-3"
                   style={{ height: CHROME_HEIGHT }}
@@ -251,7 +252,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                   allowFullScreen
                   className="absolute left-0 top-0 origin-top-left border-0"
                   // Remount on view change so the site re-runs its responsive layout at the new width
-                  key={`${view}-${src}`}
+                  key={`${frameView}-${src}`}
                   loading="lazy"
                   referrerPolicy="strict-origin-when-cross-origin"
                   // No allow-top-navigation: the embedded site can't navigate this page away
@@ -267,7 +268,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                         }
                       : { width: '100%', height: '100%' }
                   }
-                  title={`${title || 'Project'}: ${view} preview`}
+                  title={`${title || 'Project'}: ${frameView} preview`}
                 />
               </div>
             </div>
@@ -276,7 +277,6 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
       </div>
 
       {fullscreen &&
-        src &&
         createPortal(
           <div
             aria-label={`${title || 'Project'}: mobile preview`}
@@ -289,7 +289,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
               className="h-dvh w-full border-0"
               referrerPolicy="strict-origin-when-cross-origin"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-              src={src}
+              src={src!}
               title={`${title || 'Project'}: mobile preview`}
             />
             <div
@@ -300,7 +300,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                 <ViewToggle className="border-0 p-0" onSelect={selectView} view={view} />
                 <Button
                   aria-label="Close preview and return to the page"
-                  onClick={closeFullscreen}
+                  onClick={() => selectView('desktop')}
                   ref={closeRef}
                   size="sm"
                   variant="ghost"
