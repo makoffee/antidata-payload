@@ -198,7 +198,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
       )}
     >
       {/* Content block */}
-      <div className="lg:sticky lg:top-24 lg:self-start lg:pt-14">
+      <div className="lg:self-center">
         <h2 className="text-3xl md:text-5xl font-medium tracking-tight" id="experience-title">
           {title || 'The Experience'}
         </h2>
