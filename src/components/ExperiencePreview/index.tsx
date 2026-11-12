@@ -96,6 +96,9 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   const [stageWidth, setStageWidth] = useState(0)
   const [windowHeight, setWindowHeight] = useState(0)
   const [isPhone, setIsPhone] = useState(false)
+  // Width of a classic (space-taking) scrollbar in this browser: ~15px in desktop Firefox and on
+  // Windows, 0 where scrollbars overlay the content (macOS Chrome/Safari, phones)
+  const [scrollbarWidth, setScrollbarWidth] = useState(0)
   const closeRef = useRef<HTMLButtonElement>(null)
 
   const preferred =
@@ -160,6 +163,11 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
     observer.observe(el)
     const onResize = () => setWindowHeight(window.innerHeight)
     onResize()
+    const probe = document.createElement('div')
+    probe.style.cssText = 'position:absolute;top:-9999px;width:100px;height:100px;overflow:scroll'
+    document.body.appendChild(probe)
+    setScrollbarWidth(probe.offsetWidth - probe.clientWidth)
+    probe.remove()
     window.addEventListener('resize', onResize)
     return () => {
       observer.disconnect()
@@ -259,10 +267,13 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                   sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
                   src={src!}
                   style={
-                    // Figma scales its own canvas; the live site renders at device size, scaled down
+                    // Figma scales its own canvas; the live site renders at device size, scaled down.
+                    // The frame is widened by the scrollbar width so the site still gets the full
+                    // device width; the scrollbar itself falls outside the clipped screen. Without
+                    // this, desktop Firefox leaves the mobile view ~15px short and it scrolls sideways.
                     active === 'live'
                       ? {
-                          width: device.width,
+                          width: device.width + scrollbarWidth,
                           height: screenHeight / device.scale,
                           transform: `scale(${device.scale})`,
                         }
@@ -281,12 +292,15 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
           <div
             aria-label={`${title || 'Project'}: mobile preview`}
             aria-modal="true"
-            className="fixed inset-0 z-[100] bg-background"
+            // overflow-hidden: nothing inside may widen the screen and cause sideways panning
+            className="fixed inset-0 z-[100] overflow-hidden bg-background"
             role="dialog"
           >
             <iframe
               allowFullScreen
-              className="h-dvh w-full border-0"
+              // iOS Safari stretches an iframe to its content's width and ignores width: 100%; a 1px
+              // width with min-width 100% pins it to the screen
+              className="block h-dvh w-px min-w-full max-w-full border-0"
               referrerPolicy="strict-origin-when-cross-origin"
               sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
               src={src!}
