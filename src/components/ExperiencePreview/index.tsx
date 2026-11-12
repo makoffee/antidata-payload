@@ -26,13 +26,19 @@ export type ExperiencePreviewProps = {
   title?: string | null
 }
 
-// The live site renders at a real device width and is scaled down to fit its column, so
-// "Desktop" shows the actual desktop layout even beside the text block
-const VIEWPORTS: Record<View, { width: number; height: number }> = {
-  desktop: { width: 1440, height: 900 },
-  mobile: { width: 390, height: 844 },
-}
+// The live site renders at a real device width and is scaled down to fit, so "Desktop" shows
+// the actual desktop layout even beside the text block. Desktop is a 1280px laptop; mobile is
+// an iPhone (393×852).
+const DESKTOP_WIDTH = 1280
+const PHONE = { width: 393, height: 852 }
 const CHROME_HEIGHT = 36
+const BORDER = 2 // 1px on each side
+
+// Both views share one frame height, so switching never moves the page. It follows the column
+// width, but never gets taller than ~72% of the window (the whole frame stays on screen) and
+// stays within sensible bounds.
+const frameHeightFor = (stageWidth: number, windowHeight: number) =>
+  Math.round(Math.max(420, Math.min(680, stageWidth * 0.85, windowHeight * 0.72)))
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
@@ -50,6 +56,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   const [view, setView] = useState<View>('desktop')
   const stageRef = useRef<HTMLDivElement>(null)
   const [stageWidth, setStageWidth] = useState(0)
+  const [windowHeight, setWindowHeight] = useState(0)
 
   const preferred =
     source === 'figma'
@@ -69,14 +76,27 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
     if (!el) return
     const observer = new ResizeObserver(([entry]) => setStageWidth(entry.contentRect.width))
     observer.observe(el)
-    return () => observer.disconnect()
+    const onResize = () => setWindowHeight(window.innerHeight)
+    onResize()
+    window.addEventListener('resize', onResize)
+    return () => {
+      observer.disconnect()
+      window.removeEventListener('resize', onResize)
+    }
   }, [])
 
-  const viewport = VIEWPORTS[view]
-  // -2 for the 1px border on each side
-  const scale = stageWidth ? Math.min(1, (stageWidth - 2) / viewport.width) : 0
-  const screenWidth = viewport.width * scale
-  const screenHeight = viewport.height * scale
+  const measured = stageWidth > 0 && windowHeight > 0
+  const frameHeight = measured ? frameHeightFor(stageWidth, windowHeight) : 0
+  const screenHeight = frameHeight - BORDER - (view === 'desktop' ? CHROME_HEIGHT : 0)
+  // Desktop fills the column; mobile takes an iPhone's proportions at the same height
+  const screenWidth =
+    view === 'desktop'
+      ? stageWidth - BORDER
+      : Math.round((screenHeight * PHONE.width) / PHONE.height)
+  const device =
+    view === 'desktop'
+      ? { width: DESKTOP_WIDTH, scale: screenWidth / DESKTOP_WIDTH }
+      : { width: PHONE.width, scale: screenHeight / PHONE.height }
 
   return (
     <section
@@ -144,7 +164,11 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                 view === 'desktop' ? 'rounded-lg' : 'rounded-[1.75rem]',
               )}
               // Hidden until measured so it never flashes at full device width and overflows
-              style={{ width: screenWidth + 2, visibility: scale ? undefined : 'hidden' }}
+              style={{
+                width: screenWidth + BORDER,
+                height: frameHeight,
+                visibility: measured ? undefined : 'hidden',
+              }}
             >
               {view === 'desktop' && (
                 <div
@@ -178,9 +202,9 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                     // Figma scales its own canvas; the live site renders at device size, scaled down
                     active === 'live'
                       ? {
-                          width: viewport.width,
-                          height: viewport.height,
-                          transform: `scale(${scale})`,
+                          width: device.width,
+                          height: screenHeight / device.scale,
+                          transform: `scale(${device.scale})`,
                         }
                       : { width: '100%', height: '100%' }
                   }
