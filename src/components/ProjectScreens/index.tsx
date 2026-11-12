@@ -72,10 +72,10 @@ export const ProjectScreens: React.FC<{
                 )}
                 delay={(index % 4) * 0.06}
               >
-                <CardHeader className="pb-4">
+                <CardHeader className="px-4 pt-4 pb-3">
                   <CardTitle className="text-base font-medium">{label}</CardTitle>
                 </CardHeader>
-                <div className="px-6 pb-6">
+                <div className="px-4 pb-4">
                   <div className="relative aspect-[3/4] overflow-hidden rounded-md border border-border/60 bg-muted">
                     <Media
                       fill
