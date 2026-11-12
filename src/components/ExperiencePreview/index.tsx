@@ -1,7 +1,8 @@
 'use client'
 
-import { ArrowUpRight, Monitor, Smartphone } from 'lucide-react'
-import React, { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { ArrowUpRight, Monitor, Smartphone, X } from 'lucide-react'
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/utilities/ui'
@@ -45,6 +46,39 @@ const frameHeightFor = (stageWidth: number, windowHeight: number) =>
 
 const useIsoLayoutEffect = typeof window === 'undefined' ? useEffect : useLayoutEffect
 
+const PHONE_QUERY = '(max-width: 767px)'
+const OVERLAY_STATE = 'experience-overlay'
+
+const ViewToggle: React.FC<{
+  className?: string
+  onSelect: (v: View) => void
+  view: View
+}> = ({ className, onSelect, view }) => (
+  <div
+    aria-label="Preview size"
+    className={cn('flex w-fit rounded-md border border-border p-1', className)}
+    role="radiogroup"
+  >
+    {(['desktop', 'mobile'] as const).map((v) => {
+      const Icon = v === 'desktop' ? Monitor : Smartphone
+      return (
+        <Button
+          aria-checked={view === v}
+          className={cn('capitalize', view === v && 'bg-muted')}
+          key={v}
+          onClick={() => onSelect(v)}
+          role="radio"
+          size="sm"
+          variant="ghost"
+        >
+          <Icon aria-hidden />
+          {v}
+        </Button>
+      )
+    })}
+  </div>
+)
+
 export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   className,
   description,
@@ -61,6 +95,10 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   const stageRef = useRef<HTMLDivElement>(null)
   const [stageWidth, setStageWidth] = useState(0)
   const [windowHeight, setWindowHeight] = useState(0)
+  const [isPhone, setIsPhone] = useState(false)
+  // On phones the mobile view takes over the screen at the device's real width
+  const [fullscreen, setFullscreen] = useState(false)
+  const closeRef = useRef<HTMLButtonElement>(null)
 
   const preferred =
     source === 'figma'
@@ -72,8 +110,47 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
 
   // Phones get the mobile view first
   useEffect(() => {
-    if (window.matchMedia('(max-width: 767px)').matches) setView('mobile')
+    const mq = window.matchMedia(PHONE_QUERY)
+    setIsPhone(mq.matches)
+    if (mq.matches) setView('mobile')
+    const onChange = (e: MediaQueryListEvent) => setIsPhone(e.matches)
+    mq.addEventListener('change', onChange)
+    return () => mq.removeEventListener('change', onChange)
   }, [])
+
+  const openFullscreen = useCallback(() => {
+    // A history entry, so the phone's back gesture closes the overlay instead of leaving the page
+    window.history.pushState({ [OVERLAY_STATE]: true }, '')
+    setFullscreen(true)
+  }, [])
+
+  const closeFullscreen = useCallback(() => {
+    if (window.history.state?.[OVERLAY_STATE])
+      window.history.back() // popstate below closes it
+    else setFullscreen(false)
+  }, [])
+
+  useEffect(() => {
+    if (!fullscreen) return
+    const onPop = () => setFullscreen(false)
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && closeFullscreen()
+    const overflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    window.addEventListener('popstate', onPop)
+    window.addEventListener('keydown', onKey)
+    closeRef.current?.focus()
+    return () => {
+      document.body.style.overflow = overflow
+      window.removeEventListener('popstate', onPop)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [fullscreen, closeFullscreen])
+
+  const selectView = (v: View) => {
+    setView(v)
+    if (v === 'mobile' && isPhone && !fullscreen) openFullscreen()
+    if (v === 'desktop' && fullscreen) closeFullscreen()
+  }
 
   useIsoLayoutEffect(() => {
     const el = stageRef.current
@@ -133,31 +210,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
 
       {/* Preview stage */}
       <div className="min-w-0">
-        {showFrame && (
-          <div
-            aria-label="Preview size"
-            className="mx-auto mb-4 flex w-fit rounded-md border border-border p-1"
-            role="radiogroup"
-          >
-            {(['desktop', 'mobile'] as const).map((v) => {
-              const Icon = v === 'desktop' ? Monitor : Smartphone
-              return (
-                <Button
-                  aria-checked={view === v}
-                  className={cn('capitalize', view === v && 'bg-muted')}
-                  key={v}
-                  onClick={() => setView(v)}
-                  role="radio"
-                  size="sm"
-                  variant="ghost"
-                >
-                  <Icon aria-hidden />
-                  {v}
-                </Button>
-              )
-            })}
-          </div>
-        )}
+        {showFrame && <ViewToggle className="mx-auto mb-4" onSelect={selectView} view={view} />}
         <div ref={stageRef}>
           {!showFrame ? (
             fallback
@@ -185,7 +238,9 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                   <span className="mx-auto max-w-[60%] truncate text-xs text-muted-foreground">
                     {active === 'figma'
                       ? 'Figma prototype'
-                      : (addressLabel || src!).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                      : (addressLabel || src!)
+                          .replace(/^https?:\/\/(www\.)?/, '')
+                          .replace(/\/$/, '')}
                   </span>
                   {/* Balances the traffic lights so the address bar stays centred */}
                   <span className="w-[3.25rem] shrink-0" />
@@ -219,6 +274,44 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
           )}
         </div>
       </div>
+
+      {fullscreen &&
+        src &&
+        createPortal(
+          <div
+            aria-label={`${title || 'Project'}: mobile preview`}
+            aria-modal="true"
+            className="fixed inset-0 z-[100] bg-background"
+            role="dialog"
+          >
+            <iframe
+              allowFullScreen
+              className="h-dvh w-full border-0"
+              referrerPolicy="strict-origin-when-cross-origin"
+              sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+              src={src}
+              title={`${title || 'Project'}: mobile preview`}
+            />
+            <div
+              className="fixed inset-x-0 flex justify-center px-4"
+              style={{ bottom: 'max(16px, env(safe-area-inset-bottom))' }}
+            >
+              <div className="flex items-center gap-1 rounded-lg border border-border bg-background/85 p-1 shadow-lg backdrop-blur">
+                <ViewToggle className="border-0 p-0" onSelect={selectView} view={view} />
+                <Button
+                  aria-label="Close preview and return to the page"
+                  onClick={closeFullscreen}
+                  ref={closeRef}
+                  size="sm"
+                  variant="ghost"
+                >
+                  <X aria-hidden />
+                </Button>
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </section>
   )
 }
