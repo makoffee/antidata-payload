@@ -7,6 +7,8 @@ import {
   HorizontalRuleFeature,
   InlineToolbarFeature,
   lexicalEditor,
+  OrderedListFeature,
+  UnorderedListFeature,
 } from '@payloadcms/richtext-lexical'
 
 import { authenticated } from '../../access/authenticated'
@@ -117,6 +119,8 @@ export const Projects: CollectionConfig<'projects'> = {
                   return [
                     ...rootFeatures,
                     HeadingFeature({ enabledHeadingSizes: ['h2', 'h3', 'h4'] }),
+                    UnorderedListFeature(),
+                    OrderedListFeature(),
                     BlocksFeature({ blocks: [MediaBlock] }),
                     FixedToolbarFeature(),
                     InlineToolbarFeature(),
@@ -167,6 +171,61 @@ export const Projects: CollectionConfig<'projects'> = {
                   type: 'text',
                 },
               ],
+            },
+          ],
+        },
+        {
+          name: 'experience',
+          label: 'Experience',
+          description:
+            'An interactive preview of the finished work, with a desktop/mobile toggle. Shown after the case study when the chosen source has a URL.',
+          fields: [
+            {
+              name: 'source',
+              type: 'radio',
+              defaultValue: 'live',
+              options: [
+                { label: 'Live site', value: 'live' },
+                { label: 'Figma prototype', value: 'figma' },
+              ],
+              admin: {
+                layout: 'horizontal',
+                description:
+                  'Switch to Figma when the live site no longer matches the design (or is offline).',
+              },
+            },
+            {
+              name: 'liveUrl',
+              type: 'text',
+              label: 'Live preview URL',
+              admin: {
+                placeholder: 'https://',
+                description:
+                  'Leave empty to use the "Live project URL" from Details. Some sites (e.g. the App Store) refuse to be embedded; the preview then uses the Figma URL, or is left out.',
+              },
+            },
+            {
+              name: 'figmaUrl',
+              type: 'text',
+              label: 'Figma URL',
+              admin: {
+                placeholder: 'https://www.figma.com/proto/…',
+                description:
+                  'Paste the Share link of a prototype (or design file). The file must be viewable by anyone with the link.',
+              },
+              validate: (value: string | null | undefined) =>
+                !value || /^https:\/\/([\w-]+\.)?figma\.com\//.test(value)
+                  ? true
+                  : 'Must be a figma.com link',
+            },
+            {
+              name: 'title',
+              type: 'text',
+              admin: { placeholder: 'Experience it' },
+            },
+            {
+              name: 'description',
+              type: 'textarea',
             },
           ],
         },

@@ -201,6 +201,22 @@ export interface Project {
         id?: string | null;
       }[]
     | null;
+  experience?: {
+    /**
+     * Switch to Figma when the live site no longer matches the design (or is offline).
+     */
+    source?: ('live' | 'figma') | null;
+    /**
+     * Leave empty to use the "Live project URL" from Details. Some sites (e.g. the App Store) refuse to be embedded; the preview then uses the Figma URL, or is left out.
+     */
+    liveUrl?: string | null;
+    /**
+     * Paste the Share link of a prototype (or design file). The file must be viewable by anyone with the link.
+     */
+    figmaUrl?: string | null;
+    title?: string | null;
+    description?: string | null;
+  };
   client?: string | null;
   year?: number | null;
   /**
@@ -1331,6 +1347,15 @@ export interface ProjectsSelect<T extends boolean = true> {
         size?: T;
         caption?: T;
         id?: T;
+      };
+  experience?:
+    | T
+    | {
+        source?: T;
+        liveUrl?: T;
+        figmaUrl?: T;
+        title?: T;
+        description?: T;
       };
   client?: T;
   year?: T;

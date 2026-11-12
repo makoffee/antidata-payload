@@ -10,10 +10,12 @@ import RichText from '@/components/RichText'
 
 import type { Project } from '@/payload-types'
 
+import { ExperiencePreview } from '@/components/ExperiencePreview'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { ProjectGallery } from '@/components/ProjectGallery'
 import { ProjectGrid } from '@/components/ProjectGrid'
 import { ProjectHero } from '@/heros/ProjectHero'
+import { canEmbed, toFigmaEmbedUrl } from '@/utilities/embed'
 import { generateMeta } from '@/utilities/generateMeta'
 import PageClient from './page.client'
 
@@ -56,6 +58,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
   const related = (project.relatedProjects || []).filter(
     (item): item is Project => typeof item === 'object',
   )
+  const experience = await resolveExperience(project)
 
   return (
     <article className="pt-24 pb-24">
@@ -72,6 +75,10 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         <div className="container mt-16">
           <RichText className="max-w-[48rem] mx-auto" data={project.content} enableGutter={false} />
         </div>
+      )}
+
+      {experience && (
+        <ExperiencePreview className="mt-24" {...experience} />
       )}
 
       {project.gallery && project.gallery.length > 0 && (
@@ -163,6 +170,36 @@ const queryProjectBySlug = cache(async ({ slug }: { slug: string }) => {
 
   return result.docs?.[0] || null
 })
+
+// Builds the Experience section from the admin's Experience tab. Returns null (no section) when
+// there's nothing to preview. The component prefers the chosen source and falls back to the other.
+const resolveExperience = async (project: Project) => {
+  const { source, liveUrl, figmaUrl, title, description } = project.experience ?? {}
+  const siteUrl = liveUrl || project.projectUrl
+  const live = siteUrl && /^https?:\/\//.test(siteUrl) ? siteUrl : null
+  const figma = figmaUrl ? toFigmaEmbedUrl(figmaUrl) : null
+
+  if (!live && !figma) return null
+
+  const links = [
+    live && { href: live, label: 'Open live site' },
+    figma && figmaUrl && { href: figmaUrl, label: 'Open in Figma' },
+  ].filter((link): link is { href: string; label: string } => Boolean(link))
+
+  // Sites that refuse iframes (e.g. the App Store) fall back to Figma, or hide the section
+  const usesLive = Boolean(live) && (source !== 'figma' || !figma)
+  const liveEmbeddable = usesLive ? await canEmbed(live!) : true
+  if (!liveEmbeddable && !figma) return null
+
+  return {
+    source: liveEmbeddable ? (source ?? 'live') : 'figma',
+    liveUrl: liveEmbeddable ? live : null,
+    figmaUrl: figma,
+    title,
+    description,
+    links,
+  }
+}
 
 // The project after this one in the admin's drag-and-drop order, wrapping around to the first
 const queryNextProject = async ({ id }: { id: Project['id'] }) => {
