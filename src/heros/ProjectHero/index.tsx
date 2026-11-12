@@ -3,10 +3,13 @@ import React from 'react'
 import type { Project } from '@/payload-types'
 
 import { Media } from '@/components/Media'
+import { ScrollToLink } from '@/components/ScrollToLink'
 
 export const ProjectHero: React.FC<{
   project: Project
-}> = ({ project }) => {
+  /** The page has an interactive Experience preview: "Live" links down to it instead of off-site */
+  hasDemo?: boolean
+}> = ({ project, hasDemo = false }) => {
   const { title, summary, coverImage, client, year, services, projectUrl } = project
 
   const details = [
@@ -23,7 +26,7 @@ export const ProjectHero: React.FC<{
         </h1>
         {summary && <p className="mt-6 max-w-[48rem] text-xl text-muted-foreground">{summary}</p>}
 
-        {(details.length > 0 || projectUrl) && (
+        {(details.length > 0 || projectUrl || hasDemo) && (
           <dl className="mt-10 grid grid-cols-2 gap-6 border-t border-border pt-6 md:grid-cols-4">
             {details.map(({ label, value }) => (
               <div key={label}>
@@ -31,20 +34,40 @@ export const ProjectHero: React.FC<{
                 <dd className="mt-1">{value}</dd>
               </div>
             ))}
-            {projectUrl && (
+            {hasDemo ? (
               <div>
                 <dt className="text-sm text-muted-foreground">Live</dt>
                 <dd className="mt-1">
-                  <a
-                    className="underline underline-offset-4 hover:no-underline"
-                    href={projectUrl}
-                    rel="noopener noreferrer"
-                    target="_blank"
+                  <ScrollToLink
+                    className="group inline-flex items-center gap-1 underline underline-offset-4 hover:no-underline"
+                    targetId="experience"
                   >
-                    Visit site ↗
-                  </a>
+                    Live demo
+                    <span
+                      aria-hidden
+                      className="inline-block transition-transform duration-300 ease-out group-hover:translate-y-0.5 motion-reduce:transition-none"
+                    >
+                      ↓
+                    </span>
+                  </ScrollToLink>
                 </dd>
               </div>
+            ) : (
+              projectUrl && (
+                <div>
+                  <dt className="text-sm text-muted-foreground">Live</dt>
+                  <dd className="mt-1">
+                    <a
+                      className="underline underline-offset-4 hover:no-underline"
+                      href={projectUrl}
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      Visit site ↗
+                    </a>
+                  </dd>
+                </div>
+              )
             )}
           </dl>
         )}

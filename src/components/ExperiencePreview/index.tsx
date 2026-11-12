@@ -190,9 +190,10 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
 
   return (
     <section
+      id="experience"
       aria-labelledby="experience-title"
       className={cn(
-        'container grid gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16',
+        'container grid scroll-mt-24 gap-10 lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:gap-16',
         className,
       )}
     >
@@ -207,7 +208,9 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
           <div className="mt-6 flex flex-wrap gap-3">
             {links.map(({ href, label }) => (
               <Button asChild key={href} size="sm" variant="outline">
-                <a href={href} rel="noopener noreferrer" target="_blank">
+                {/* No "noreferrer": demos like zt-static only open when launched from antidata.net,
+                    and the browser default sends just our origin, never the full URL */}
+                <a href={href} rel="noopener" target="_blank">
                   {label}
                   <ArrowUpRight aria-hidden />
                 </a>

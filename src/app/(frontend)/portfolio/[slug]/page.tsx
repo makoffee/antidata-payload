@@ -69,7 +69,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
 
       {draft && <LivePreviewListener />}
 
-      <ProjectHero project={project} />
+      <ProjectHero hasDemo={Boolean(experience)} project={project} />
 
       {project.content && (
         <div className="container mt-16">
@@ -77,9 +77,7 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         </div>
       )}
 
-      {experience && (
-        <ExperiencePreview className="mt-24" {...experience} />
-      )}
+      {experience && <ExperiencePreview className="mt-24" {...experience} />}
 
       {project.gallery && project.gallery.length > 0 && (
         <div className="container mt-16">
