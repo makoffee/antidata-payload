@@ -24,6 +24,9 @@ export type ExperiencePreviewProps = {
   /** Which URL to preview. Falls back to the other one when the chosen one is missing. */
   source?: ExperienceSource
   title?: string | null
+  /** Shown in the desktop browser bar instead of the preview's own address (e.g. the real site
+   *  when the preview is an archived demo) */
+  addressLabel?: string | null
 }
 
 // The live site renders at a real device width and is scaled down to fit, so "Desktop" shows
@@ -52,6 +55,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   liveUrl,
   source = 'live',
   title,
+  addressLabel,
 }) => {
   const [view, setView] = useState<View>('desktop')
   const stageRef = useRef<HTMLDivElement>(null)
@@ -181,7 +185,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
                   <span className="mx-auto max-w-[60%] truncate text-xs text-muted-foreground">
                     {active === 'figma'
                       ? 'Figma prototype'
-                      : src!.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                      : (addressLabel || src!).replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
                   </span>
                   {/* Balances the traffic lights so the address bar stays centred */}
                   <span className="w-[3.25rem] shrink-0" />

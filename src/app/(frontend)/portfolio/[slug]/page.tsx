@@ -194,6 +194,8 @@ const resolveExperience = async (project: Project) => {
   return {
     source: liveEmbeddable ? (source ?? 'live') : 'figma',
     liveUrl: liveEmbeddable ? live : null,
+    // The browser bar shows the project's real address, even when the preview is a demo copy
+    addressLabel: project.projectUrl || live,
     figmaUrl: figma,
     title,
     description,
