@@ -182,7 +182,7 @@ const resolveExperience = async (project: Project) => {
   if (!live && !figma) return null
 
   const links = [
-    live && { href: live, label: 'Open live site' },
+    live && { href: live, label: 'View live demo' },
     figma && figmaUrl && { href: figmaUrl, label: 'Open in Figma' },
   ].filter((link): link is { href: string; label: string } => Boolean(link))
 
