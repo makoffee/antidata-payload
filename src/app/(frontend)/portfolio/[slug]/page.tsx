@@ -78,11 +78,11 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
         </div>
       )}
 
-      {project.screens?.items?.length ? (
-        <ProjectScreens className="mt-16" screens={project.screens} />
-      ) : null}
-
       {experience && <ExperiencePreview className="mt-24" {...experience} />}
+
+      {project.screens?.items?.length ? (
+        <ProjectScreens className="mt-24" screens={project.screens} />
+      ) : null}
 
       {project.gallery && project.gallery.length > 0 && (
         <div className="container mt-16">
