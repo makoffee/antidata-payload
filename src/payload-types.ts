@@ -190,6 +190,21 @@ export interface Project {
     };
     [k: string]: unknown;
   } | null;
+  screens?: {
+    heading?: string | null;
+    /**
+     * A branded, abstract image works best. Without one the cards sit on the page.
+     */
+    backgroundImage?: (number | null) | Media;
+    text?: string | null;
+    items?:
+      | {
+          label: string;
+          image: number | Media;
+          id?: string | null;
+        }[]
+      | null;
+  };
   /**
    * Shown after the case study. Use "Half width" to place images side by side.
    */
@@ -1340,6 +1355,20 @@ export interface ProjectsSelect<T extends boolean = true> {
   coverImage?: T;
   storyImage?: T;
   content?: T;
+  screens?:
+    | T
+    | {
+        heading?: T;
+        backgroundImage?: T;
+        text?: T;
+        items?:
+          | T
+          | {
+              label?: T;
+              image?: T;
+              id?: T;
+            };
+      };
   gallery?:
     | T
     | {

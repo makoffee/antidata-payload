@@ -12,6 +12,7 @@ import * as migration_20261110_102131_hero_intro_animation from './20261110_1021
 import * as migration_20261110_110104_hero_keywords from './20261110_110104_hero_keywords';
 import * as migration_20261110_221809_cta_background_image from './20261110_221809_cta_background_image';
 import * as migration_20261112_094421_project_experience from './20261112_094421_project_experience';
+import * as migration_20261112_145956_project_screens from './20261112_145956_project_screens';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20261112_094421_project_experience.up,
     down: migration_20261112_094421_project_experience.down,
-    name: '20261112_094421_project_experience'
+    name: '20261112_094421_project_experience',
+  },
+  {
+    up: migration_20261112_145956_project_screens.up,
+    down: migration_20261112_145956_project_screens.down,
+    name: '20261112_145956_project_screens'
   },
 ];

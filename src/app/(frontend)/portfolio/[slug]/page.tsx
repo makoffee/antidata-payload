@@ -13,6 +13,7 @@ import type { Project } from '@/payload-types'
 import { ExperiencePreview } from '@/components/ExperiencePreview'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 import { ProjectGallery } from '@/components/ProjectGallery'
+import { ProjectScreens } from '@/components/ProjectScreens'
 import { ProjectGrid } from '@/components/ProjectGrid'
 import { ProjectHero } from '@/heros/ProjectHero'
 import { canEmbed, toFigmaEmbedUrl } from '@/utilities/embed'
@@ -76,6 +77,10 @@ export default async function ProjectPage({ params: paramsPromise }: Args) {
           <RichText className="max-w-[48rem] mx-auto" data={project.content} enableGutter={false} />
         </div>
       )}
+
+      {project.screens?.items?.length ? (
+        <ProjectScreens className="mt-16" screens={project.screens} />
+      ) : null}
 
       {experience && <ExperiencePreview className="mt-24" {...experience} />}
 

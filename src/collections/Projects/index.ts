@@ -132,6 +132,55 @@ export const Projects: CollectionConfig<'projects'> = {
           ],
         },
         {
+          name: 'screens',
+          label: 'Screens',
+          description:
+            'Optional. Screens (e.g. wireframes) shown side by side in frosted cards over a banner image, right after the case study.',
+          fields: [
+            {
+              type: 'row',
+              fields: [
+                {
+                  name: 'heading',
+                  type: 'text',
+                  admin: { placeholder: 'Wireframes' },
+                },
+                {
+                  name: 'backgroundImage',
+                  type: 'upload',
+                  relationTo: 'media',
+                  label: 'Banner background',
+                  admin: {
+                    description: 'A branded, abstract image works best. Without one the cards sit on the page.',
+                  },
+                },
+              ],
+            },
+            {
+              name: 'text',
+              type: 'textarea',
+              label: 'Supporting text',
+            },
+            {
+              name: 'items',
+              type: 'array',
+              label: 'Screens',
+              labels: { singular: 'Screen', plural: 'Screens' },
+              maxRows: 4,
+              admin: { initCollapsed: true },
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    { name: 'label', type: 'text', required: true },
+                    { name: 'image', type: 'upload', relationTo: 'media', required: true },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+        {
           label: 'Gallery',
           fields: [
             {
