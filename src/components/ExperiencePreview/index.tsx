@@ -51,7 +51,10 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
   const stageRef = useRef<HTMLDivElement>(null)
   const [stageWidth, setStageWidth] = useState(0)
 
-  const preferred = source === 'figma' ? [figmaUrl && 'figma', liveUrl && 'live'] : [liveUrl && 'live', figmaUrl && 'figma']
+  const preferred =
+    source === 'figma'
+      ? [figmaUrl && 'figma', liveUrl && 'live']
+      : [liveUrl && 'live', figmaUrl && 'figma']
   const active = (preferred.find(Boolean) || null) as ExperienceSource | null
   const src = active === 'figma' ? figmaUrl : liveUrl
   const showFrame = Boolean(src) && (active === 'figma' || embeddable)
@@ -84,16 +87,32 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
       )}
     >
       {/* Content block */}
-      <div className="lg:sticky lg:top-24 lg:self-start">
-        <h2 className="text-2xl md:text-3xl font-medium tracking-tight" id="experience-title">
+      <div className="lg:sticky lg:top-24 lg:self-start lg:pt-14">
+        <h2 className="text-3xl md:text-5xl font-medium tracking-tight" id="experience-title">
           {title || 'Experience it'}
         </h2>
-        {description && <p className="mt-4 text-muted-foreground">{description}</p>}
+        {description && <p className="mt-4 text-lg text-muted-foreground">{description}</p>}
 
+        {links.length > 0 && (
+          <div className="mt-6 flex flex-wrap gap-3">
+            {links.map(({ href, label }) => (
+              <Button asChild key={href} size="sm" variant="outline">
+                <a href={href} rel="noopener noreferrer" target="_blank">
+                  {label}
+                  <ArrowUpRight aria-hidden />
+                </a>
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Preview stage */}
+      <div className="min-w-0">
         {showFrame && (
           <div
             aria-label="Preview size"
-            className="mt-8 inline-flex rounded-md border border-border p-1"
+            className="mx-auto mb-4 flex w-fit rounded-md border border-border p-1"
             role="radiogroup"
           >
             {(['desktop', 'mobile'] as const).map((v) => {
@@ -115,73 +134,62 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
             })}
           </div>
         )}
-
-        {links.length > 0 && (
-          <div className="mt-6 flex flex-wrap gap-3">
-            {links.map(({ href, label }) => (
-              <Button asChild key={href} size="sm" variant="outline">
-                <a href={href} rel="noopener noreferrer" target="_blank">
-                  {label}
-                  <ArrowUpRight aria-hidden />
-                </a>
-              </Button>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Preview stage */}
-      <div className="min-w-0 rounded-xl bg-muted/50 p-4 md:p-6" ref={stageRef}>
-        {!showFrame ? (
-          fallback
-        ) : (
-          <div
-            className={cn(
-              'mx-auto overflow-hidden border border-border bg-background shadow-lg transition-[width,border-radius] duration-300 ease-out',
-              view === 'desktop' ? 'rounded-lg' : 'rounded-[1.75rem]',
-            )}
-            // Hidden until measured so it never flashes at full device width and overflows
-            style={{ width: screenWidth + 2, visibility: scale ? undefined : 'hidden' }}
-          >
-            {view === 'desktop' && (
-              <div
-                className="flex items-center gap-2 border-b border-border bg-muted px-3"
-                style={{ height: CHROME_HEIGHT }}
-              >
-                <span className="size-3 shrink-0 rounded-full bg-[#ff5f57]" />
-                <span className="size-3 shrink-0 rounded-full bg-[#febc2e]" />
-                <span className="size-3 shrink-0 rounded-full bg-[#28c840]" />
-                <span className="mx-auto max-w-[60%] truncate rounded bg-background px-3 py-0.5 text-xs text-muted-foreground">
-                  {active === 'figma'
-                    ? 'Figma prototype'
-                    : src!.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
-                </span>
-                {/* Balances the traffic lights so the address bar stays centred */}
-                <span className="w-[3.25rem] shrink-0" />
+        <div ref={stageRef}>
+          {!showFrame ? (
+            fallback
+          ) : (
+            <div
+              className={cn(
+                'mx-auto overflow-hidden border border-border bg-background shadow-lg transition-[width,border-radius] duration-300 ease-out',
+                view === 'desktop' ? 'rounded-lg' : 'rounded-[1.75rem]',
+              )}
+              // Hidden until measured so it never flashes at full device width and overflows
+              style={{ width: screenWidth + 2, visibility: scale ? undefined : 'hidden' }}
+            >
+              {view === 'desktop' && (
+                <div
+                  className="flex items-center gap-2 border-b border-border bg-muted px-3"
+                  style={{ height: CHROME_HEIGHT }}
+                >
+                  <span className="size-3 shrink-0 rounded-full bg-[#ff5f57]" />
+                  <span className="size-3 shrink-0 rounded-full bg-[#febc2e]" />
+                  <span className="size-3 shrink-0 rounded-full bg-[#28c840]" />
+                  <span className="mx-auto max-w-[60%] truncate text-xs text-muted-foreground">
+                    {active === 'figma'
+                      ? 'Figma prototype'
+                      : src!.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                  </span>
+                  {/* Balances the traffic lights so the address bar stays centred */}
+                  <span className="w-[3.25rem] shrink-0" />
+                </div>
+              )}
+              <div className="relative overflow-hidden" style={{ height: screenHeight }}>
+                <iframe
+                  allowFullScreen
+                  className="absolute left-0 top-0 origin-top-left border-0"
+                  // Remount on view change so the site re-runs its responsive layout at the new width
+                  key={`${view}-${src}`}
+                  loading="lazy"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  // No allow-top-navigation: the embedded site can't navigate this page away
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+                  src={src!}
+                  style={
+                    // Figma scales its own canvas; the live site renders at device size, scaled down
+                    active === 'live'
+                      ? {
+                          width: viewport.width,
+                          height: viewport.height,
+                          transform: `scale(${scale})`,
+                        }
+                      : { width: '100%', height: '100%' }
+                  }
+                  title={`${title || 'Project'}: ${view} preview`}
+                />
               </div>
-            )}
-            <div className="relative overflow-hidden" style={{ height: screenHeight }}>
-              <iframe
-                allowFullScreen
-                className="absolute left-0 top-0 origin-top-left border-0"
-                // Remount on view change so the site re-runs its responsive layout at the new width
-                key={`${view}-${src}`}
-                loading="lazy"
-                referrerPolicy="strict-origin-when-cross-origin"
-                // No allow-top-navigation: the embedded site can't navigate this page away
-                sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-                src={src!}
-                style={
-                  // Figma scales its own canvas; the live site renders at device size, scaled down
-                  active === 'live'
-                    ? { width: viewport.width, height: viewport.height, transform: `scale(${scale})` }
-                    : { width: '100%', height: '100%' }
-                }
-                title={`${title || 'Project'}: ${view} preview`}
-              />
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </section>
   )
