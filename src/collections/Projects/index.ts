@@ -270,7 +270,7 @@ export const Projects: CollectionConfig<'projects'> = {
             {
               name: 'title',
               type: 'text',
-              admin: { placeholder: 'Experience it' },
+              admin: { placeholder: 'The Experience' },
             },
             {
               name: 'description',

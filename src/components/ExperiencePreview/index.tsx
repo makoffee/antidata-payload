@@ -200,7 +200,7 @@ export const ExperiencePreview: React.FC<ExperiencePreviewProps> = ({
       {/* Content block */}
       <div className="lg:sticky lg:top-24 lg:self-start lg:pt-14">
         <h2 className="text-3xl md:text-5xl font-medium tracking-tight" id="experience-title">
-          {title || 'Experience it'}
+          {title || 'The Experience'}
         </h2>
         {description && <p className="mt-4 text-lg text-muted-foreground">{description}</p>}
 
