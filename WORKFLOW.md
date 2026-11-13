@@ -39,6 +39,13 @@ npm run generate:types
 Commit the migration files with the code. Prefer *adding* fields; renaming or removing a field
 deletes the content stored in it.
 
+**Safety protocol for schema changes:**
+
+1. Run `npm run backup` *before* editing the collection (it can't run after, once the code expects columns the DB doesn't have).
+2. Adding fields is safe. Before a rename or removal, create a throwaway Neon branch from `main` as a snapshot and note the time.
+3. A push to `main` that contains a migration is the point of no return: the Vercel build runs `payload migrate` (`npm run ci`) against the shared database.
+4. Final safety net is Neon point-in-time restore (check the plan's restore window in the Neon dashboard).
+
 ## Safety
 
 - `npm run backup` saves all content to `backups/<timestamp>.json` (git-ignored).
