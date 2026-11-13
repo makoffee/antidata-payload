@@ -12,7 +12,7 @@ const art = [
   '            \\/   /_/ |_/_/|_/ /_/ /___/____/_/ |_/_/ /_/ |_|',
 ].join('\n')
 
-const accent = 'text-foreground dark:text-[#ccff00]'
+const accent = 'text-foreground dark:text-brand'
 
 const Prompt = () => <span className={accent}>root@antidata:~# </span>
 
