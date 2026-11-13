@@ -10,6 +10,7 @@ import { Pages } from './collections/Pages'
 import { Posts } from './collections/Posts'
 import { Projects } from './collections/Projects'
 import { Users } from './collections/Users'
+import { Appearance } from './Appearance/config'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -96,7 +97,7 @@ export default buildConfig({
         defaultFromName: 'antidata.net',
       })
     : undefined,
-  globals: [Header, Footer],
+  globals: [Header, Footer, Appearance],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   typescript: {

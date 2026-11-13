@@ -3,7 +3,7 @@ import React from 'react'
 import type { Project } from '@/payload-types'
 
 import { RevealCard } from '@/blocks/CardGrid/RevealCard'
-import { FixedBackdrop } from '@/components/FixedBackdrop'
+import { SectionBackground } from '@/components/SectionBackground'
 import { Media } from '@/components/Media'
 import { Reveal } from '@/components/Reveal'
 import { CardHeader, CardTitle } from '@/components/ui/card'
@@ -34,7 +34,7 @@ export const ProjectScreens: React.FC<{
       aria-labelledby={screens.heading ? 'project-screens' : undefined}
       className={cn(background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28', className)}
     >
-      {background && <FixedBackdrop resource={background} />}
+      {background && <SectionBackground resource={background} />}
 
       <div className="container">
         {(screens.heading || screens.text) && (

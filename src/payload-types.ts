@@ -114,10 +114,12 @@ export interface Config {
   globals: {
     header: Header;
     footer: Footer;
+    appearance: Appearance;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    appearance: AppearanceSelect<false> | AppearanceSelect<true>;
   };
   locale: null;
   widgets: {
@@ -2123,6 +2125,19 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance".
+ */
+export interface Appearance {
+  id: number;
+  /**
+   * How background images behave behind card sections (e.g. Design Expertise, Wireframes). Cover: scrolls with the section. Fixed: stays still while the cards scroll over it. Parallax: drifts slowly as you scroll.
+   */
+  backgroundStyle?: ('cover' | 'fixed' | 'parallax') | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
@@ -2163,6 +2178,16 @@ export interface FooterSelect<T extends boolean = true> {
             };
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "appearance_select".
+ */
+export interface AppearanceSelect<T extends boolean = true> {
+  backgroundStyle?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

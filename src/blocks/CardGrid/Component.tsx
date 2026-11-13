@@ -6,7 +6,7 @@ import React from 'react'
 
 import { Reveal } from '@/components/Reveal'
 
-import { FixedBackdrop } from '@/components/FixedBackdrop'
+import { SectionBackground } from '@/components/SectionBackground'
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { sectionHeadingClass, sectionTextClass } from '@/utilities/sectionHeading'
 import { cn } from '@/utilities/ui'
@@ -37,7 +37,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
       className={cn(background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28 mb-16 md:mb-24')}
       id={`block-${id}`}
     >
-      {background && <FixedBackdrop resource={background} />}
+      {background && <SectionBackground resource={background} />}
 
       <div className="container">
         {(heading || text) && (
