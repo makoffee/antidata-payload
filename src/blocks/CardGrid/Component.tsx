@@ -6,7 +6,7 @@ import React from 'react'
 
 import { Reveal } from '@/components/Reveal'
 
-import { Media } from '@/components/Media'
+import { FixedBackdrop } from '@/components/FixedBackdrop'
 import { CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { sectionHeadingClass, sectionTextClass } from '@/utilities/sectionHeading'
 import { cn } from '@/utilities/ui'
@@ -34,27 +34,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
 
   return (
     <section
-      className={cn(background && 'relative isolate overflow-hidden py-20 md:py-28 mb-16 md:mb-24')}
+      className={cn(background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28 mb-16 md:mb-24')}
       id={`block-${id}`}
     >
-      {background && (
-        <>
-          <div aria-hidden className="absolute inset-0 -z-20">
-            {/* Light mode flips a dark image into a bright one (invert + hue-rotate keeps its colours) */}
-            <Media
-              fill
-              imgClassName="object-cover invert hue-rotate-180 dark:invert-0 dark:hue-rotate-0"
-              resource={background}
-              size="100vw"
-            />
-          </div>
-          {/* Theme tint keeps the heading readable on any image */}
-          <div
-            aria-hidden
-            className="absolute inset-0 -z-10 bg-background/30 dark:bg-background/45"
-          />
-        </>
-      )}
+      {background && <FixedBackdrop resource={background} />}
 
       <div className="container">
         {(heading || text) && (

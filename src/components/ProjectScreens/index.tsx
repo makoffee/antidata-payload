@@ -3,6 +3,7 @@ import React from 'react'
 import type { Project } from '@/payload-types'
 
 import { RevealCard } from '@/blocks/CardGrid/RevealCard'
+import { FixedBackdrop } from '@/components/FixedBackdrop'
 import { Media } from '@/components/Media'
 import { Reveal } from '@/components/Reveal'
 import { CardHeader, CardTitle } from '@/components/ui/card'
@@ -31,22 +32,9 @@ export const ProjectScreens: React.FC<{
   return (
     <section
       aria-labelledby={screens.heading ? 'project-screens' : undefined}
-      className={cn(background && 'relative isolate overflow-hidden py-20 md:py-28', className)}
+      className={cn(background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28', className)}
     >
-      {background && (
-        <>
-          <div aria-hidden className="absolute inset-0 -z-20">
-            {/* Light mode flips a dark image into a bright one (invert + hue-rotate keeps its colours) */}
-            <Media
-              fill
-              imgClassName="object-cover invert hue-rotate-180 dark:invert-0 dark:hue-rotate-0"
-              resource={background}
-              size="100vw"
-            />
-          </div>
-          <div aria-hidden className="absolute inset-0 -z-10 bg-background/30 dark:bg-background/45" />
-        </>
-      )}
+      {background && <FixedBackdrop resource={background} />}
 
       <div className="container">
         {(screens.heading || screens.text) && (
