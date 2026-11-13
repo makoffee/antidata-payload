@@ -34,7 +34,7 @@ export const CallToActionBlock: React.FC<CTABlockProps> = ({
           delay={0.4}
         >
           <div className="flex max-w-[48rem] items-start gap-4">
-            <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-[#ccff00] text-black">
+            <span className="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-brand text-brand-foreground">
               <Phone aria-hidden className="size-5 motion-safe:animate-ring" />
             </span>
             {richText && (

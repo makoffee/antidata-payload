@@ -480,7 +480,7 @@ export interface Page {
             /**
              * Choose how the link should be rendered.
              */
-            appearance?: ('default' | 'outline') | null;
+            appearance?: ('default' | 'outline' | 'brand') | null;
           };
           id?: string | null;
         }[]

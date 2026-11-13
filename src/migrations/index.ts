@@ -14,6 +14,7 @@ import * as migration_20261110_221809_cta_background_image from './20261110_2218
 import * as migration_20261112_094421_project_experience from './20261112_094421_project_experience';
 import * as migration_20261112_145956_project_screens from './20261112_145956_project_screens';
 import * as migration_20261113_081259_appearance_global from './20261113_081259_appearance_global';
+import * as migration_20261113_143247_brand_button_appearance from './20261113_143247_brand_button_appearance';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20261113_081259_appearance_global.up,
     down: migration_20261113_081259_appearance_global.down,
-    name: '20261113_081259_appearance_global'
+    name: '20261113_081259_appearance_global',
+  },
+  {
+    up: migration_20261113_143247_brand_button_appearance.up,
+    down: migration_20261113_143247_brand_button_appearance.down,
+    name: '20261113_143247_brand_button_appearance'
   },
 ];
