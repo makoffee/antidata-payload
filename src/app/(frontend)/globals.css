@@ -19,6 +19,7 @@
   h6 {
     font-weight: unset;
     font-size: unset;
+    font-family: var(--font-heading);
   }
 }
 
@@ -44,11 +45,23 @@
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
   --font-mono: var(--font-geist-mono);
-  --font-sans: var(--font-geist-sans);
+  --font-sans: var(--font-manrope);
+  --font-heading: var(--font-figtree);
 
   /* Brand: neon yellow. Same in light and dark, with black text on top. */
   --color-brand: #ccff00;
   --color-brand-foreground: #000000;
+
+  /* Golden type scale: each step multiplies by the square root of phi (1.272), so every
+     second step is exactly 1.618x. 16 / 20 / 26 / 33 / 42 / 53 / 68px at 1rem = 16px.
+     Use as text-phi-0 ... text-phi-6, or as the min/max of a clamp() for fluid headings. */
+  --text-phi-0: 1rem;
+  --text-phi-1: 1.272rem;
+  --text-phi-2: 1.618rem;
+  --text-phi-3: 2.058rem;
+  --text-phi-4: 2.618rem;
+  --text-phi-5: 3.33rem;
+  --text-phi-6: 4.236rem;
 }
 
 @layer utilities {
@@ -99,7 +112,8 @@
   }
 }
 
-:root {
+:root,
+[data-theme='light'] {
   --background: oklch(100% 0 0deg);
   --foreground: oklch(14.5% 0 0deg);
   --card: oklch(96.5% 0.005 265deg);
@@ -226,6 +240,13 @@
 }
 
 @theme {
+  --text-phi-0--line-height: var(--leading-golden);
+  --text-phi-1--line-height: var(--leading-golden);
+  --text-phi-2--line-height: var(--leading-golden);
+  --text-phi-3--line-height: var(--leading-golden);
+  --text-phi-4--line-height: var(--leading-golden);
+  --text-phi-5--line-height: var(--leading-golden);
+  --text-phi-6--line-height: var(--leading-golden);
   --text-xs--line-height: var(--leading-golden);
   --text-sm--line-height: var(--leading-golden);
   --text-base--line-height: var(--leading-golden);

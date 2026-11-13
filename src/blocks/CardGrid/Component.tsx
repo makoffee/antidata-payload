@@ -1,6 +1,7 @@
 import type { CardGridBlock as CardGridBlockProps } from '@/payload-types'
 
 import { ArrowUpRight } from 'lucide-react'
+import { Zen_Kaku_Gothic_New } from 'next/font/google'
 import Link from 'next/link'
 import React from 'react'
 
@@ -18,6 +19,19 @@ const columnClasses = {
   '2': 'md:grid-cols-2',
   '3': 'md:grid-cols-2 lg:grid-cols-3',
   '4': 'md:grid-cols-2 lg:grid-cols-4',
+}
+
+// Clean geometric Japanese face for the kanji marks; browser fetches only the glyph slices it needs.
+const kanjiFont = Zen_Kaku_Gothic_New({ weight: '400', preload: false, display: 'swap' })
+
+// TEMP prototype: kanji in place of icons, matched by card title. Remove if we don't keep it.
+const kanjiByTitle: Record<string, string> = {
+  'ux design consulting': '導',
+  'creative direction': '構',
+  'ai product design': '脳',
+  'native application design': '端',
+  'brand identity': '印',
+  'design system management': '律',
 }
 
 export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
@@ -50,6 +64,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
         {cards && cards.length > 0 && (
           <ul className={cn('grid gap-6', columnClasses[columns || '3'])}>
             {cards.map(({ id: cardId, title, description, icon, url }, index) => {
+              const kanji = title ? kanjiByTitle[title.trim().toLowerCase()] : undefined
               const Icon = icon ? cardIcons[icon as CardIconName]?.Icon : null
               const isExternal = Boolean(url && /^https?:\/\//.test(url))
 
@@ -68,7 +83,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                   <CardHeader className="gap-4">
                     {/* Icon box and title share one row */}
                     <div className="flex items-center gap-4">
-                      {Icon && (
+                      {(kanji || Icon) && (
                         <span
                           className={cn(
                             'inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background',
@@ -76,7 +91,13 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                               'bg-white/70 dark:bg-white/10 dark:group-hover:bg-white dark:group-hover:text-black',
                           )}
                         >
-                          <Icon aria-hidden className="size-5" />
+                          {kanji ? (
+                            <span aria-hidden className={cn(kanjiFont.className, 'text-3xl leading-none')}>
+                              {kanji}
+                            </span>
+                          ) : (
+                            Icon && <Icon aria-hidden className="size-5" />
+                          )}
                         </span>
                       )}
                       <CardTitle className="text-xl font-medium">{title}</CardTitle>

@@ -1,12 +1,12 @@
-// Section intros: a lighter, large h2 (fluid 30px → 48px) under the page's single bold hero h1. Subtext uses
+// Section intros: a lighter, large h2 (fluid 26px → 42px, golden scale) under the page's single bold hero h1. Subtext uses
 // the shadcn/ui "lead" style.
 export const sectionHeadingClass =
-  'scroll-m-20 text-[clamp(1.875rem,1.3rem+2.2vw,3rem)] font-medium tracking-tight'
-export const sectionTextClass = 'mt-4 text-xl text-muted-foreground'
+  'scroll-m-20 text-[length:clamp(var(--text-phi-2),1.1rem+2vw,var(--text-phi-4))] font-medium tracking-tight'
+export const sectionTextClass = 'mt-4 text-phi-1 text-muted-foreground'
 
 // Same styles for intros written in rich text (an h2 followed by a paragraph)
 export const sectionRichTextClass = [
-  'prose-h2:mb-0 prose-h2:mt-0 prose-h2:scroll-m-20 prose-h2:text-[clamp(1.875rem,1.3rem+2.2vw,3rem)]',
+  'prose-h2:mb-0 prose-h2:mt-0 prose-h2:scroll-m-20 prose-h2:text-[length:clamp(var(--text-phi-2),1.1rem+2vw,var(--text-phi-4))]',
   'prose-h2:font-medium prose-h2:tracking-tight',
-  'prose-p:mt-4 prose-p:text-xl prose-p:text-muted-foreground',
+  'prose-p:mt-4 prose-p:text-phi-1 prose-p:text-muted-foreground',
 ].join(' ')

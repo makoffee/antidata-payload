@@ -53,19 +53,9 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
             hangs below it, rather than the whole block being centred */}
         <div className="container relative z-10 pt-[30svh] pb-20 md:pt-[calc(41svh-2rem)] md:pb-24">
           <div className="max-w-[40rem] lg:max-w-none">
-            {richText && (
-              <motion.div {...textIn(0.15)}>
-                {/* One-line name on desktop; the subline keeps a readable width */}
-                <RichText
-                  className="mb-6 prose-h1:text-[clamp(2.25rem,1.5rem+2.9vw,3.25rem)] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem] lg:prose-p:max-w-none prose-p:text-[clamp(1.25rem,1.1rem+0.6vw,1.5rem)] prose-p:font-light prose-strong:font-semibold"
-                  data={richText}
-                  enableGutter={false}
-                />
-              </motion.div>
-            )}
-            {/* Glass keyword chips under the subline, so the name leads */}
+            {/* Glass keyword chips above the name, with space below so they don't compete with it */}
             {keywords && keywords.length > 0 && (
-              <motion.ul className="mb-10 flex flex-wrap gap-2 md:mb-16" {...textIn(0.3)}>
+              <motion.ul className="mb-6 flex flex-wrap gap-2 md:mb-8" {...textIn(0.1)}>
                 {keywords.map((keyword) => (
                   <li
                     className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-white/85 backdrop-blur-md"
@@ -75,6 +65,16 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
                   </li>
                 ))}
               </motion.ul>
+            )}
+            {richText && (
+              <motion.div {...textIn(0.2)}>
+                {/* One-line name on desktop; the subline stays about half to two-thirds of the width */}
+                <RichText
+                  className="mb-10 md:mb-16 prose-h1:text-[length:clamp(var(--text-phi-3),1.4rem+2.6vw,var(--text-phi-5))] prose-h1:font-black prose-h1:tracking-tight lg:prose-h1:whitespace-nowrap prose-p:max-w-[40rem] lg:prose-p:max-w-[max(50%,36rem)] prose-p:text-white/90 prose-p:text-[length:clamp(var(--text-phi-1),1.1rem+0.6vw,var(--text-phi-2))] prose-p:font-light prose-strong:font-semibold"
+                  data={richText}
+                  enableGutter={false}
+                />
+              </motion.div>
             )}
             {Array.isArray(links) && links.length > 0 && (
               <motion.ul

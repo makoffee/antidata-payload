@@ -10,6 +10,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { SearchIcon } from 'lucide-react'
 
+import { useTheme } from '@/providers/Theme'
 import { ThemeToggle } from '@/providers/Theme/ThemeSelector'
 
 type NavLink = NonNullable<HeaderType['navItems']>[number]['link']
@@ -27,6 +28,9 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const contact = navItems.find(({ link }) => isContact(link))?.link
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
+  // The landing page forces the header to the dark theme (white logo over the hero photo).
+  // The dropdown panel follows the site's real light/dark choice instead.
+  const { theme: siteTheme } = useTheme()
 
   // Close the mobile menu after navigating, or on Escape
   useEffect(() => setOpen(false), [pathname])
@@ -85,8 +89,10 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
           'absolute inset-x-4 top-full origin-top rounded-lg border bg-background/95 p-4 text-foreground shadow-lg backdrop-blur-xl transition-[opacity,scale,translate] duration-200 ease-out md:hidden',
           open ? 'scale-100 opacity-100' : 'pointer-events-none -translate-y-2 scale-95 opacity-0',
         )}
+        data-theme={siteTheme}
         id="mobile-menu"
         inert={!open}
+        suppressHydrationWarning
       >
         <nav className="flex flex-col">
           {links.map(({ link }, i) => (
