@@ -92,11 +92,11 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                             // Kanji marks: brand yellow on a black chip (readable in both themes);
                             // on hover the chip flips to a solid brand square
                             kanji &&
-                              'bg-black text-brand ring-1 ring-white/10 group-hover:bg-brand group-hover:text-black dark:bg-black dark:group-hover:bg-brand dark:group-hover:text-black',
+                              'rounded-full bg-black text-brand ring-1 ring-white/10 group-hover:bg-brand group-hover:text-black dark:bg-black dark:group-hover:bg-brand dark:group-hover:text-black',
                           )}
                         >
                           {kanji ? (
-                            <span aria-hidden className={cn(kanjiFont.className, 'text-3xl leading-none')}>
+                            <span aria-hidden className={cn(kanjiFont.className, 'text-phi-2 leading-none')}>
                               {kanji}
                             </span>
                           ) : (
@@ -104,7 +104,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                           )}
                         </span>
                       )}
-                      <CardTitle className="text-xl font-medium dark:text-brand">{title}</CardTitle>
+                      <CardTitle className="text-xl font-medium">{title}</CardTitle>
                       {url && (
                         <ArrowUpRight
                           aria-hidden
@@ -116,7 +116,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                       <CardDescription
                         className={cn(
                           'text-base',
-                          background && 'text-foreground/75',
+                          background && 'text-foreground/75 dark:text-foreground',
                         )}
                       >
                         {description}
