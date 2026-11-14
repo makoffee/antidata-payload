@@ -13,7 +13,7 @@ export async function Footer() {
   const navItems = footerData?.navItems || []
 
   return (
-    <footer className="mt-auto border-t border-border bg-black dark:bg-card text-white">
+    <footer className="mt-auto bg-black dark:bg-card text-white">
       <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
         <Link aria-label="antidata.net home" className="flex items-center gap-4" href="/">
           <LogoIcon className="shrink-0 text-white" />

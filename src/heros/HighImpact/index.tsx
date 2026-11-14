@@ -46,12 +46,12 @@ export const HighImpactHero: React.FC<Page['hero']> = ({
   return (
     <MotionConfig reducedMotion="user">
       <div
-        className="relative isolate -mt-[10.4rem] flex min-h-[90svh] flex-col bg-black text-white"
+        className="relative isolate -mt-[11.4rem] flex min-h-[calc(90svh+1rem)] flex-col bg-black text-white"
         data-theme="dark"
       >
         {/* The name sits just above the optical centre of the screen and everything else
             hangs below it, rather than the whole block being centred */}
-        <div className="container relative z-10 pt-[30svh] pb-20 md:pt-[calc(41svh-2rem)] md:pb-24">
+        <div className="container relative z-10 pt-[calc(30svh+1rem)] pb-20 md:pt-[calc(41svh-1rem)] md:pb-24">
           <div className="max-w-[40rem] lg:max-w-none">
             {/* Glass keyword chips above the name, with space below so they don't compete with it */}
             {keywords && keywords.length > 0 && (
