@@ -55,7 +55,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
 
       <div className="container">
         {(heading || text) && (
-          <Reveal className="mb-12 max-w-[48rem]">
+          <Reveal className="mx-auto mb-12 max-w-[48rem] text-center">
             {heading && <h2 className={sectionHeadingClass}>{heading}</h2>}
             {text && <p className={sectionTextClass}>{text}</p>}
           </Reveal>
@@ -89,6 +89,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                             'inline-flex size-11 shrink-0 items-center justify-center rounded-md bg-muted text-foreground transition-colors duration-300 group-hover:bg-foreground group-hover:text-background',
                             background &&
                               'bg-white/70 dark:bg-white/10 dark:group-hover:bg-white dark:group-hover:text-black',
+                            // Kanji marks: brand yellow on a black chip (readable in both themes);
+                            // on hover the chip flips to a solid brand square
+                            kanji &&
+                              'bg-black text-brand ring-1 ring-white/10 group-hover:bg-brand group-hover:text-black dark:bg-black dark:group-hover:bg-brand dark:group-hover:text-black',
                           )}
                         >
                           {kanji ? (
@@ -100,7 +104,7 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                           )}
                         </span>
                       )}
-                      <CardTitle className="text-xl font-medium">{title}</CardTitle>
+                      <CardTitle className="text-xl font-medium dark:text-brand">{title}</CardTitle>
                       {url && (
                         <ArrowUpRight
                           aria-hidden

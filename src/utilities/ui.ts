@@ -5,7 +5,17 @@
  */
 
 import { type ClassValue, clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
+import { extendTailwindMerge } from 'tailwind-merge'
+
+// Teach the class merger that text-phi-0..6 (the golden type scale) are font sizes, not colours,
+// so cn('text-phi-1', 'text-muted-foreground') keeps both.
+const twMerge = extendTailwindMerge({
+  extend: {
+    classGroups: {
+      'font-size': [{ text: ['phi-0', 'phi-1', 'phi-2', 'phi-3', 'phi-4', 'phi-5', 'phi-6'] }],
+    },
+  },
+})
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
