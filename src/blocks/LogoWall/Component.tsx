@@ -13,6 +13,7 @@ export const LogoWallBlock: React.FC<LogoWallBlockProps & { id?: string }> = ({
   heading,
   text,
   logos,
+  monochrome,
 }) => {
   const items = (logos || []).filter((item) => item.logo && typeof item.logo === 'object')
 
@@ -33,12 +34,16 @@ export const LogoWallBlock: React.FC<LogoWallBlockProps & { id?: string }> = ({
               if (!logo || typeof logo !== 'object') return null
               const dark = logoDark && typeof logoDark === 'object' ? logoDark : null
 
-              // Full-colour logos. On hover a gentle scale-up with a slight overshoot (spring feel),
-              // done in CSS so the block stays a server component.
+              // Muted by default: grey and squeezed toward mid-tone so black, white and colourful
+              // logos sit at a similar strength in both themes. On hover they return to full colour
+              // and scale up gently with a slight overshoot (spring feel). All CSS, so the block
+              // stays a server component.
               const imgClass = cn(
                 'max-h-7 sm:max-h-10 md:max-h-12 w-auto max-w-[85%] sm:max-w-[70%] object-contain',
-                'transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105',
+                'transition duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] group-hover:scale-105',
                 'motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+                monochrome &&
+                  'grayscale contrast-[.3] group-hover:grayscale-0 group-hover:contrast-100',
               )
 
               // Plain <img> so SVG logos render as-is (Next's image optimizer rejects SVG).
