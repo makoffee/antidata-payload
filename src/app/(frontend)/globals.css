@@ -339,3 +339,25 @@ html[data-theme='light'] {
     }
   }
 }
+
+/* Bullet lists in rich text: small brand-yellow squares instead of round discs.
+   A thin dark outline keeps the yellow readable on light pages; dark mode doesn't need it. */
+.prose ul {
+  list-style: none;
+}
+.prose ul > li {
+  position: relative;
+}
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  top: 0.62em;
+  left: -1em;
+  width: 0.45em;
+  height: 0.45em;
+  background: var(--color-brand);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.85);
+}
+[data-theme='dark'] .prose ul > li::before {
+  box-shadow: none;
+}
