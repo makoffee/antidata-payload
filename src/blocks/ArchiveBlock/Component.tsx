@@ -67,6 +67,7 @@ export const ArchiveBlock: React.FC<
         collection: 'posts',
         depth: 1,
         limit,
+        sort: '-publishedAt',
         where,
       })
 

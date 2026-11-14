@@ -19,6 +19,7 @@ export default async function Page() {
     collection: 'posts',
     depth: 1,
     limit: 12,
+    sort: '-publishedAt',
     overrideAccess: false,
     select: {
       title: true,
@@ -31,10 +32,8 @@ export default async function Page() {
   return (
     <div className="pt-24 pb-24">
       <PageClient />
-      <div className="container mb-16">
-        <div className="prose dark:prose-invert max-w-none">
-          <h1>Blog</h1>
-        </div>
+      <div className="container mb-12">
+        <h1 className="text-4xl md:text-6xl font-medium tracking-tight">Blog</h1>
       </div>
 
       <div className="container mb-8">
