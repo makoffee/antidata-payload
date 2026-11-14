@@ -15,7 +15,7 @@ Anything you change in the local admin changes the real site.
 
 ```bash
 git pull
-npm run dev          # http://localhost:3000
+npm run dev          # http://localhost:3000 (webpack + file polling: this folder syncs with Dropbox)
 npm run typecheck    # before committing
 git add -A && git commit -m "…" && git push   # Vercel deploys main automatically
 ```
@@ -53,3 +53,4 @@ deletes the content stored in it.
 - Code broken on live? Vercel → Deployments → previous deploy → *Promote*. Content is unaffected.
 - Use **npm** only (no pnpm/yarn). Don't run `vercel env pull`; it rewrites `.env.local`.
 - There is no seed: the template's seed button was removed because it overwrites real content.
+- Dev uses webpack with file polling because the default Turbopack watcher misses in-place saves in this Dropbox folder (sed-style replace-saves were seen, normal saves were not). If edits stop showing anyway, restart `npm run dev`; restart it after any local `npm run build` too.

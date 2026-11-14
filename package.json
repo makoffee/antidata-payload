@@ -7,8 +7,8 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
-    "predev": "mkdir -p .next && xattr -w com.dropbox.ignored 1 .next node_modules 2>/dev/null || true",
-    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "predev": "rm -rf .next && mkdir -p .next && xattr -w com.dropbox.ignored 1 .next node_modules 2>/dev/null || true",
+    "dev": "cross-env WATCHPACK_POLLING=true NODE_OPTIONS=--no-deprecation next dev --webpack",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && npm run build && npm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
     "generate:types": "cross-env NODE_OPTIONS=--no-deprecation payload generate:types",
