@@ -75,6 +75,11 @@ export const LogoWall: Block = {
       type: 'checkbox',
       label: 'Show logos in greyscale (full colour on hover)',
       defaultValue: true,
+      admin: {
+        // No longer used: logos always show in full colour. Hidden rather than removed so no
+        // database column is dropped.
+        hidden: true,
+      },
     },
   ],
 }
