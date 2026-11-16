@@ -13,8 +13,10 @@ const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
 
   if (image && typeof image === 'object' && 'url' in image) {
     const ogUrl = image.sizes?.og?.url
+    const raw = ogUrl || image.url || ''
 
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
+    // Blob files come back as absolute URLs; local fallbacks are relative
+    url = /^https?:\/\//.test(raw) ? raw : serverUrl + raw
   }
 
   return url
