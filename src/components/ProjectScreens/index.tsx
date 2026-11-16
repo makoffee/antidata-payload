@@ -27,12 +27,17 @@ export const ProjectScreens: React.FC<{
   if (!items.length) return null
 
   const background =
-    screens.backgroundImage && typeof screens.backgroundImage === 'object' ? screens.backgroundImage : null
+    screens.backgroundImage && typeof screens.backgroundImage === 'object'
+      ? screens.backgroundImage
+      : null
 
   return (
     <section
       aria-labelledby={screens.heading ? 'project-screens' : undefined}
-      className={cn(background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28', className)}
+      className={cn(
+        background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28',
+        className,
+      )}
     >
       {background && <SectionBackground resource={background} />}
 

@@ -5,18 +5,20 @@ import React from 'react'
 import type { Footer } from '@/payload-types'
 
 import { CMSLink } from '@/components/Link'
-import { LogoIcon } from '@/components/Logo/Logo'
+import { BrandMark } from '@/components/Logo/BrandMark'
+import { getBranding } from '@/utilities/getBranding'
 
 export async function Footer() {
   const footerData: Footer = await getCachedGlobal('footer', 1)()
 
+  const branding = await getBranding()
   const navItems = footerData?.navItems || []
 
   return (
     <footer className="mt-auto bg-black dark:bg-card text-white">
       <div className="container py-8 gap-8 flex flex-col md:flex-row md:justify-between">
         <Link aria-label="antidata.net home" className="flex items-center gap-4" href="/">
-          <LogoIcon className="shrink-0 text-white" />
+          <BrandMark className="size-10 shrink-0 text-white" src={branding.icon} variant="icon" />
           {/* Same line as the homepage hero's supporting text */}
           <p className="text-sm text-white/70">
             <b className="font-semibold text-white">antidata.net</b> – a UX and product design

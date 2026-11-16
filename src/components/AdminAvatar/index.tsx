@@ -13,7 +13,8 @@ export const AdminAvatar: React.FC = () => {
     | null
     | undefined
 
-  const src = avatar && typeof avatar === 'object' ? avatar.sizes?.thumbnail?.url || avatar.url : null
+  const src =
+    avatar && typeof avatar === 'object' ? avatar.sizes?.thumbnail?.url || avatar.url : null
 
   const style: React.CSSProperties = {
     alignItems: 'center',

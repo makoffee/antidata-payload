@@ -87,9 +87,7 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
       <div className="absolute inset-x-0 bottom-0 p-5 text-white">
         <h3 className="text-xl font-medium">{title}</h3>
         {meta && <p className="mt-1 text-sm text-white/70">{meta}</p>}
-        {summary && (
-          <p className="mt-3 text-sm text-white/85 line-clamp-2">{summary}</p>
-        )}
+        {summary && <p className="mt-3 text-sm text-white/85 line-clamp-2">{summary}</p>}
       </div>
     </Link>
   )

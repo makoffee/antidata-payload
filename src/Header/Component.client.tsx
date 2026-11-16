@@ -6,14 +6,15 @@ import React, { useEffect, useState } from 'react'
 
 import type { Header } from '@/payload-types'
 
-import { Logo, LogoIcon } from '@/components/Logo/Logo'
+import { BrandMark } from '@/components/Logo/BrandMark'
 import { HeaderNav } from './Nav'
 
 interface HeaderClientProps {
+  branding: { icon: string | null; logo: string | null }
   data: Header
 }
 
-export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
+export const HeaderClient: React.FC<HeaderClientProps> = ({ branding, data }) => {
   /* Storing the value in a useState to avoid hydration errors */
   const [theme, setTheme] = useState<string | null>(null)
   const { headerTheme, setHeaderTheme } = useHeaderTheme()
@@ -33,8 +34,16 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
     <header className="container relative z-20   " {...(theme ? { 'data-theme': theme } : {})}>
       <div className="py-8 flex items-center justify-between">
         <Link href="/">
-          <LogoIcon className="size-9 text-foreground md:hidden" />
-          <Logo className="hidden text-foreground md:block" />
+          <BrandMark
+            className="size-9 text-foreground md:hidden"
+            src={branding.icon}
+            variant="icon"
+          />
+          <BrandMark
+            className="hidden h-9 w-auto text-foreground md:block"
+            src={branding.logo}
+            variant="logo"
+          />
         </Link>
         <HeaderNav data={data} />
       </div>
