@@ -45,11 +45,11 @@ export const hero: Field = {
       defaultValue: 'fadeSlide',
       admin: {
         condition: (_, { type } = {}) => type === 'highImpact',
-        description: 'How the hero appears when the page loads.',
+        description: 'How the hero enters on page load.',
       },
       options: [
         {
-          label: 'Fade & slide (background fades in, text slides in from the right)',
+          label: 'Fade and slide',
           value: 'fadeSlide',
         },
         { label: 'Fade only', value: 'fade' },
@@ -64,7 +64,7 @@ export const hero: Field = {
       admin: {
         condition: (_, { type } = {}) => type === 'highImpact',
         description:
-          'Small chips shown above the heading, e.g. Design Consulting, UX Design. Also used in the SEO description. Press Enter after each.',
+          'Short tags above the heading. Also used in the SEO description. Press Enter after each.',
       },
     },
     {

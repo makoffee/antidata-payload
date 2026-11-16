@@ -29,7 +29,7 @@ export const Users: CollectionConfig = {
       name: 'avatar',
       type: 'upload',
       relationTo: 'media',
-      admin: { description: 'Profile picture. Shown as your avatar in the admin.' },
+      admin: { description: 'Profile picture.' },
     },
   ],
   timestamps: true,

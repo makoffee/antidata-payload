@@ -48,7 +48,9 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
 
   return (
     <section
-      className={cn(background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28 mb-16 md:mb-24')}
+      className={cn(
+        background && 'relative isolate [clip-path:inset(0)] py-20 md:py-28 mb-16 md:mb-24',
+      )}
       id={`block-${id}`}
     >
       {background && <SectionBackground resource={background} />}
@@ -96,7 +98,10 @@ export const CardGridBlock: React.FC<CardGridBlockProps & { id?: string }> = ({
                           )}
                         >
                           {kanji ? (
-                            <span aria-hidden className={cn(kanjiFont.className, 'text-phi-2 leading-none')}>
+                            <span
+                              aria-hidden
+                              className={cn(kanjiFont.className, 'text-phi-2 leading-none')}
+                            >
                               {kanji}
                             </span>
                           ) : (

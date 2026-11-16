@@ -24,7 +24,7 @@ export const Archive: Block = {
           ]
         },
       }),
-      label: 'Intro Content',
+      label: 'Intro',
     },
     {
       name: 'populateBy',
@@ -36,7 +36,7 @@ export const Archive: Block = {
           value: 'collection',
         },
         {
-          label: 'Individual Selection',
+          label: 'Selection',
           value: 'selection',
         },
       ],
@@ -48,7 +48,7 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
       defaultValue: 'posts',
-      label: 'Collections To Show',
+      label: 'Collections',
       options: [
         {
           label: 'Posts',
@@ -67,7 +67,7 @@ export const Archive: Block = {
         condition: (_, siblingData) => siblingData.populateBy === 'collection',
       },
       hasMany: true,
-      label: 'Categories To Show',
+      label: 'Categories',
       relationTo: 'categories',
     },
     {
@@ -86,13 +86,13 @@ export const Archive: Block = {
       admin: {
         condition: (_, siblingData) =>
           siblingData.populateBy === 'selection' || siblingData.relationTo === 'projects',
-        description: 'How portfolio projects are shown. Stories swipe sideways on mobile.',
+        description: 'How projects are displayed.',
       },
       defaultValue: 'grid',
       label: 'Project layout',
       options: [
         { label: 'Grid', value: 'grid' },
-        { label: 'Stories (tall cards)', value: 'stories' },
+        { label: 'Stories', value: 'stories' },
       ],
     },
     {
@@ -103,7 +103,7 @@ export const Archive: Block = {
           siblingData.populateBy === 'selection' || siblingData.relationTo === 'projects',
       },
       defaultValue: false,
-      label: 'Show "View all projects" button',
+      label: 'Show "View all" button',
     },
     {
       name: 'selectedDocs',

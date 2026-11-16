@@ -15,6 +15,7 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { getBranding } from '@/utilities/getBranding'
 
 // Figtree for headlines, Manrope for body, buttons, nav and everything else
 const figtree = Figtree({ subsets: ['latin'], variable: '--font-figtree', display: 'swap' })
@@ -22,13 +23,24 @@ const manrope = Manrope({ subsets: ['latin'], variable: '--font-manrope', displa
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
+  const { icon } = await getBranding()
 
   return (
-    <html className={cn(figtree.variable, manrope.variable, GeistMono.variable)} lang="en" suppressHydrationWarning>
+    <html
+      className={cn(figtree.variable, manrope.variable, GeistMono.variable)}
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
         <InitTheme />
-        <link href="/favicon.ico" rel="icon" sizes="32x32" />
-        <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+        {icon ? (
+          <link href={icon} rel="icon" />
+        ) : (
+          <>
+            <link href="/favicon.ico" rel="icon" sizes="32x32" />
+            <link href="/favicon.svg" rel="icon" type="image/svg+xml" />
+          </>
+        )}
       </head>
       <body>
         <Providers>

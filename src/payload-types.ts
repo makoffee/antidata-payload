@@ -156,7 +156,7 @@ export interface UserAuthOperations {
   };
 }
 /**
- * Portfolio case studies. Drag rows to change the order they appear on the site.
+ * Case studies. Drag rows to reorder.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "projects".
@@ -166,15 +166,15 @@ export interface Project {
   _order?: string | null;
   title: string;
   /**
-   * One or two sentences. Shown on project cards and under the title.
+   * One or two sentences, shown on cards and under the title.
    */
   summary?: string | null;
   /**
-   * Used on the project page and on cards across the site.
+   * Main project image, used on the page and on cards.
    */
   coverImage: number | Media;
   /**
-   * A tall 9:16 image (e.g. 1080×1920) for the homepage story cards. Without one, the card crops the cover image to fit.
+   * Optional 9:16 image for story cards. Defaults to a crop of the cover.
    */
   storyImage?: (number | null) | Media;
   content?: {
@@ -195,7 +195,7 @@ export interface Project {
   screens?: {
     heading?: string | null;
     /**
-     * A branded, abstract image works best. Without one the cards sit on the page.
+     * Optional. Dark or abstract images work best.
      */
     backgroundImage?: (number | null) | Media;
     text?: string | null;
@@ -208,7 +208,7 @@ export interface Project {
       | null;
   };
   /**
-   * Shown after the case study. Use "Half width" to place images side by side.
+   * Shown after the case study. Use half width to pair images.
    */
   gallery?:
     | {
@@ -220,15 +220,15 @@ export interface Project {
     | null;
   experience?: {
     /**
-     * Switch to Figma when the live site no longer matches the design (or is offline).
+     * Use Figma if the live site is offline or has changed.
      */
     source?: ('live' | 'figma') | null;
     /**
-     * Leave empty to use the "Live project URL" from Details. Some sites (e.g. the App Store) refuse to be embedded; the preview then uses the Figma URL, or is left out.
+     * Defaults to the live project URL. Some sites block embedding.
      */
     liveUrl?: string | null;
     /**
-     * Paste the Share link of a prototype (or design file). The file must be viewable by anyone with the link.
+     * Share link to a prototype or design file. Must be viewable by anyone with the link.
      */
     figmaUrl?: string | null;
     title?: string | null;
@@ -237,11 +237,11 @@ export interface Project {
   client?: string | null;
   year?: number | null;
   /**
-   * e.g. Branding, Web design, Art direction. Press Enter after each.
+   * Press Enter after each.
    */
   services?: string[] | null;
   /**
-   * Skills as listed for this project on LinkedIn. Shown as tags at the end of the case study (keeps the wording consistent for recruiters and ATS). Press Enter after each.
+   * Shown as tags at the end of the case study. Press Enter after each.
    */
   skills?: string[] | null;
   projectUrl?: string | null;
@@ -264,11 +264,11 @@ export interface Project {
     description?: string | null;
   };
   /**
-   * Featured projects can be shown on the homepage with a Projects block.
+   * Available to Projects blocks.
    */
   featured?: boolean | null;
   /**
-   * Used for the filters on the Portfolio page.
+   * Used for filtering.
    */
   categories?: (number | Category)[] | null;
   relatedProjects?: (number | Project)[] | null;
@@ -435,11 +435,11 @@ export interface Page {
   hero: {
     type: 'none' | 'highImpact' | 'mediumImpact' | 'lowImpact';
     /**
-     * How the hero appears when the page loads.
+     * How the hero enters on page load.
      */
     animation?: ('fadeSlide' | 'fade' | 'none') | null;
     /**
-     * Small chips shown above the heading, e.g. Design Consulting, UX Design. Also used in the SEO description. Press Enter after each.
+     * Short tags above the heading. Also used in the SEO description. Press Enter after each.
      */
     keywords?: string[] | null;
     richText?: {
@@ -573,7 +573,7 @@ export interface User {
   id: number;
   name?: string | null;
   /**
-   * Profile picture. Shown as your avatar in the admin.
+   * Profile picture.
    */
   avatar?: (number | null) | Media;
   updatedAt: string;
@@ -616,7 +616,7 @@ export interface CallToActionBlock {
     [k: string]: unknown;
   } | null;
   /**
-   * Full-width image behind the card, fading in from the page colour at the top. Abstract or dark images work best.
+   * Full-width image behind the card. Dark or abstract images work best.
    */
   backgroundImage?: (number | null) | Media;
   links?:
@@ -713,7 +713,7 @@ export interface CardGridBlock {
   heading?: string | null;
   text?: string | null;
   /**
-   * Turns the section into a full-width banner with frosted-glass cards. Abstract or dark images work best.
+   * Full-width image behind the cards. Dark or abstract images work best.
    */
   backgroundImage?: (number | null) | Media;
   /**
@@ -747,7 +747,7 @@ export interface CardGridBlock {
           | null;
         description?: string | null;
         /**
-         * e.g. /portfolio or https://… Makes the whole card clickable.
+         * Makes the whole card a link.
          */
         url?: string | null;
         id?: string | null;
@@ -803,17 +803,17 @@ export interface LogoWallBlock {
   heading?: string | null;
   text?: string | null;
   /**
-   * SVG works best; transparent PNG is fine. Drag to reorder. Logos are shown in greyscale until hovered.
+   * SVG or transparent PNG. Drag to reorder.
    */
   logos?:
     | {
         logo: number | Media;
         /**
-         * Brand name, used as the image’s alt text.
+         * Used as the alt text.
          */
         name: string;
         /**
-         * A light/white version shown when the site is in dark mode. Leave empty to use the main logo in both themes.
+         * Light version for dark mode. Optional.
          */
         logoDark?: (number | null) | Media;
         url?: string | null;
@@ -850,7 +850,7 @@ export interface ArchiveBlock {
   categories?: (number | Category)[] | null;
   limit?: number | null;
   /**
-   * How portfolio projects are shown. Stories swipe sideways on mobile.
+   * How projects are displayed.
    */
   projectLayout?: ('grid' | 'stories') | null;
   showViewAll?: boolean | null;
@@ -2135,19 +2135,19 @@ export interface Footer {
 export interface Appearance {
   id: number;
   /**
-   * How background images behave behind card sections (e.g. Design Expertise, Wireframes). Cover: scrolls with the section. Fixed: stays still while the cards scroll over it. Parallax: drifts slowly as you scroll.
+   * Behaviour of section background images on scroll.
    */
   backgroundStyle?: ('cover' | 'fixed' | 'parallax') | null;
   /**
-   * Replace the logo in the admin and on the login screen. Leave empty to use the built-in antidata logo. Use single-colour artwork (SVG or transparent PNG): it is painted in the admin text colour, so it suits light and dark mode automatically (multi-colour artwork becomes a one-colour silhouette).
+   * Single-colour SVG or transparent PNG artwork works best: it adapts to light and dark mode.
    */
   adminBranding?: {
     /**
-     * Full wordmark, shown on the login screen.
+     * Wide wordmark. SVG or transparent PNG.
      */
     logo?: (number | null) | Media;
     /**
-     * Small mark, shown next to the breadcrumbs.
+     * Square mark. Also used as the browser tab icon.
      */
     icon?: (number | null) | Media;
   };

@@ -32,10 +32,9 @@ export const CallToAction: Block = {
       name: 'backgroundImage',
       type: 'upload',
       relationTo: 'media',
-      label: 'Background image (optional)',
+      label: 'Background image',
       admin: {
-        description:
-          'Full-width image behind the card, fading in from the page colour at the top. Abstract or dark images work best.',
+        description: 'Full-width image behind the card. Dark or abstract images work best.',
       },
     },
     linkGroup({

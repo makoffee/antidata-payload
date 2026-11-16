@@ -13,8 +13,14 @@ export const ProjectsBlockComponent: React.FC<
     id?: string
   }
 > = async (props) => {
-  const { id, introContent, limit: limitFromProps, populateBy, selectedProjects, showViewAll } =
-    props
+  const {
+    id,
+    introContent,
+    limit: limitFromProps,
+    populateBy,
+    selectedProjects,
+    showViewAll,
+  } = props
 
   let projects: Project[] = []
 
@@ -44,7 +50,10 @@ export const ProjectsBlockComponent: React.FC<
       <ProjectGrid projects={projects} />
       {showViewAll && (
         <div className="mt-12">
-          <Link className="text-lg underline underline-offset-4 hover:no-underline" href="/portfolio">
+          <Link
+            className="text-lg underline underline-offset-4 hover:no-underline"
+            href="/portfolio"
+          >
             View full portfolio →
           </Link>
         </div>

@@ -26,8 +26,7 @@ export const LogoWall: Block = {
         plural: 'Logos',
       },
       admin: {
-        description:
-          'SVG works best; transparent PNG is fine. Drag to reorder. Logos are shown in greyscale until hovered.',
+        description: 'SVG or transparent PNG. Drag to reorder.',
         initCollapsed: true,
       },
       fields: [
@@ -45,7 +44,7 @@ export const LogoWall: Block = {
               type: 'text',
               required: true,
               admin: {
-                description: 'Brand name, used as the image’s alt text.',
+                description: 'Used as the alt text.',
               },
             },
           ],
@@ -54,16 +53,15 @@ export const LogoWall: Block = {
           name: 'logoDark',
           type: 'upload',
           relationTo: 'media',
-          label: 'Dark mode logo (optional)',
+          label: 'Dark mode logo',
           admin: {
-            description:
-              'A light/white version shown when the site is in dark mode. Leave empty to use the main logo in both themes.',
+            description: 'Light version for dark mode. Optional.',
           },
         },
         {
           name: 'url',
           type: 'text',
-          label: 'Link (optional)',
+          label: 'Link',
           admin: {
             placeholder: 'https://',
           },
@@ -73,7 +71,7 @@ export const LogoWall: Block = {
     {
       name: 'monochrome',
       type: 'checkbox',
-      label: 'Show logos in greyscale (full colour on hover)',
+      label: 'Greyscale until hover',
       defaultValue: true,
     },
   ],

@@ -31,7 +31,7 @@ export const cardIcons = {
   palette: { label: 'Palette', Icon: Palette },
   penTool: { label: 'Pen tool', Icon: PenTool },
   layers: { label: 'Layers', Icon: Layers },
-  blocks: { label: 'Building blocks (design system)', Icon: Blocks },
+  blocks: { label: 'Blocks', Icon: Blocks },
   component: { label: 'Component', Icon: Component },
   code: { label: 'Code', Icon: Code },
   box: { label: 'Box', Icon: Box },

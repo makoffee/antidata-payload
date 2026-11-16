@@ -28,7 +28,7 @@ export const ProjectsBlock: Block = {
           ]
         },
       }),
-      label: 'Intro Content',
+      label: 'Intro',
     },
     {
       name: 'populateBy',
@@ -37,7 +37,7 @@ export const ProjectsBlock: Block = {
       options: [
         { label: 'Featured projects', value: 'featured' },
         { label: 'Latest projects', value: 'all' },
-        { label: 'Individual selection', value: 'selection' },
+        { label: 'Selection', value: 'selection' },
       ],
     },
     {
@@ -61,7 +61,7 @@ export const ProjectsBlock: Block = {
     {
       name: 'showViewAll',
       type: 'checkbox',
-      label: 'Show "View full portfolio" link',
+      label: 'Show "View all" link',
       defaultValue: true,
     },
   ],

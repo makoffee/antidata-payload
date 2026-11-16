@@ -23,10 +23,9 @@ export const CardGrid: Block = {
       name: 'backgroundImage',
       type: 'upload',
       relationTo: 'media',
-      label: 'Background image (optional)',
+      label: 'Background image',
       admin: {
-        description:
-          'Turns the section into a full-width banner with frosted-glass cards. Abstract or dark images work best.',
+        description: 'Full-width image behind the cards. Dark or abstract images work best.',
       },
     },
     {
@@ -75,9 +74,9 @@ export const CardGrid: Block = {
         {
           name: 'url',
           type: 'text',
-          label: 'Link (optional)',
+          label: 'Link',
           admin: {
-            description: 'e.g. /portfolio or https://… Makes the whole card clickable.',
+            description: 'Makes the whole card a link.',
           },
         },
       ],

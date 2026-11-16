@@ -55,7 +55,7 @@ export const Projects: CollectionConfig<'projects'> = {
   admin: {
     group: 'Portfolio',
     defaultColumns: ['title', 'client', 'year', 'featured', '_status', 'updatedAt'],
-    description: 'Portfolio case studies. Drag rows to change the order they appear on the site.',
+    description: 'Case studies. Drag rows to reorder.',
     livePreview: {
       url: ({ data, req }) =>
         generatePreviewPath({
@@ -88,7 +88,7 @@ export const Projects: CollectionConfig<'projects'> = {
               name: 'summary',
               type: 'textarea',
               admin: {
-                description: 'One or two sentences. Shown on project cards and under the title.',
+                description: 'One or two sentences, shown on cards and under the title.',
               },
               maxLength: 280,
             },
@@ -98,17 +98,17 @@ export const Projects: CollectionConfig<'projects'> = {
               relationTo: 'media',
               required: true,
               admin: {
-                description: 'Used on the project page and on cards across the site.',
+                description: 'Main project image, used on the page and on cards.',
               },
             },
             {
               name: 'storyImage',
               type: 'upload',
               relationTo: 'media',
-              label: 'Story card image (optional)',
+              label: 'Story card image',
               admin: {
                 description:
-                  'A tall 9:16 image (e.g. 1080×1920) for the homepage story cards. Without one, the card crops the cover image to fit.',
+                  'Optional 9:16 image for story cards. Defaults to a crop of the cover.',
               },
             },
             {
@@ -135,8 +135,7 @@ export const Projects: CollectionConfig<'projects'> = {
         {
           name: 'screens',
           label: 'Screens',
-          description:
-            'Optional. Screens (e.g. wireframes) shown side by side in frosted cards over a banner image, right after the case study.',
+          description: 'Optional screens shown side by side after the case study.',
           fields: [
             {
               type: 'row',
@@ -152,7 +151,7 @@ export const Projects: CollectionConfig<'projects'> = {
                   relationTo: 'media',
                   label: 'Banner background',
                   admin: {
-                    description: 'A branded, abstract image works best. Without one the cards sit on the page.',
+                    description: 'Optional. Dark or abstract images work best.',
                   },
                 },
               ],
@@ -192,7 +191,7 @@ export const Projects: CollectionConfig<'projects'> = {
                 plural: 'Images',
               },
               admin: {
-                description: 'Shown after the case study. Use "Half width" to place images side by side.',
+                description: 'Shown after the case study. Use half width to pair images.',
                 initCollapsed: true,
               },
               fields: [
@@ -227,8 +226,7 @@ export const Projects: CollectionConfig<'projects'> = {
         {
           name: 'experience',
           label: 'Experience',
-          description:
-            'An interactive preview of the finished work, with a desktop/mobile toggle. Shown after the case study when the chosen source has a URL.',
+          description: 'Interactive preview with a desktop and mobile toggle.',
           fields: [
             {
               name: 'source',
@@ -240,8 +238,7 @@ export const Projects: CollectionConfig<'projects'> = {
               ],
               admin: {
                 layout: 'horizontal',
-                description:
-                  'Switch to Figma when the live site no longer matches the design (or is offline).',
+                description: 'Use Figma if the live site is offline or has changed.',
               },
             },
             {
@@ -250,8 +247,7 @@ export const Projects: CollectionConfig<'projects'> = {
               label: 'Live preview URL',
               admin: {
                 placeholder: 'https://',
-                description:
-                  'Leave empty to use the "Live project URL" from Details. Some sites (e.g. the App Store) refuse to be embedded; the preview then uses the Figma URL, or is left out.',
+                description: 'Defaults to the live project URL. Some sites block embedding.',
               },
             },
             {
@@ -261,7 +257,7 @@ export const Projects: CollectionConfig<'projects'> = {
               admin: {
                 placeholder: 'https://www.figma.com/proto/…',
                 description:
-                  'Paste the Share link of a prototype (or design file). The file must be viewable by anyone with the link.',
+                  'Share link to a prototype or design file. Must be viewable by anyone with the link.',
               },
               validate: (value: string | null | undefined) =>
                 !value || /^https:\/\/([\w-]+\.)?figma\.com\//.test(value)
@@ -302,7 +298,7 @@ export const Projects: CollectionConfig<'projects'> = {
               type: 'text',
               hasMany: true,
               admin: {
-                description: 'e.g. Branding, Web design, Art direction. Press Enter after each.',
+                description: 'Press Enter after each.',
               },
             },
             {
@@ -310,8 +306,7 @@ export const Projects: CollectionConfig<'projects'> = {
               type: 'text',
               hasMany: true,
               admin: {
-                description:
-                  'Skills as listed for this project on LinkedIn. Shown as tags at the end of the case study (keeps the wording consistent for recruiters and ATS). Press Enter after each.',
+                description: 'Shown as tags at the end of the case study. Press Enter after each.',
               },
             },
             {
@@ -372,7 +367,7 @@ export const Projects: CollectionConfig<'projects'> = {
       defaultValue: false,
       admin: {
         position: 'sidebar',
-        description: 'Featured projects can be shown on the homepage with a Projects block.',
+        description: 'Available to Projects blocks.',
       },
     },
     {
@@ -380,7 +375,7 @@ export const Projects: CollectionConfig<'projects'> = {
       type: 'relationship',
       admin: {
         position: 'sidebar',
-        description: 'Used for the filters on the Portfolio page.',
+        description: 'Used for filtering.',
       },
       hasMany: true,
       relationTo: 'categories',

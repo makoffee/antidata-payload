@@ -14,7 +14,7 @@ export const Appearance: GlobalConfig = {
     {
       name: 'backgroundStyle',
       type: 'radio',
-      label: 'Section background style',
+      label: 'Background style',
       defaultValue: 'parallax',
       options: [
         { label: 'Cover', value: 'cover' },
@@ -23,17 +23,16 @@ export const Appearance: GlobalConfig = {
       ],
       admin: {
         layout: 'horizontal',
-        description:
-          'How background images behave behind card sections (e.g. Design Expertise, Wireframes). Cover: scrolls with the section. Fixed: stays still while the cards scroll over it. Parallax: drifts slowly as you scroll.',
+        description: 'Behaviour of section background images on scroll.',
       },
     },
     {
       name: 'adminBranding',
       type: 'group',
-      label: 'Admin branding',
+      label: 'Design and branding',
       admin: {
         description:
-          'Replace the logo in the admin and on the login screen. Leave empty to use the built-in antidata logo. Use single-colour artwork (SVG or transparent PNG): it is painted in the admin text colour, so it suits light and dark mode automatically (multi-colour artwork becomes a one-colour silhouette).',
+          'Single-colour SVG or transparent PNG artwork works best: it adapts to light and dark mode.',
       },
       fields: [
         {
@@ -41,14 +40,14 @@ export const Appearance: GlobalConfig = {
           type: 'upload',
           relationTo: 'media',
           label: 'Logo',
-          admin: { description: 'Full wordmark, shown on the login screen.' },
+          admin: { description: 'Wide wordmark. SVG or transparent PNG.' },
         },
         {
           name: 'icon',
           type: 'upload',
           relationTo: 'media',
           label: 'Icon',
-          admin: { description: 'Small mark, shown next to the breadcrumbs.' },
+          admin: { description: 'Square mark. Also used as the browser tab icon.' },
         },
       ],
     },
