@@ -25,6 +25,11 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
+      // Own branding: wordmark on the login screen, mark in the sidebar (theme-aware SVG)
+      graphics: {
+        Icon: '@/components/AdminBrand#AdminIcon',
+        Logo: '@/components/AdminBrand#AdminLogo',
+      },
       // The `BeforeLogin` component renders a message that you see while logging into your admin panel.
       // Feel free to delete this at any time. Simply remove the line below.
       beforeLogin: ['@/components/BeforeLogin'],
@@ -34,6 +39,7 @@ export default buildConfig({
     // Shows the user's profile image (Users → Avatar) in the admin's top-right corner
     avatar: { Component: '@/components/AdminAvatar#AdminAvatar' },
     meta: {
+      icons: [{ rel: 'icon', type: 'image/svg+xml', url: '/favicon.svg' }],
       titleSuffix: ' – Antidata admin',
     },
     importMap: {

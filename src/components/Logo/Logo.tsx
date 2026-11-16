@@ -3,6 +3,7 @@ import React from 'react'
 
 interface Props {
   className?: string
+  style?: React.CSSProperties
 }
 
 // Inline so the mark takes the surrounding text colour (currentColor): black in the light
@@ -15,12 +16,13 @@ const mark = (
   </>
 )
 
-export const Logo = ({ className }: Props) => (
+export const Logo = ({ className, style }: Props) => (
   <svg
     aria-label="antidata"
     className={clsx('h-9 w-auto', className)}
     fill="currentColor"
     role="img"
+    style={style}
     viewBox="50 30 1550 380"
     xmlns="http://www.w3.org/2000/svg"
   >
@@ -34,12 +36,13 @@ export const Logo = ({ className }: Props) => (
 )
 
 // The mark on its own, for the footer
-export const LogoIcon = ({ className }: Props) => (
+export const LogoIcon = ({ className, style }: Props) => (
   <svg
     aria-label="antidata"
     className={clsx('size-10', className)}
     fill="currentColor"
     role="img"
+    style={style}
     viewBox="50 30 420 365"
     xmlns="http://www.w3.org/2000/svg"
   >

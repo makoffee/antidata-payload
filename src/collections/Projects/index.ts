@@ -1,3 +1,4 @@
+import { autoFillSeo } from '@/utilities/seoDefaults'
 import type { CollectionConfig } from 'payload'
 
 import {
@@ -411,7 +412,7 @@ export const Projects: CollectionConfig<'projects'> = {
   ],
   hooks: {
     afterChange: [revalidateProject],
-    beforeChange: [populatePublishedAt],
+    beforeChange: [populatePublishedAt, autoFillSeo('projects')],
     afterDelete: [revalidateProjectDelete],
   },
   versions: {

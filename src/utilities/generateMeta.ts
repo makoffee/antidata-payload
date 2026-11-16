@@ -4,7 +4,7 @@ import type { Media, Page, Post, Project, Config } from '../payload-types'
 
 import { mergeOpenGraph } from './mergeOpenGraph'
 import { getServerSideURL } from './getURL'
-import { SITE_NAME } from './site'
+import { defaultSeoTitle } from './seoDefaults'
 
 const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
   const serverUrl = getServerSideURL()
@@ -30,8 +30,8 @@ export const generateMeta = async (args: {
 
   const ogImage = getImageURL(doc?.meta?.image)
 
-  // meta.title is generated as "<title> | SITE_NAME" by the SEO plugin, so use it as-is
-  const title = doc?.meta?.title || (doc?.title ? `${doc.title} | ${SITE_NAME}` : SITE_NAME)
+  // meta.title is filled with "<title> | antidata.net" on save (and can be overridden); fall back to the same
+  const title = doc?.meta?.title || defaultSeoTitle(doc?.title)
 
   return {
     description: doc?.meta?.description,

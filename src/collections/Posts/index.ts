@@ -26,6 +26,7 @@ import {
   PreviewField,
 } from '@payloadcms/plugin-seo/fields'
 import { slugField } from 'payload'
+import { autoFillSeo } from '@/utilities/seoDefaults'
 
 export const Posts: CollectionConfig<'posts'> = {
   slug: 'posts',
@@ -150,14 +151,6 @@ export const Posts: CollectionConfig<'posts'> = {
             }),
 
             MetaDescriptionField({}),
-            PreviewField({
-              // if the `generateUrl` function is configured
-              hasGenerateFn: true,
-
-              // field paths to match the target field for data
-              titlePath: 'meta.title',
-              descriptionPath: 'meta.description',
-            }),
           ],
         },
       ],
@@ -216,8 +209,22 @@ export const Posts: CollectionConfig<'posts'> = {
       ],
     },
     slugField(),
+    // Search-result preview, shown in the right-hand sidebar (display only, no database column)
+    (() => {
+      const preview = PreviewField({
+        // if the `generateUrl` function is configured
+        hasGenerateFn: true,
+        // field paths to match the target field for data
+        titlePath: 'meta.title',
+        descriptionPath: 'meta.description',
+      })
+      return { ...preview, admin: { ...preview.admin, position: 'sidebar' as const } }
+    })(),
   ],
   hooks: {
+    // SEO title/description follow the post until you type your own: a field that is empty, or
+    // still equal to the last auto value, is refreshed from the current title and body.
+    beforeChange: [autoFillSeo('posts')],
     afterChange: [revalidatePost],
     afterRead: [populateAuthors],
     afterDelete: [revalidateDelete],

@@ -13,3 +13,6 @@ export const collectionPrefixMap: Partial<Record<CollectionSlug, string>> = {
 
 export const getDocPath = (collection: CollectionSlug, slug: string) =>
   `${collectionPrefixMap[collection] ?? `/${collection}`}/${slug}`
+
+// Suffix on page titles: "<Title> | antidata.net"
+export const TITLE_SUFFIX = 'antidata.net'

@@ -1,3 +1,4 @@
+import { autoFillSeo } from '@/utilities/seoDefaults'
 import type { CollectionConfig } from 'payload'
 
 import { authenticated } from '../../access/authenticated'
@@ -125,7 +126,7 @@ export const Pages: CollectionConfig<'pages'> = {
   ],
   hooks: {
     afterChange: [revalidatePage],
-    beforeChange: [populatePublishedAt],
+    beforeChange: [populatePublishedAt, autoFillSeo('pages')],
     afterDelete: [revalidateDelete],
   },
   versions: {
