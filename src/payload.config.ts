@@ -31,6 +31,8 @@ export default buildConfig({
       // Shortcuts and unpublished drafts at the top of the admin dashboard
       beforeDashboard: ['@/components/AdminDashboard'],
     },
+    // Shows the user's profile image (Users → Avatar) in the admin's top-right corner
+    avatar: { Component: '@/components/AdminAvatar#AdminAvatar' },
     meta: {
       titleSuffix: ' – Antidata admin',
     },

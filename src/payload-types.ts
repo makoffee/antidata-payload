@@ -572,6 +572,10 @@ export interface Post {
 export interface User {
   id: number;
   name?: string | null;
+  /**
+   * Profile picture. Shown as your avatar in the admin.
+   */
+  avatar?: (number | null) | Media;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1765,6 +1769,7 @@ export interface CategoriesSelect<T extends boolean = true> {
  */
 export interface UsersSelect<T extends boolean = true> {
   name?: T;
+  avatar?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

@@ -12,6 +12,9 @@ export const Users: CollectionConfig = {
     update: authenticated,
   },
   admin: {
+    // Single-user site: hide Users from the sidebar. Edit your own name and avatar at /admin/account.
+    // (Routes stay enabled, so /admin/collections/users still works if a second user is ever needed.)
+    group: false,
     defaultColumns: ['name', 'email'],
     useAsTitle: 'name',
   },
@@ -20,6 +23,13 @@ export const Users: CollectionConfig = {
     {
       name: 'name',
       type: 'text',
+    },
+    {
+      // Profile picture: shown as the admin avatar (top right)
+      name: 'avatar',
+      type: 'upload',
+      relationTo: 'media',
+      admin: { description: 'Profile picture. Shown as your avatar in the admin.' },
     },
   ],
   timestamps: true,

@@ -1,4 +1,5 @@
 import { formatDateTime } from 'src/utilities/formatDateTime'
+import { User as UserIcon } from 'lucide-react'
 import React from 'react'
 
 import type { Post } from '@/payload-types'
@@ -44,7 +45,30 @@ export const PostHero: React.FC<{
 
           <div className="flex flex-col md:flex-row gap-4 md:gap-16">
             {hasAuthors && (
-              <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                {/* Profile picture to the left of the author tag; the default user icon if none is set */}
+                {populatedAuthors?.slice(0, 3).map((author) => {
+                  const url = (author as { avatarUrl?: string | null }).avatarUrl
+                  return url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      alt=""
+                      className="size-10 shrink-0 rounded-full object-cover ring-1 ring-white/30"
+                      height={40}
+                      key={author.id}
+                      src={url}
+                      width={40}
+                    />
+                  ) : (
+                    <span
+                      aria-hidden
+                      className="flex size-10 shrink-0 items-center justify-center rounded-full bg-white/15 ring-1 ring-white/30"
+                      key={author.id}
+                    >
+                      <UserIcon className="size-5" />
+                    </span>
+                  )
+                })}
                 <div className="flex flex-col gap-1">
                   <p className="text-sm">Author</p>
 
