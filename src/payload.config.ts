@@ -78,9 +78,7 @@ export default buildConfig({
     vercelBlobStorage({
       enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
       collections: {
-        // Serve files straight from the public Blob CDN instead of through /api/media/file, which
-        // does a head() + download (two billable Blob reads) on every cache miss.
-        media: { disablePayloadAccessControl: true },
+        media: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN,
       // Bypass Vercel's 4.5MB serverless upload limit; files go straight to Blob.
