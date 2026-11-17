@@ -1,6 +1,6 @@
 // Refuses to run when POSTGRES_URL points at the production database.
 // Used by `npm run dev`, `npm run migrate*`, and by Vercel preview builds (`npm run ci`).
-// Set PRODUCTION_DB_HOST to a fragment of the production Neon host (e.g. ep-lively-brook-abc123).
+// Set PRODUCTION_DB_HOST to a fragment of the production Neon host (e.g. ep-example-host-123).
 // `--strict` also fails when PRODUCTION_DB_HOST is not set (used on Vercel previews).
 // ALLOW_PROD_DB=1 overrides (only for a deliberate one-off against production).
 
