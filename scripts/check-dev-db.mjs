@@ -21,10 +21,14 @@ try {
 
 if (prod.length === 0) {
   if (strict) {
-    console.error('check-dev-db: PRODUCTION_DB_HOST is not set, so previews cannot be verified. Set it in Vercel (Preview).')
+    console.error(
+      'check-dev-db: PRODUCTION_DB_HOST is not set, so previews cannot be verified. Set it in Vercel (Preview).',
+    )
     process.exit(1)
   }
-  console.warn('check-dev-db: PRODUCTION_DB_HOST not set; cannot verify this is not the production database.')
+  console.warn(
+    'check-dev-db: PRODUCTION_DB_HOST not set; cannot verify this is not the production database.',
+  )
   process.exit(0)
 }
 
@@ -32,6 +36,26 @@ if (prod.some((p) => host.includes(p)) && process.env.ALLOW_PROD_DB !== '1') {
   console.error(
     `\ncheck-dev-db: POSTGRES_URL points at the PRODUCTION database (${host}).\n` +
       'Use the dev branch connection string instead (see WORKFLOW.md). Set ALLOW_PROD_DB=1 to override once.\n',
+  )
+  process.exit(1)
+}
+
+// Locally, also refuse if ANY other variable (DATABASE_URL, PGHOST, ...) points at production.
+// Skipped with --strict (Vercel previews still carry the integration's unused legacy variables).
+const stray = strict
+  ? []
+  : Object.entries(process.env)
+      .filter(
+        ([k, v]) =>
+          k !== 'PRODUCTION_DB_HOST' &&
+          k !== 'POSTGRES_URL' &&
+          v &&
+          prod.some((p) => v.includes(p)),
+      )
+      .map(([k]) => k)
+if (stray.length > 0 && process.env.ALLOW_PROD_DB !== '1') {
+  console.error(
+    `\ncheck-dev-db: these variables point at the PRODUCTION database: ${stray.join(', ')}\nRemove them from .env.local (names only shown, values hidden).\n`,
   )
   process.exit(1)
 }

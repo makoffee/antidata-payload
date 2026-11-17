@@ -61,15 +61,15 @@ deletes the content stored in it.
 
 **Safety protocol for schema changes:**
 
-1. Run `npm run backup` *before* editing the collection (it can't run after, once the code expects columns the DB doesn't have).
+1. `npm run backup` now saves the **`dev`** database, not production. Run it before editing a collection if the `dev` content matters. The real production safety net is a Neon branch: just before merging a PR that carries a migration, create a branch from `main` in Neon (name it e.g. `pre-<date>`, expiry 7 days) and note the time for point-in-time restore. Delete it once the release looks good.
 2. Adding fields is safe. Renames and removals delete content in the database they run on: try them on `dev` first, and note the time before the production merge.
 3. Test first on `dev`: `npm run migrate` locally migrates the Neon `dev` branch, and the preview build migrates it too. Merging `dev` into `main` runs `payload migrate` (`npm run ci`) on production. That merge is the point of no return. Preview builds abort if `POSTGRES_URL` is the production host or `PRODUCTION_DB_HOST` is unset.
 4. Final safety net is Neon point-in-time restore (check the plan's restore window in the Neon dashboard).
 
 ## Safety
 
-- `npm run backup` saves all content to `backups/<timestamp>.json` (git-ignored).
-- Neon keeps 6 hours of history: if content is lost, restore from Neon quickly.
+- `npm run backup` saves the database it is pointed at (local: the `dev` branch) to `backups/<timestamp>.json` (git-ignored). It does not back up production.
+- Production recovery: a Neon branch from `main` before risky merges, and Neon point-in-time restore (about 6 hours of history on the free plan): restore quickly if content is lost.
 - Code broken on live? Vercel → Deployments → previous production deploy → *Promote* (or revert the merge commit on `main`). Content is unaffected.
 - Use **npm** only (no pnpm/yarn). Don't run `vercel env pull`; it rewrites `.env.local`.
 - There is no seed: the template's seed button was removed because it overwrites real content.

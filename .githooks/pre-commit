@@ -1,0 +1,7 @@
+#!/bin/sh
+# Work happens on `dev`; `main` is production and only changes via a GitHub pull request.
+if [ "$(git branch --show-current)" = "main" ] && [ "$ALLOW_MAIN" != "1" ]; then
+  echo "Blocked: don't commit on main. Run 'git checkout dev' (see AGENTS.md / WORKFLOW.md)."
+  echo "Override once with ALLOW_MAIN=1."
+  exit 1
+fi

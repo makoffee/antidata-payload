@@ -7,6 +7,8 @@ Goal: production stays stable; `dev` and local can break freely. Free-tier frien
 - Optional: GitHub → Settings → Branches → protect `main` (require a pull request).
 - Vercel → Settings → Git: production branch is `main`. Other branches get preview deploys.
 
+- `npm install` sets `core.hooksPath=.githooks` (the `prepare` script); the hooks block commits and pushes on `main`.
+
 ## 2. Database (Neon, via Vercel Storage)
 - Create a Neon database in Vercel Storage and connect it to the project (Production).
 - In the Neon console create a branch `dev` from `main`, **Auto-delete: Never**.
