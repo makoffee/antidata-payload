@@ -52,7 +52,7 @@ deletes the content stored in it.
 
 1. Run `npm run backup` *before* editing the collection (it can't run after, once the code expects columns the DB doesn't have).
 2. Adding fields is safe. Before a rename or removal, create a throwaway Neon branch from `main` as a snapshot and note the time.
-3. A push that contains a migration is the point of no return, **including a push to `dev`**: every Vercel build (preview or production) runs `payload migrate` (`npm run ci`) against the shared database. Run `npm run migrate` locally first, and treat the new schema as live from that moment.
+3. The Vercel build (`npm run ci`) runs `payload migrate` **only for production** (`VERCEL_ENV=production`), so merging `dev` into `main` is when pending migrations get applied. Previews of `dev` never migrate. Caveat: if you already ran `npm run migrate` locally, the shared database has the new schema before any merge, and it is live from that moment. To test a schema change on a preview without that, you would need a separate Neon branch for previews.
 4. Final safety net is Neon point-in-time restore (check the plan's restore window in the Neon dashboard).
 
 ## Safety
