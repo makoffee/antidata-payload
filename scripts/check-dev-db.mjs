@@ -1,0 +1,39 @@
+// Refuses to run when POSTGRES_URL points at the production database.
+// Used by `npm run dev`, `npm run migrate*`, and by Vercel preview builds (`npm run ci`).
+// Set PRODUCTION_DB_HOST to a fragment of the production Neon host (e.g. ep-lively-brook-abc123).
+// `--strict` also fails when PRODUCTION_DB_HOST is not set (used on Vercel previews).
+// ALLOW_PROD_DB=1 overrides (only for a deliberate one-off against production).
+
+const strict = process.argv.includes('--strict')
+const url = process.env.POSTGRES_URL || ''
+const prod = (process.env.PRODUCTION_DB_HOST || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean)
+
+let host = ''
+try {
+  host = new URL(url).host
+} catch {
+  console.error('check-dev-db: POSTGRES_URL is missing or not a valid URL.')
+  process.exit(1)
+}
+
+if (prod.length === 0) {
+  if (strict) {
+    console.error('check-dev-db: PRODUCTION_DB_HOST is not set, so previews cannot be verified. Set it in Vercel (Preview).')
+    process.exit(1)
+  }
+  console.warn('check-dev-db: PRODUCTION_DB_HOST not set; cannot verify this is not the production database.')
+  process.exit(0)
+}
+
+if (prod.some((p) => host.includes(p)) && process.env.ALLOW_PROD_DB !== '1') {
+  console.error(
+    `\ncheck-dev-db: POSTGRES_URL points at the PRODUCTION database (${host}).\n` +
+      'Use the dev branch connection string instead (see WORKFLOW.md). Set ALLOW_PROD_DB=1 to override once.\n',
+  )
+  process.exit(1)
+}
+
+console.log(`check-dev-db: OK (${host})`)
