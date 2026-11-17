@@ -6,13 +6,13 @@ Three environments:
 |---|---|---|---|
 | **Production** | Vercel, `main` branch | Neon `main` | Vercel Blob |
 | **Preview** | Vercel, `dev` branch | Neon `dev` | Vercel Blob (see Setup) |
-| **Local** | `npm run dev` | Neon `dev` (same as preview) | local disk (no Blob token) |
+| **Local** | `npm run dev` | Neon `dev` (same as preview) | local disk; missing files read from the live site |
 
 Local and preview never touch production data. `npm run dev` and `npm run migrate*` refuse to run
 if `POSTGRES_URL` is the production host (`PRODUCTION_DB_HOST`, checked by `scripts/check-dev-db.mjs`).
 Real content is edited in the live admin (`antidata.net/admin`). Local/preview content is throwaway:
 reset the Neon `dev` branch from `main` whenever you want fresh data (Neon → Branches → `dev` → Reset from parent).
-Images from production don't appear locally (files live in Blob); uploads you make locally stay on disk.
+Local images that exist in production are fetched read-only from the live site (`MEDIA_FALLBACK_ORIGIN` in `.env.local`, CDN-cached, no Blob operations); uploads you make locally stay on disk and are never sent to production.
 
 ## Content (projects, pages, images)
 
