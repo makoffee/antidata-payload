@@ -7,6 +7,7 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
+    "prepare": "git config core.hooksPath .githooks || true",
     "check:db": "node --env-file-if-exists=.env.local scripts/check-dev-db.mjs",
     "predev": "npm run check:db && find .next -mindepth 1 -maxdepth 1 ! -name cache -exec rm -rf {} + 2>/dev/null; rm -rf .next/cache/webpack .next/cache/swc 2>/dev/null; mkdir -p .next && xattr -w com.dropbox.ignored 1 .next node_modules 2>/dev/null || true",
     "dev": "cross-env WATCHPACK_POLLING=true NODE_OPTIONS=--no-deprecation next dev --webpack",
