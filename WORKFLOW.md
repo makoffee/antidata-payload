@@ -14,13 +14,22 @@ Anything you change in the local admin changes the real site.
 ## Code (theme, layout, features)
 
 ```bash
-git pull
+git checkout dev && git pull
 npm run dev          # http://localhost:3000 (webpack + file polling: this folder syncs with Dropbox)
 npm run typecheck    # before committing
-git add -A && git commit -m "…" && git push   # Vercel deploys main automatically
+git add -A && git commit -m "…" && git push origin dev   # Vercel builds a preview of dev
 ```
 
-For bigger changes push a separate git branch first; Vercel gives it a preview URL.
+**Branches:** `main` is production and only changes through a pull request. Day-to-day work happens on `dev`.
+
+1. Commit and push to `dev`. Vercel builds a preview deploy (Vercel → Deployments, or the link on the GitHub PR/commit).
+2. Check the preview. Keep pushing fixes to `dev` as needed.
+3. When happy, open a pull request `dev` → `main` on GitHub and merge it. The merge triggers the production build.
+4. Afterwards, sync locally: `git checkout dev && git pull && git merge origin/main` (only needed if `main` got commits that `dev` lacks, e.g. a GitHub merge commit) and `git push origin dev`.
+
+Don't commit directly to `main`. For a larger experiment, branch off `dev` (`git checkout -b feature/name`) and open a PR into `dev`.
+
+Caveat: previews share the live database and Blob store, so a preview is not isolated from production *data*, only from production *code*.
 
 **Node version:** `.nvmrc` and `engines` in `package.json` pin Node 24 for both local and Vercel.
 The shell switches automatically when you `cd` into the folder; in an editor terminal that
@@ -43,14 +52,14 @@ deletes the content stored in it.
 
 1. Run `npm run backup` *before* editing the collection (it can't run after, once the code expects columns the DB doesn't have).
 2. Adding fields is safe. Before a rename or removal, create a throwaway Neon branch from `main` as a snapshot and note the time.
-3. A push to `main` that contains a migration is the point of no return: the Vercel build runs `payload migrate` (`npm run ci`) against the shared database.
+3. A push that contains a migration is the point of no return, **including a push to `dev`**: every Vercel build (preview or production) runs `payload migrate` (`npm run ci`) against the shared database. Run `npm run migrate` locally first, and treat the new schema as live from that moment.
 4. Final safety net is Neon point-in-time restore (check the plan's restore window in the Neon dashboard).
 
 ## Safety
 
 - `npm run backup` saves all content to `backups/<timestamp>.json` (git-ignored).
 - Neon keeps 6 hours of history: if content is lost, restore from Neon quickly.
-- Code broken on live? Vercel → Deployments → previous deploy → *Promote*. Content is unaffected.
+- Code broken on live? Vercel → Deployments → previous production deploy → *Promote* (or revert the merge commit on `main`). Content is unaffected.
 - Use **npm** only (no pnpm/yarn). Don't run `vercel env pull`; it rewrites `.env.local`.
 - There is no seed: the template's seed button was removed because it overwrites real content.
 - Dev uses webpack with file polling because the default Turbopack watcher misses in-place saves in this Dropbox folder (sed-style replace-saves were seen, normal saves were not). If edits stop showing anyway, restart `npm run dev`; restart it after any local `npm run build` too. `npm run dev` clears `.next` but keeps `.next/cache/images`, so restarts don't re-read every image from Blob.

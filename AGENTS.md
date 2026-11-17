@@ -8,8 +8,9 @@ Generic Payload reference lives in `.cursor/rules/` (collections, fields, hooks,
 - **One shared database and Blob store** serve local dev and production. Anything done locally changes the live site.
 - **Never seed, never re-enable `push`** on the db adapter. Schema changes go through migrations only.
 - **Schema changes:** ask the user to run `npm run backup` first. Then `npm run migrate:create -- name`, the user runs `npm run migrate`, then `npm run generate:types`. Prefer adding fields. Warn before any rename or removal (it deletes content) and suggest a throwaway Neon branch first.
-- A push to `main` runs `payload migrate` in the Vercel build, so a pushed migration is applied to the live DB.
-- Claude cannot `git push` or migrate the shared DB. The user runs `! git push origin main` and `! npm run migrate`.
+- **Branches:** work on `dev`, never commit or push to `main`. `main` is production (stable); `dev` gets a Vercel preview deploy. The user merges `dev` into `main` via a GitHub pull request when they want a production build. If the checkout is on `main`, `git checkout dev` first.
+- Every Vercel build (preview or production) runs `payload migrate` (`npm run ci`) against the shared DB, so a pushed migration is applied to the live DB even from `dev`. The user runs `npm run migrate` locally first.
+- Claude cannot `git push` or migrate the shared DB. The user runs `! git push origin dev` and `! npm run migrate`. Claude may commit to `dev` locally.
 - Never run `vercel env pull` (it overwrites `.env.local`).
 - Scripts that upload media: pass a fresh `context` object on every Local API call, then verify files exist in Blob.
 - After editing components run `npm run generate:importmap`. After schema changes run `npm run generate:types`. Validate with `npm run typecheck`.
