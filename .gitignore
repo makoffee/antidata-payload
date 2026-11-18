@@ -14,12 +14,8 @@ public/robots.txt
 public/sitemap*.xml
 
 
-# Playwright
+# Dependencies
 node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
 .env*
 
 # Local environment & secrets
