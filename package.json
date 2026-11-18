@@ -23,6 +23,7 @@
     "test:e2e": "cross-env NODE_OPTIONS=\"--no-deprecation --import=tsx/esm\" playwright test --config=playwright.config.ts",
     "test:int": "cross-env NODE_OPTIONS=--no-deprecation vitest run --config ./vitest.config.mts",
     "ci": "if [ \"$VERCEL_ENV\" != \"production\" ]; then node scripts/check-dev-db.mjs --strict; fi && payload migrate && npm run build",
+    "sync:media": "npm run check:db && node --env-file=.env.local scripts/sync-media.mjs",
     "backup": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/backup.ts",
     "typecheck": "tsc --noEmit",
     "migrate:create": "npm run check:db && cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
