@@ -28,6 +28,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html
       className={cn(figtree.variable, manrope.variable, GeistMono.variable)}
+      data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning
     >

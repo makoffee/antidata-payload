@@ -12,6 +12,7 @@ type CMSLinkType = {
   className?: string
   label?: string | null
   newTab?: boolean | null
+  onClick?: React.MouseEventHandler<HTMLAnchorElement>
   reference?: {
     relationTo: 'pages' | 'posts' | 'projects'
     value: Page | Post | Project | string | number
@@ -29,6 +30,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
     className,
     label,
     newTab,
+    onClick,
     reference,
     size: sizeFromProps,
     url,
@@ -42,7 +44,10 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
   if (!href) return null
 
   const size = appearance === 'link' ? 'clear' : sizeFromProps
-  const newTabProps = newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}
+  const newTabProps = {
+    ...(newTab ? { rel: 'noopener noreferrer', target: '_blank' } : {}),
+    ...(onClick ? { onClick } : {}),
+  }
 
   /* Ensure we don't break any styles set by richText */
   if (appearance === 'inline') {

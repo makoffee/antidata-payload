@@ -94,7 +94,7 @@ export const ArchiveBlock: React.FC<
     ) : null
 
   return (
-    <div className="my-16 pb-12 md:pb-16" id={`block-${id}`}>
+    <div className="my-16 pb-12 md:pb-16">
       {(introContent || showViewAll) && (
         <Reveal className="container mb-12 md:mb-16">
           {introContent && (

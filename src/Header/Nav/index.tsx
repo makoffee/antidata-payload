@@ -20,7 +20,11 @@ const isContact = (link: NavLink) =>
   /contact/i.test(link.label || '') || /contact/i.test(link.url || '')
 
 const contactClass =
-  'rounded-full bg-foreground px-4 py-2 font-medium text-background transition-opacity hover:opacity-85'
+  'rounded-full bg-foreground px-4 py-2 text-base font-medium text-background transition-opacity hover:opacity-85'
+
+// Hover/focus: a brand-color underline stroke grows from the left across the full link width
+const navLinkClass =
+  "relative py-2 text-base font-medium hover:no-underline after:absolute after:inset-x-0 after:bottom-0 after:h-[3px] after:origin-left after:scale-x-0 after:rounded-full after:bg-brand after:transition-transform after:duration-300 after:ease-out after:content-[''] hover:after:scale-x-100 focus-visible:after:scale-x-100"
 
 export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   const navItems = data?.navItems || []
@@ -31,6 +35,22 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
   // The landing page forces the header to the dark theme (white logo over the hero photo).
   // The dropdown panel follows the site's real light/dark choice instead.
   const { theme: siteTheme } = useTheme()
+
+  // Same-page #hash links: Next's <Link> won't re-scroll when the URL already has that hash
+  // (second click does nothing), so scroll to the section ourselves. Smoothness comes from the
+  // CSS `scroll-behavior` on <html>, which respects reduced-motion.
+  const hashClick =
+    (url?: string | null): React.MouseEventHandler<HTMLAnchorElement> =>
+    (e) => {
+      const match = url?.match(/^(\/?)#([^/?]+)$/)
+      if (!match || (match[1] && pathname !== '/')) return
+      const target = document.getElementById(decodeURIComponent(match[2]))
+      if (!target) return
+      e.preventDefault()
+      target.scrollIntoView()
+      window.history.replaceState(null, '', `#${match[2]}`)
+      setOpen(false)
+    }
 
   // Close the mobile menu after navigating, or on Escape
   useEffect(() => setOpen(false), [pathname])
@@ -47,7 +67,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
         {/* Desktop */}
         <nav className="hidden items-center gap-5 md:flex">
           {links.map(({ link }, i) => (
-            <CMSLink key={i} {...link} appearance="link" />
+            <CMSLink className={navLinkClass} key={i} {...link} onClick={hashClick(link.url)} appearance="link" />
           ))}
         </nav>
         {/* Search stays an icon on every screen size, left of Contact / the menu button */}
@@ -96,7 +116,7 @@ export const HeaderNav: React.FC<{ data: HeaderType }> = ({ data }) => {
       >
         <nav className="flex flex-col">
           {links.map(({ link }, i) => (
-            <CMSLink className="py-3 text-lg" key={i} {...link} />
+            <CMSLink className="py-3 text-lg" key={i} {...link} onClick={hashClick(link.url)} />
           ))}
           {contact && (
             <CMSLink {...contact} className={cn(contactClass, 'mt-3 py-3 text-center text-lg')} />
