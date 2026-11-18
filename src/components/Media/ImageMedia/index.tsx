@@ -32,6 +32,9 @@ const { breakpoints } = cssVariables
  *      <Image unoptimized src="https://cdn.example.com/hero.jpg" width={1200} height={600} alt="" />
  *
  * Only add `loader` if using external CDNs with custom transforms.
+ *
+ * Here: with NEXT_PUBLIC_BLOB_BASE_URL set, getMediaUrl returns a direct Blob URL (host already
+ * allowed in next.config.ts, and identical on server and browser because the env var is inlined).
  */
 
 export const ImageMedia: React.FC<MediaProps> = (props) => {

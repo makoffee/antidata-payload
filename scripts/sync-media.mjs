@@ -3,7 +3,8 @@
 //
 // Why: the dev database is a copy of production, but the image files live only in Vercel Blob.
 // This reads each file ONCE, and never again once it is on disk, so local browsing costs no Blob
-// operations after that. It never deletes anything, so locally uploaded files are kept.
+// operations after that. It never deletes anything and never touches files the database does not
+// list, so locally uploaded files are kept. A listed file that is the wrong size is re-fetched.
 // Re-run it after resetting the Neon dev branch from main (new rows can reference new files).
 //
 //   npm run sync:media -- --limit 3   try a few first
@@ -13,7 +14,7 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import pg from 'pg'
+import { listMedia } from './lib/media-list.mjs'
 
 const origin = (process.env.SYNC_MEDIA_ORIGIN || 'https://antidata.net').replace(/\/$/, '')
 const limitArg = process.argv.indexOf('--limit')
@@ -21,19 +22,17 @@ const limit = limitArg > -1 ? Number(process.argv[limitArg + 1]) : Infinity
 const outDir = path.resolve(process.cwd(), 'public/media')
 fs.mkdirSync(outDir, { recursive: true })
 
-const client = new pg.Client({ connectionString: process.env.POSTGRES_URL })
-await client.connect()
-const cols = (
-  await client.query(
-    `select column_name from information_schema.columns
-     where table_name = 'media' and (column_name = 'filename' or column_name like 'sizes\\_%\\_filename')`,
-  )
-).rows.map((r) => r.column_name)
-const rows = (await client.query(`select ${cols.map((c) => `"${c}"`).join(', ')} from media`)).rows
-await client.end()
-
-const names = [...new Set(rows.flatMap((r) => Object.values(r)).filter(Boolean))]
-const allMissing = names.filter((n) => !fs.existsSync(path.join(outDir, n)))
+const listed = await listMedia()
+const names = listed.map((f) => f.name)
+// Missing, or on disk at a size that differs from what Payload recorded (e.g. a saved error page):
+// both are fetched again. Anything not listed in the database (local uploads) is never touched.
+const isGood = (f) => {
+  const file = path.join(outDir, f.name)
+  if (!fs.existsSync(file)) return false
+  const size = fs.statSync(file).size
+  return size > 0 && (f.size == null || size === f.size)
+}
+const allMissing = listed.filter((f) => !isGood(f)).map((f) => f.name)
 const missing = allMissing.slice(0, limit)
 console.log(`${names.length} files listed, ${names.length - allMissing.length} already on disk, ${allMissing.length} missing; fetching ${missing.length} from ${origin}`)
 

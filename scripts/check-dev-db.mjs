@@ -11,6 +11,17 @@ const prod = (process.env.PRODUCTION_DB_HOST || '')
   .map((s) => s.trim())
   .filter(Boolean)
 
+// Storage guard: a local checkout must not hold a Blob write token, or a local upload/delete
+// could reach production media. Local uploads go to public/media. (Vercel builds are exempt.)
+if (!process.env.VERCEL && process.env.BLOB_READ_WRITE_TOKEN && process.env.ALLOW_LOCAL_BLOB !== '1') {
+  console.error(
+    '\ncheck-dev-db: BLOB_READ_WRITE_TOKEN is set in this local environment.\n' +
+      'Remove it from .env.local / your shell so local uploads stay on disk (see WORKFLOW.md).\n' +
+      'Set ALLOW_LOCAL_BLOB=1 to override once (e.g. a deliberate bulk upload).\n',
+  )
+  process.exit(1)
+}
+
 let host = ''
 try {
   host = new URL(url).host

@@ -5,14 +5,14 @@ Three environments:
 | | Code | Database | Media |
 |---|---|---|---|
 | **Production** | Vercel, `main` branch | Neon `main` | Vercel Blob |
-| **Preview** | Vercel, `dev` branch | Neon `dev` | Vercel Blob (see Setup) |
-| **Local** | `npm run dev` | Neon `dev` (same as preview) | local disk; missing files read from the live site |
+| **Preview** | Vercel, `dev` branch | Neon `dev` | none (no Blob token, by design); uploaded images do not show |
+| **Local** | `npm run dev` | Neon `dev` (same as preview) | `public/media` on disk, filled by `npm run sync:media` |
 
 Local and preview never touch production data. `npm run dev` and `npm run migrate*` refuse to run
 if `POSTGRES_URL` is the production host (`PRODUCTION_DB_HOST`, checked by `scripts/check-dev-db.mjs`).
 Real content is edited in the live admin (`antidata.net/admin`). Local/preview content is throwaway:
 reset the Neon `dev` branch from `main` whenever you want fresh data (Neon → Branches → `dev` → Reset from parent).
-Local images that exist in production are fetched read-only from the live site (`MEDIA_FALLBACK_ORIGIN` in `.env.local`, CDN-cached, no Blob operations); uploads you make locally stay on disk and are never sent to production.
+Local has no Blob token (`npm run dev` refuses to start if one is set). The dev database lists production's images but their files live only in Blob, so run `npm run sync:media` to copy them into `public/media` once; uploads you make locally stay on disk and are never sent to production.
 
 ## Content (projects, pages, images)
 
@@ -73,16 +73,25 @@ deletes the content stored in it.
 - Code broken on live? Vercel → Deployments → previous production deploy → *Promote* (or revert the merge commit on `main`). Content is unaffected.
 - Use **npm** only (no pnpm/yarn). Don't run `vercel env pull`; it rewrites `.env.local`.
 - There is no seed: the template's seed button was removed because it overwrites real content.
-- Blob usage (below) is only production's (plus Preview if it shares the token). Local uploads go to disk.
+- Blob usage (below) is only production's (Preview has no token). Local uploads go to disk.
 - Dev uses webpack with file polling because the default Turbopack watcher misses in-place saves when the project folder is synced by a cloud-drive app such as Dropbox (only needed in that setup; sed-style replace-saves were seen, normal saves were not). If edits stop showing anyway, restart `npm run dev`; restart it after any local `npm run build` too. `npm run dev` clears `.next` but keeps `.next/cache/images`, so restarts don't re-read every image from Blob.
 
 ## Blob usage (free plan: 10,000 simple operations a month)
 
-Every image read from Blob that misses a cache counts as a simple operation (a `head()` or a download). Uploads, copies and `list()` are a separate, advanced quota. The limit applies to the whole Blob store (production, plus previews if they share its token), and the count resets monthly. The free plan only shows about the last 12 hours of usage: note the number and date now and then, and compare after a few days to get the daily rate.
+Every image read from Blob that misses a cache counts as a simple operation (a `head()` or a download). Uploads, copies and `list()` are a separate, advanced quota. The limit applies to the whole Blob store (production only: previews and local have no token), and the count resets monthly. The free plan only shows about the last 12 hours of usage: note the number and date now and then, and compare after a few days to get the daily rate.
 
-How media is served: through Payload's own route, `/api/media/file/<name>`, then Next's image optimizer. Since 2026-11-18 the route sends a one-year cache header (`cacheControlMaxAge` in `payload.config.ts`) and Next keeps optimized variants for a year (`minimumCacheTTL` in `next.config.ts`). Before that the header was `max-age=0` (the plugin default, despite what this file used to say), so every request and every optimizer refresh re-read Blob (a `head()` plus a download, 2 simple operations), which used up the free tier and got the store suspended. After a deploy, check `curl -sI https://antidata.net/api/media/file/<name>` for `cache-control: public, max-age=31536000`.
+How media is served: through Payload's own route, `/api/media/file/<name>`, then Next's image optimizer. Since 2026-11-18 the route sends a one-year cache header (`cacheControlMaxAge` in `payload.config.ts`) and Next keeps optimized variants for a year (`minimumCacheTTL` in `next.config.ts`). Before that the header was `max-age=0` (the plugin default, despite what this file used to say), so every request and every optimizer refresh re-read Blob (a `head()` plus a download, 2 simple operations), which used up the free tier and got the store suspended. After a deploy, check `curl -s -o /dev/null -D - https://antidata.net/api/media/file/<name>` for `cache-control: public, max-age=31536000` (use a GET, not `curl -I`: the route answers HEAD with a 404).
 
-- **Do not switch media to direct Blob URLs** (`disablePayloadAccessControl` on the Blob plugin). It removes the route that the admin thumbnails, upload previews and post saves use, and caused 500 errors in the live admin on 2026-11-16. If this is revisited, test on a preview deploy first, with the admin open.
+- **Direct public Blob URLs for the site, route for the admin.** With `NEXT_PUBLIC_BLOB_BASE_URL` set (`https://<store>.public.blob.vercel-storage.com`), `getMediaUrl` turns `/api/media/file/<name>` into `<base>/<name>`, so visitors and Next's image optimizer read Blob's CDN (an operation only on a CDN miss). Payload's route stays for the admin (thumbnails, previews) and for any URL stored in the database. Do **not** set `disablePayloadAccessControl` on the Blob plugin: it removes that route and broke the live admin on 2026-11-16. The variable is inlined at build, so redeploy after changing it. Leave it unset locally (images come from the `public/media` mirror) and set it for Preview and Production in Vercel.
 - **Bulk scripts** (imports, site generation): upload each file once and don't re-read it to verify. Try 2 or 3 items first. Resume after a failure from the last good item rather than re-running everything. Avoid `list()` loops.
 - **Local dev has no Blob token** (uploads go to disk), so local use costs no Blob operations. The dev database lists production's images but their files are only in Blob: run `npm run sync:media` (try `-- --limit 3` first) to copy the missing ones into `public/media` once. It never re-reads files already on disk and never deletes. Re-run after resetting the Neon `dev` branch from `main`. The old `MEDIA_FALLBACK_ORIGIN` live-site fallback was removed because it spent production Blob operations on every local image view; delete that line from `.env.local` if it is still there. Don't put the production token back in `.env.local`; bulk scripts that must hit Blob need a deliberate, temporary token.
 - If the monthly count climbs fast, the next levers are fewer image widths (`deviceSizes` in `next.config.ts`), a lower image quality (now fixed at 100) and fewer resized copies per upload in `src/collections/Media.ts`.
+
+## Media mirror and recovery (if online storage is lost)
+
+`public/media` (git-ignored, inside the Dropbox folder, so it is also copied offsite) is a local copy of every file the database lists. Production's Blob store has no backup of its own.
+
+- `npm run sync:media` copies files that are missing, or the wrong size, from the live site. Never deletes; never touches local-only uploads. Run it after resetting the Neon `dev` branch from `main`, and after production uploads you want in the mirror.
+- `npm run media:verify` checks every file the database lists is on disk at the size Payload recorded (read-only; exit 1 on a problem).
+- **If the store is lost or blocked:** create a new Blob store, make a read-write token for it, run `npm run media:verify`, then `RESTORE_BLOB_TOKEN=<token> npm run media:restore` (dry run, shows the target store), then add `-- --apply` (try `-- --limit 3` first). It uploads each file under its original filename and never overwrites an existing blob, so the database needs no change. Then set `BLOB_READ_WRITE_TOKEN` on the new store in Vercel (Production) and redeploy. The media base URL is derived from the token, so check images load afterwards. `RESTORE_BLOB_TOKEN` is separate from `BLOB_READ_WRITE_TOKEN` on purpose (the dev guard refuses that variable locally).
+- The mirror only covers files the database lists. The dev database is a copy of production, so refresh it (reset from `main`) before relying on the mirror as a full backup.
