@@ -1,12 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
   <style>
-    .small { fill: #fff; }
+    /* Default (also what renderers that ignore CSS media queries show, e.g. Google's favicon
+       service): opaque black square with the white icon, for search results and home screens. */
+    .small { display: none; fill: #fff; }
     @media (prefers-color-scheme: light) { .small { fill: #000; } }
-    .big { display: none; }
-    /* Rendered at 40px or more (search results, home screens): black square, white icon */
-    @media (min-width: 40px) {
-      .small { display: none; }
-      .big { display: inline; }
+    /* Browser tabs render this under 40px: transparent, icon fills the canvas. */
+    @media (max-width: 39.99px) {
+      .small { display: inline; }
+      .big { display: none; }
     }
   </style>
   <defs>
@@ -18,9 +19,9 @@
   </defs>
   <!-- Tabs: transparent, icon fills the canvas -->
   <use class="small" xlink:href="#icon" transform="translate(256 256) scale(1.25) translate(-256 -256)"/>
-  <!-- Large: opaque black square, icon inside the circle-crop safe zone -->
+  <!-- Large: opaque black square, icon sized to sit inside a circle crop with a comfortable margin -->
   <g class="big">
     <rect width="512" height="512" fill="#000"/>
-    <use xlink:href="#icon" fill="#fff" transform="translate(256 256) scale(0.66) translate(-256 -256)"/>
+    <use xlink:href="#icon" fill="#fff" transform="translate(256 256) scale(0.8) translate(-256 -256)"/>
   </g>
 </svg>
