@@ -14,6 +14,24 @@ Real content is edited in the live admin (`antidata.net/admin`). Local/preview c
 reset the Neon `dev` branch from `main` whenever you want fresh data (Neon → Branches → `dev` → Reset from parent).
 Local has no Blob token (`npm run dev` refuses to start if one is set). The dev database lists production's images but their files live only in Blob, so run `npm run sync:media` to copy them into `public/media` once; uploads you make locally stay on disk and are never sent to production.
 
+## Which environment for what
+
+Production is the source of truth. `dev` (local and preview) is a playground: break it, test on it, throw it away.
+
+| Kind of change | Where | Afterwards |
+|---|---|---|
+| Code and design (nav, styles, components) | `dev`, then merge a PR | nothing |
+| Structure (new field, block or option) | `dev` + a migration, then merge | enter the new content once on production (list the steps in the PR notes; make the code fall back gracefully until then) |
+| Real content (case studies, order, copy, images) | **production admin only** | `dev` stays stale until you refresh it |
+
+Nothing syncs `dev` back to production, and nothing syncs automatically the other way. Refresh `dev` by hand, when you want production's content to test against (usually after a merge or before starting a larger piece of work):
+
+1. Optional: `npm run backup` if anything in the `dev` database is worth keeping (the refresh erases it).
+2. Neon console → Branches → `dev` → **Reset from parent**. `dev` becomes a copy of production, and the preview deploy shows it too.
+3. `npm run migrate` if your branch has migrations production doesn't have yet (safe: it only touches `dev`).
+4. `npm run sync:media` to copy new production images into `public/media`.
+5. The copy includes visitor data (contact-form submissions, user records). Delete the submissions in the local admin if you don't want them on `dev`.
+
 ## Content (projects, pages, images)
 
 - Edit in the admin: `/admin` on the live site or `localhost:3000/admin`.
