@@ -5,14 +5,14 @@ Three environments:
 | | Code | Database | Media |
 |---|---|---|---|
 | **Production** | Vercel, `main` branch | Neon `main` | Vercel Blob |
-| **Preview** | Vercel, `dev` branch | Neon `dev` | Vercel Blob (see Setup) |
-| **Local** | `npm run dev` | Neon `dev` (same as preview) | local disk; missing files read from the live site |
+| **Preview** | Vercel, `dev` branch | Neon `dev` | none (no Blob token, by design); uploaded images do not show |
+| **Local** | `npm run dev` | Neon `dev` (same as preview) | `public/media` on disk, filled by `npm run sync:media` |
 
 Local and preview never touch production data. `npm run dev` and `npm run migrate*` refuse to run
 if `POSTGRES_URL` is the production host (`PRODUCTION_DB_HOST`, checked by `scripts/check-dev-db.mjs`).
 Real content is edited in the live admin (`antidata.net/admin`). Local/preview content is throwaway:
 reset the Neon `dev` branch from `main` whenever you want fresh data (Neon → Branches → `dev` → Reset from parent).
-Local images that exist in production are fetched read-only from the live site (`MEDIA_FALLBACK_ORIGIN` in `.env.local`, CDN-cached, no Blob operations); uploads you make locally stay on disk and are never sent to production.
+Local has no Blob token (`npm run dev` refuses to start if one is set). The dev database lists production's images but their files live only in Blob, so run `npm run sync:media` to copy them into `public/media` once; uploads you make locally stay on disk and are never sent to production.
 
 ## Content (projects, pages, images)
 
@@ -73,14 +73,14 @@ deletes the content stored in it.
 - Code broken on live? Vercel → Deployments → previous production deploy → *Promote* (or revert the merge commit on `main`). Content is unaffected.
 - Use **npm** only (no pnpm/yarn). Don't run `vercel env pull`; it rewrites `.env.local`.
 - There is no seed: the template's seed button was removed because it overwrites real content.
-- Blob usage (below) is only production's (plus Preview if it shares the token). Local uploads go to disk.
+- Blob usage (below) is only production's (Preview has no token). Local uploads go to disk.
 - Dev uses webpack with file polling because the default Turbopack watcher misses in-place saves when the project folder is synced by a cloud-drive app such as Dropbox (only needed in that setup; sed-style replace-saves were seen, normal saves were not). If edits stop showing anyway, restart `npm run dev`; restart it after any local `npm run build` too. `npm run dev` clears `.next` but keeps `.next/cache/images`, so restarts don't re-read every image from Blob.
 
 ## Blob usage (free plan: 10,000 simple operations a month)
 
-Every image read from Blob that misses a cache counts as a simple operation (a `head()` or a download). Uploads, copies and `list()` are a separate, advanced quota. The limit applies to the whole Blob store (production, plus previews if they share its token), and the count resets monthly. The free plan only shows about the last 12 hours of usage: note the number and date now and then, and compare after a few days to get the daily rate.
+Every image read from Blob that misses a cache counts as a simple operation (a `head()` or a download). Uploads, copies and `list()` are a separate, advanced quota. The limit applies to the whole Blob store (production only: previews and local have no token), and the count resets monthly. The free plan only shows about the last 12 hours of usage: note the number and date now and then, and compare after a few days to get the daily rate.
 
-How media is served: through Payload's own route, `/api/media/file/<name>`, then Next's image optimizer. Since 2026-11-18 the route sends a one-year cache header (`cacheControlMaxAge` in `payload.config.ts`) and Next keeps optimized variants for a year (`minimumCacheTTL` in `next.config.ts`). Before that the header was `max-age=0` (the plugin default, despite what this file used to say), so every request and every optimizer refresh re-read Blob (a `head()` plus a download, 2 simple operations), which used up the free tier and got the store suspended. After a deploy, check `curl -sI https://antidata.net/api/media/file/<name>` for `cache-control: public, max-age=31536000`.
+How media is served: through Payload's own route, `/api/media/file/<name>`, then Next's image optimizer. Since 2026-11-18 the route sends a one-year cache header (`cacheControlMaxAge` in `payload.config.ts`) and Next keeps optimized variants for a year (`minimumCacheTTL` in `next.config.ts`). Before that the header was `max-age=0` (the plugin default, despite what this file used to say), so every request and every optimizer refresh re-read Blob (a `head()` plus a download, 2 simple operations), which used up the free tier and got the store suspended. After a deploy, check `curl -s -o /dev/null -D - https://antidata.net/api/media/file/<name>` for `cache-control: public, max-age=31536000` (use a GET, not `curl -I`: the route answers HEAD with a 404).
 
 - **Do not switch media to direct Blob URLs** (`disablePayloadAccessControl` on the Blob plugin). It removes the route that the admin thumbnails, upload previews and post saves use, and caused 500 errors in the live admin on 2026-11-16. If this is revisited, test on a preview deploy first, with the admin open.
 - **Bulk scripts** (imports, site generation): upload each file once and don't re-read it to verify. Try 2 or 3 items first. Resume after a failure from the last good item rather than re-running everything. Avoid `list()` loops.

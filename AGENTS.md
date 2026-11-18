@@ -13,7 +13,7 @@ Generic Payload reference lives in `.cursor/rules/` (collections, fields, hooks,
 ## Project-specific rules
 
 - **Three environments.** Production (`main` branch) uses Neon `main` + Vercel Blob. Preview (`dev` branch) and local dev both use the Neon `dev` branch; local has no Blob token, so uploads go to disk. Local work does not touch production data. `npm run dev` / `migrate*` refuse to run if `POSTGRES_URL` is the production host (`scripts/check-dev-db.mjs`, `PRODUCTION_DB_HOST`).
-- **Never seed, never re-enable `push`** on the db adapter. Schema changes go through migrations only.
+- **Never seed, never re-enable `push`** on the db adapter. Schema changes go through migrations only. ("Seed" means the template's demo-content seed, which overwrites real content. Copying media files between storage and `public/media` is not seeding.)
 - **Schema changes** (adding fields is preferred; a rename or removal deletes content in whichever DB it runs on, so warn first):
   1. Edit the collection or global.
   2. `npm run migrate:create -- name`, then the user runs `npm run migrate` (applies to the Neon `dev` DB), then `npm run generate:types`.
