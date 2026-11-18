@@ -18,7 +18,7 @@ export const LogoWallBlock: React.FC<LogoWallBlockProps & { id?: string }> = ({
   const items = (logos || []).filter((item) => item.logo && typeof item.logo === 'object')
 
   return (
-    <section className="container" id={`block-${id}`}>
+    <section className="container">
       {(heading || text) && (
         <Reveal className="mx-auto mb-12 max-w-[48rem] text-center">
           {heading && <h2 className={sectionHeadingClass}>{heading}</h2>}

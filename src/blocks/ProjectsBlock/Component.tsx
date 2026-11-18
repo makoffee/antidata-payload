@@ -43,7 +43,7 @@ export const ProjectsBlockComponent: React.FC<
   }
 
   return (
-    <div className="container" id={`block-${id}`}>
+    <div className="container">
       {introContent && (
         <RichText className="ms-0 max-w-[48rem] mb-12" data={introContent} enableGutter={false} />
       )}

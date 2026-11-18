@@ -363,3 +363,9 @@ html[data-theme='light'] {
 [data-theme='dark'] .prose ul > li::before {
   box-shadow: none;
 }
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+}

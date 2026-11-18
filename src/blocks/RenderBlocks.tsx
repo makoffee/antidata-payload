@@ -27,6 +27,15 @@ const blockComponents = {
   cardGrid: CardGridBlock,
 }
 
+// Anchor for #hash links: the editor's "Block name" in the admin, slugified
+// (e.g. "Case Studies" -> #case-studies). Falls back to the block's id.
+const anchorFor = (block: Page['layout'][0]) =>
+  block.blockName
+    ?.toLowerCase()
+    .normalize('NFKD')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || `block-${block.id}`
+
 export const RenderBlocks: React.FC<{
   blocks: Page['layout'][0][]
 }> = (props) => {
@@ -45,7 +54,7 @@ export const RenderBlocks: React.FC<{
 
             if (Block) {
               return (
-                <div className="my-16" key={index}>
+                <div className="my-16 scroll-mt-8" id={anchorFor(block)} key={index}>
                   {selfRevealing.has(blockType) ? (
                     // @ts-expect-error there may be some mismatch between the expected types here
                     <Block {...block} disableInnerContainer />
