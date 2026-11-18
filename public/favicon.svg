@@ -1,8 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="96" fill="#000"/>
-  <g fill="#fff" transform="translate(256 256) scale(0.78) translate(-256 -256)">
-    <polygon points="451.8 364.7 291.9 87.6 240.1 87.6 374.2 319.9 229.2 319.9 203.2 364.7 400.1 364.7 400.1 364.7 451.8 364.7"/>
-    <polygon points="97.3 424.4 417.1 424.4 443.1 379.6 174.8 379.6 245.8 256.6 220 211.8 123.1 379.6 123.1 379.6 97.3 424.4"/>
-    <polygon points="220.1 87.6 60.2 364.6 86 409.4 220.2 177.1 292.7 302.6 344.5 302.7 256 149.3 256 149.3 220.1 87.6"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="512" height="512" viewBox="0 0 512 512">
+  <style>
+    .small { fill: #fff; }
+    @media (prefers-color-scheme: light) { .small { fill: #000; } }
+    .big { display: none; }
+    /* Rendered at 40px or more (search results, home screens): black square, white icon */
+    @media (min-width: 40px) {
+      .small { display: none; }
+      .big { display: inline; }
+    }
+  </style>
+  <defs>
+    <g id="icon">
+      <polygon points="451.8 364.7 291.9 87.6 240.1 87.6 374.2 319.9 229.2 319.9 203.2 364.7 400.1 364.7 400.1 364.7 451.8 364.7"/>
+      <polygon points="97.3 424.4 417.1 424.4 443.1 379.6 174.8 379.6 245.8 256.6 220 211.8 123.1 379.6 123.1 379.6 97.3 424.4"/>
+      <polygon points="220.1 87.6 60.2 364.6 86 409.4 220.2 177.1 292.7 302.6 344.5 302.7 256 149.3 256 149.3 220.1 87.6"/>
+    </g>
+  </defs>
+  <!-- Tabs: transparent, icon fills the canvas -->
+  <use class="small" xlink:href="#icon" transform="translate(256 256) scale(1.25) translate(-256 -256)"/>
+  <!-- Large: opaque black square, icon inside the circle-crop safe zone -->
+  <g class="big">
+    <rect width="512" height="512" fill="#000"/>
+    <use xlink:href="#icon" fill="#fff" transform="translate(256 256) scale(0.66) translate(-256 -256)"/>
   </g>
 </svg>
