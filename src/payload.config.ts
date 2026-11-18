@@ -89,6 +89,11 @@ export default buildConfig({
         media: true,
       },
       token: process.env.BLOB_READ_WRITE_TOKEN,
+      // One-year cache on /api/media/file/*. The plugin default is 0, which sends every request
+      // (and every Next image-optimizer refresh) through to Blob: 2 simple operations each, and the
+      // cause of the free tier running out in Nov 2026. URLs carry ?<updatedAt>, so a replaced
+      // file still busts the cache.
+      cacheControlMaxAge: 31536000,
       // Bypass Vercel's 4.5MB serverless upload limit; files go straight to Blob.
       clientUploads: true,
       // No addRandomSuffix: with clientUploads, Payload re-fetches the file by its original name

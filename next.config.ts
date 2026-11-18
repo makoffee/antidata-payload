@@ -14,6 +14,11 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 const nextConfig: NextConfig = {
   images: {
     qualities: [100],
+    // Optimized variants are kept for a year (the default is a few hours), so each width is read
+    // from Blob once, not again every few hours. Media URLs carry ?<updatedAt>, so replacing a
+    // file still shows the new one. Fewer widths means fewer variants to generate and cache.
+    minimumCacheTTL: 31536000,
+    deviceSizes: [640, 1080, 1920, 3840],
     // Payload media is served relative (/api/media/file/x.jpg?<updatedAt>, see getMediaUrl); the
     // query is a cache-buster, so allow any query there. Other local images: no query.
     localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/**', search: '' }],
