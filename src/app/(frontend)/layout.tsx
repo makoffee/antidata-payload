@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 
 import { cn } from '@/utilities/ui'
-import { GeistMono } from 'geist/font/mono'
 import { Figtree, Manrope } from 'next/font/google'
 import React from 'react'
 
@@ -27,7 +26,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html
-      className={cn(figtree.variable, manrope.variable, GeistMono.variable)}
+      className={cn(figtree.variable, manrope.variable)}
       data-scroll-behavior="smooth"
       lang="en"
       suppressHydrationWarning

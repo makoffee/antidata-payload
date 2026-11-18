@@ -44,7 +44,8 @@
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
   --breakpoint-2xl: 86rem;
-  --font-mono: var(--font-geist-mono);
+  /* System monospace: only the 404 page uses it, so no font file is downloaded for it */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --font-sans: var(--font-manrope);
   --font-heading: var(--font-figtree);
 
