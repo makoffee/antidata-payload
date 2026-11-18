@@ -26,7 +26,7 @@ Local images that exist in production are fetched read-only from the live site (
 
 ```bash
 git checkout dev && git pull
-npm run dev          # http://localhost:3000 (webpack + file polling: this folder syncs with Dropbox)
+npm run dev          # http://localhost:3000 (webpack + file polling, see Safety below)
 npm run typecheck    # before committing
 git add -A && git commit -m "…" && git push origin dev   # Vercel builds a preview of dev
 ```
@@ -74,7 +74,7 @@ deletes the content stored in it.
 - Use **npm** only (no pnpm/yarn). Don't run `vercel env pull`; it rewrites `.env.local`.
 - There is no seed: the template's seed button was removed because it overwrites real content.
 - Blob usage (below) is only production's (plus Preview if it shares the token). Local uploads go to disk.
-- Dev uses webpack with file polling because the default Turbopack watcher misses in-place saves in this Dropbox folder (sed-style replace-saves were seen, normal saves were not). If edits stop showing anyway, restart `npm run dev`; restart it after any local `npm run build` too. `npm run dev` clears `.next` but keeps `.next/cache/images`, so restarts don't re-read every image from Blob.
+- Dev uses webpack with file polling because the default Turbopack watcher misses in-place saves when the project folder is synced by a cloud-drive app such as Dropbox (only needed in that setup; sed-style replace-saves were seen, normal saves were not). If edits stop showing anyway, restart `npm run dev`; restart it after any local `npm run build` too. `npm run dev` clears `.next` but keeps `.next/cache/images`, so restarts don't re-read every image from Blob.
 
 ## Blob usage (free plan: 10,000 simple operations a month)
 
