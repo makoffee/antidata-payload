@@ -41,8 +41,7 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
   project,
   priority,
 }) => {
-  const { slug, title, summary, coverImage, storyImage, client, year } = project
-  const meta = [client, year].filter(Boolean).join(' · ')
+  const { slug, title, summary, coverImage, storyImage, client } = project
   const story = storyImage && typeof storyImage === 'object' ? storyImage : null
   const cover = coverImage && typeof coverImage === 'object' ? coverImage : null
   const cardSize = '(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 25vw'
@@ -86,7 +85,7 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
       <div className="absolute inset-x-0 bottom-0 p-5 text-white">
         <h3 className="text-xl font-medium">{title}</h3>
-        {meta && <p className="mt-1 text-sm text-white/70">{meta}</p>}
+        {client && <p className="mt-1 text-sm text-white/70">{client}</p>}
         {summary && <p className="mt-3 text-sm text-white/85 line-clamp-2">{summary}</p>}
       </div>
     </Link>
