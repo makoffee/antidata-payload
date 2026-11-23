@@ -1,7 +1,7 @@
 'use client'
 import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-builder/types'
 
-import { ArrowRight, CircleCheck } from 'lucide-react'
+import { ArrowLeft, CircleCheck } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
@@ -191,23 +191,20 @@ export const FormBlock: React.FC<
                 )}
 
                 {/* Not a dead end: somewhere useful to go next */}
-                <div className="mt-10 border-t border-border pt-8">
-                  <p className="mb-4 text-sm text-muted-foreground">While you are here</p>
-                  <div className="flex flex-col gap-3 sm:flex-row">
-                    <Link
-                      className={cn(buttonVariants({ size: 'lg', variant: 'default' }))}
-                      href="/portfolio"
-                    >
-                      See the case studies
-                      <ArrowRight aria-hidden="true" />
-                    </Link>
-                    <Link
-                      className={cn(buttonVariants({ size: 'lg', variant: 'outline' }))}
-                      href="/"
-                    >
-                      Back to the home page
-                    </Link>
-                  </div>
+                <div className="mt-10 flex flex-col-reverse gap-3 border-t border-border pt-8 sm:flex-row sm:items-center">
+                  <Link
+                    className={cn(buttonVariants({ size: 'lg', variant: 'ghost' }))}
+                    href="/"
+                  >
+                    <ArrowLeft aria-hidden="true" />
+                    Back
+                  </Link>
+                  <Link
+                    className={cn(buttonVariants({ size: 'lg', variant: 'default' }))}
+                    href="/portfolio"
+                  >
+                    See my work
+                  </Link>
                 </div>
               </div>
             )}
