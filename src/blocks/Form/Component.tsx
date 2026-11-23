@@ -311,7 +311,15 @@ export const FormBlock: React.FC<
                   )}
 
                   <Button
-                    className="w-full sm:w-auto sm:min-w-48"
+                    className={cn(
+                      'w-full border transition-[background-color,color,border-color,box-shadow] duration-300 ease-out disabled:opacity-100 sm:w-auto sm:min-w-48',
+                      canSubmit
+                        ? // Ready: black with brand text in light mode, brand with dark text in dark mode
+                          'border-transparent bg-black text-brand hover:bg-black/85 dark:bg-brand dark:text-brand-foreground dark:hover:bg-brand/90'
+                        : // Not ready: quiet outline with muted text
+                          'border-foreground/25 bg-transparent text-muted-foreground shadow-none',
+                      isSubmitting && 'opacity-70',
+                    )}
                     disabled={isSubmitting || !canSubmit}
                     form={formID}
                     size="lg"
