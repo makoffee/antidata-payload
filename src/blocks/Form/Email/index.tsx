@@ -26,10 +26,16 @@ export const Email: React.FC<
         )}
       </Label>
       <Input
+        autoComplete="email"
+        className="mt-2 h-12 md:text-base"
         defaultValue={defaultValue}
         id={name}
-        type="text"
-        {...register(name, { pattern: /^\S[^\s@]*@\S+$/, required })}
+        inputMode="email"
+        type="email"
+        {...register(name, {
+          pattern: { message: 'Please enter a valid email address', value: /^\S[^\s@]*@\S+$/ },
+          required: required ? `${label || 'Email'} is required` : false,
+        })}
       />
 
       {errors[name] && <Error name={name} />}
