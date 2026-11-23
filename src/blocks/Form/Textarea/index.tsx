@@ -14,7 +14,7 @@ export const Textarea: React.FC<
     register: UseFormRegister<FieldValues>
     rows?: number
   }
-> = ({ name, defaultValue, errors, label, register, required, rows = 6, width }) => {
+> = ({ name, defaultValue, errors, label, register, required, rows = 9, width }) => {
   return (
     <Width width={width}>
       <Label htmlFor={name}>
@@ -28,7 +28,7 @@ export const Textarea: React.FC<
       </Label>
 
       <TextAreaComponent
-        className="mt-2 md:text-base"
+        className="mt-2 min-h-48 md:text-base"
         defaultValue={defaultValue}
         id={name}
         rows={rows}
