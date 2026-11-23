@@ -167,7 +167,7 @@ export const FormBlock: React.FC<
   return (
     // Rule of thirds, like the rest of the site: on large screens the intro takes the left third
     // and the form the right two thirds (same 12-column gap as the Content block). Below that it is one full-width column.
-    <div className="container my-16">
+    <div className="container mb-16">
       <div className="grid gap-x-16 gap-y-10 lg:grid-cols-3">
         {enableIntro && introContent && (
           <div className="lg:col-span-1">
