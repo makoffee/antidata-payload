@@ -78,11 +78,12 @@ export const FormBlock: React.FC<
     void loadToken()
   }, [loadToken])
 
-  // Move focus to the confirmation so screen readers announce it and the visitor sees it
+  // Move focus to the confirmation so screen readers announce it
   useEffect(() => {
     if (hasSubmitted) {
-      successRef.current?.focus()
-      successRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      // The confirmation replaces the form in the same card, so the page should not jump
+      successRef.current?.focus({ preventScroll: true })
+      successRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
   }, [hasSubmitted])
 
@@ -160,7 +161,7 @@ export const FormBlock: React.FC<
     // and the form the right two thirds (same 12-column gap as the Content block). Below that it is one full-width column.
     <div className="container my-16">
       <div className="grid gap-x-16 gap-y-10 lg:grid-cols-3">
-        {enableIntro && introContent && !hasSubmitted && (
+        {enableIntro && introContent && (
           <div className="lg:col-span-1">
             <RichText data={introContent} enableGutter={false} />
           </div>
