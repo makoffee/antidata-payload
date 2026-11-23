@@ -7,6 +7,8 @@ import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
@@ -53,6 +55,9 @@ export const FormBlock: React.FC<
   const pageToken = useRef<string | undefined>(undefined)
   const honeypot = useRef<HTMLInputElement>(null)
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  // GDPR consent: unticked by default, must be ticked to send
+  const [consent, setConsent] = useState(false)
+  const [consentMissing, setConsentMissing] = useState(false)
   const [turnstileReset, setTurnstileReset] = useState(0)
 
   const loadToken = useCallback(async (): Promise<string | undefined> => {
@@ -76,6 +81,11 @@ export const FormBlock: React.FC<
       const submitForm = async () => {
         setError(undefined)
 
+        if (!consent) {
+          setConsentMissing(true)
+          return
+        }
+
         if (TURNSTILE_SITE_KEY && !turnstileToken) {
           setError({ message: 'Please wait a moment for the spam check to finish, then try again.' })
           return
@@ -96,6 +106,7 @@ export const FormBlock: React.FC<
             body: JSON.stringify({
               form: formID,
               submissionData: dataToSend,
+              consent: true,
               token: pageToken.current ?? (await loadToken()),
               turnstileToken,
               website: honeypot.current?.value ?? '',
@@ -144,7 +155,7 @@ export const FormBlock: React.FC<
 
       void submitForm()
     },
-    [router, formID, redirect, confirmationType, turnstileToken, loadToken],
+    [router, formID, redirect, confirmationType, turnstileToken, loadToken, consent],
   )
 
   return (
@@ -202,6 +213,39 @@ export const FormBlock: React.FC<
                 />
               </div>
 
+              <div className="mt-6">
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    aria-describedby={consentMissing ? 'consent-error' : undefined}
+                    aria-invalid={consentMissing}
+                    checked={consent}
+                    className="mt-1"
+                    id={`${formID}-consent`}
+                    onCheckedChange={(checked) => {
+                      setConsent(checked === true)
+                      if (checked === true) setConsentMissing(false)
+                    }}
+                  />
+                  <Label className="text-sm font-normal leading-snug" htmlFor={`${formID}-consent`}>
+                    <span className="required">
+                      * <span className="sr-only">(required)</span>
+                    </span>
+                    I agree that antidata.net may store my name and email address to reply to my
+                    message and to contact me about new projects and services. I can withdraw my
+                    consent at any time. See{' '}
+                    <Link className="underline underline-offset-4" href="/data-protection">
+                      Data Protection
+                    </Link>
+                    .
+                  </Label>
+                </div>
+                {consentMissing && (
+                  <div className="mt-2 text-red-500 text-sm" id="consent-error" role="alert">
+                    Please tick the box to send your message.
+                  </div>
+                )}
+              </div>
+
               {TURNSTILE_SITE_KEY && (
                 <Turnstile
                   onToken={setTurnstileToken}
@@ -213,13 +257,6 @@ export const FormBlock: React.FC<
               <Button className="mt-6" form={formID} type="submit" variant="default">
                 {submitButtonLabel}
               </Button>
-              <p className="mt-4 text-sm text-muted-foreground">
-                Your message is used only to reply to you and is deleted after 12 months. See{' '}
-                <Link className="underline underline-offset-4" href="/data-protection">
-                  Data Protection
-                </Link>
-                .
-              </p>
             </form>
           )}
         </FormProvider>

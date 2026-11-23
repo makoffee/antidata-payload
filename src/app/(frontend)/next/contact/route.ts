@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import {
   checkToken,
+  consentEntry,
   HONEYPOT_FIELD,
   isSpam,
   MAX_BODY_BYTES,
@@ -83,6 +84,11 @@ export async function POST(request: Request): Promise<Response> {
     return fail('Please check the form and try again.')
   }
 
+  // GDPR: no consent, no processing (the form also enforces this in the browser)
+  if (body.consent !== true) {
+    return fail('Please tick the box to agree before sending your message.', 400, 'consent')
+  }
+
   const validation = validateSubmission(form, body.submissionData)
   if (!validation.ok) return fail(validation.message)
 
@@ -129,7 +135,7 @@ export async function POST(request: Request): Promise<Response> {
     await payload.create({
       collection: 'form-submissions',
       context: {},
-      data: { form: form.id, submissionData: validation.data },
+      data: { form: form.id, submissionData: [...validation.data, consentEntry()] },
       overrideAccess: true,
     })
   } catch (err) {

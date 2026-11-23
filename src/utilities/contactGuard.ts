@@ -8,6 +8,14 @@ import type { Form } from '@/payload-types'
 export const HONEYPOT_FIELD = 'website'
 export const MAX_BODY_BYTES = 20_000
 
+// Proof of consent, stored with every submission. Bump the version when the checkbox wording
+// in src/blocks/Form/Component.tsx changes.
+export const CONSENT_VERSION = 'v1'
+export const consentEntry = (now: Date = new Date()): { field: string; value: string } => ({
+  field: 'gdpr-consent',
+  value: `Agreed ${now.toISOString()} (wording ${CONSENT_VERSION}: store name and email to reply and for contact about new projects and services)`,
+})
+
 const MIN_AGE_MS = 3_000 // a human cannot fill in the form faster than this
 const MAX_AGE_MS = 60 * 60 * 1000 // a form left open longer than an hour must be reloaded
 
