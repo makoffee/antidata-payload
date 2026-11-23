@@ -40,10 +40,12 @@ export const FormBlock: React.FC<
 
   const formMethods = useForm({
     defaultValues: formFromProps.fields,
+    // Validate as the visitor types, so the submit button knows when the form is complete
+    mode: 'onChange',
   })
   const {
     control,
-    formState: { errors },
+    formState: { errors, isValid },
     handleSubmit,
     register,
   } = formMethods
@@ -62,6 +64,10 @@ export const FormBlock: React.FC<
   // GDPR consent: unticked by default, must be ticked to send
   const [consent, setConsent] = useState(false)
   const [consentMissing, setConsentMissing] = useState(false)
+
+  // The button stays disabled until the required fields are valid, the box is ticked, and (when
+  // enabled) the spam check has finished
+  const canSubmit = isValid && consent && (!TURNSTILE_SITE_KEY || Boolean(turnstileToken))
 
   const loadToken = useCallback(async (): Promise<string | undefined> => {
     try {
@@ -303,7 +309,7 @@ export const FormBlock: React.FC<
 
                 <Button
                   className="w-full sm:w-auto sm:min-w-48"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !canSubmit}
                   form={formID}
                   size="lg"
                   type="submit"
