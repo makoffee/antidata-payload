@@ -178,11 +178,17 @@ export const FormBlock: React.FC<
                 role="status"
                 tabIndex={-1}
               >
-                <CircleCheck aria-hidden="true" className="mb-4 size-10 text-brand" />
-                <h2 className="mb-4 text-2xl font-medium tracking-tight md:text-3xl">
-                  Message sent
-                </h2>
-                {confirmationMessage && <RichText data={confirmationMessage} enableGutter={false} />}
+                <div className="mb-4 flex items-center gap-3">
+                  <CircleCheck aria-hidden="true" className="size-8 shrink-0 text-brand" />
+                  <h2 className="text-2xl font-medium tracking-tight md:text-3xl">Message sent</h2>
+                </div>
+                {confirmationMessage && (
+                  <RichText
+                    className="text-muted-foreground [&_*]:font-normal"
+                    data={confirmationMessage}
+                    enableGutter={false}
+                  />
+                )}
 
                 {/* Not a dead end: somewhere useful to go next */}
                 <div className="mt-10 border-t border-border pt-8">
