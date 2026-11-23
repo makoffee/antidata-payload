@@ -104,7 +104,9 @@ export const FormBlock: React.FC<
         }
 
         if (TURNSTILE_SITE_KEY && !turnstileToken) {
-          setError({ message: 'Please wait a moment for the spam check to finish, then try again.' })
+          setError({
+            message: 'Please wait a moment for the spam check to finish, then try again.',
+          })
           return
         }
 
@@ -167,166 +169,174 @@ export const FormBlock: React.FC<
     // and the form the right two thirds (same 12-column gap as the Content block). Below that it is one full-width column.
     <div className="container my-16">
       <div className="grid gap-x-16 gap-y-10 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          {enableIntro && introContent && <RichText data={introContent} enableGutter={false} />}
+        {enableIntro && introContent && (
+          <div className="lg:col-span-1">
+            <RichText data={introContent} enableGutter={false} />
+          </div>
+        )}
 
-          {/* The full privacy wording lives here, so the form itself stays short. On small screens
-              this column sits above the form, so it is read before the checkbox. */}
-          <div className={cn('text-sm text-muted-foreground', enableIntro && introContent && 'mt-8')}>
-            <p className="mb-1 font-medium text-foreground">How your details are used</p>
-            <p>
-              If you send a message, antidata.net stores your name and email address to reply to
-              you and to contact you about new projects and services. You can withdraw your consent
-              at any time. See{' '}
+        {/* Same frosted card as the call-to-action block, around both the form and the confirmation */}
+        <div className="lg:col-span-2 lg:col-start-2">
+          <div className="rounded-lg border border-white/60 bg-white/65 p-5 text-card-foreground shadow-sm backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-black/45 sm:p-6 md:p-8">
+            <FormProvider {...formMethods}>
+              {hasSubmitted && confirmationType === 'message' && (
+                <div
+                  aria-live="polite"
+                  className="outline-none"
+                  ref={successRef}
+                  role="status"
+                  tabIndex={-1}
+                >
+                  <div className="mb-4 flex items-center gap-3">
+                    <CircleCheck aria-hidden="true" className="size-8 shrink-0 text-brand" />
+                    <h2 className="text-2xl font-medium tracking-tight md:text-3xl">
+                      Message sent
+                    </h2>
+                  </div>
+                  {confirmationMessage && (
+                    <RichText
+                      className="text-muted-foreground [&_*]:font-normal"
+                      data={confirmationMessage}
+                      enableGutter={false}
+                    />
+                  )}
+
+                  {/* Not a dead end: somewhere useful to go next */}
+                  <div className="mt-10 flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center">
+                    <Link
+                      className={cn(buttonVariants({ size: 'lg', variant: 'default' }))}
+                      href="/"
+                    >
+                      <ArrowLeft aria-hidden="true" />
+                      Back
+                    </Link>
+                    <Link
+                      className={cn(buttonVariants({ size: 'lg', variant: 'outline' }))}
+                      href="/portfolio"
+                    >
+                      See my work
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {!hasSubmitted && (
+                <form id={formID} noValidate onSubmit={handleSubmit(onSubmit)}>
+                  <div className="mb-6">
+                    {formFromProps &&
+                      formFromProps.fields &&
+                      formFromProps.fields?.map((field, index) => {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        const Field: React.FC<any> =
+                          fields?.[field.blockType as keyof typeof fields]
+                        if (Field) {
+                          return (
+                            <div className="mb-6 last:mb-0" key={index}>
+                              <Field
+                                form={formFromProps}
+                                {...field}
+                                {...formMethods}
+                                control={control}
+                                errors={errors}
+                                register={register}
+                              />
+                            </div>
+                          )
+                        }
+                        return null
+                      })}
+                  </div>
+
+                  {/* Honeypot: invisible to people, tempting to bots. Anything typed here is dropped. */}
+                  <div
+                    aria-hidden="true"
+                    className="absolute -left-[9999px] h-0 w-0 overflow-hidden"
+                  >
+                    <label htmlFor={`${formID}-website`}>Leave this field empty</label>
+                    <input
+                      autoComplete="off"
+                      id={`${formID}-website`}
+                      name="website"
+                      ref={honeypot}
+                      tabIndex={-1}
+                      type="text"
+                    />
+                  </div>
+
+                  <div className="mb-6">
+                    <div className="flex items-start gap-3">
+                      <Checkbox
+                        aria-describedby={consentMissing ? 'consent-error' : undefined}
+                        aria-invalid={consentMissing}
+                        checked={consent}
+                        className="mt-0.5 size-5"
+                        id={`${formID}-consent`}
+                        onCheckedChange={(checked) => {
+                          setConsent(checked === true)
+                          if (checked === true) setConsentMissing(false)
+                        }}
+                      />
+                      <Label
+                        className="text-sm font-normal leading-snug text-muted-foreground"
+                        htmlFor={`${formID}-consent`}
+                      >
+                        <span className="required">
+                          * <span className="sr-only">(required)</span>
+                        </span>
+                        I agree to this use of my name and email address.
+                      </Label>
+                    </div>
+                    {consentMissing && (
+                      <div className="mt-2 text-sm text-red-500" id="consent-error" role="alert">
+                        Please tick the box to send your message.
+                      </div>
+                    )}
+                  </div>
+
+                  {TURNSTILE_SITE_KEY && (
+                    <Turnstile
+                      onToken={setTurnstileToken}
+                      resetKey={turnstileReset}
+                      siteKey={TURNSTILE_SITE_KEY}
+                    />
+                  )}
+
+                  {error && (
+                    <div
+                      className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm"
+                      role="alert"
+                    >
+                      {error.message}
+                    </div>
+                  )}
+
+                  <Button
+                    className="w-full sm:w-auto sm:min-w-48"
+                    disabled={isSubmitting || !canSubmit}
+                    form={formID}
+                    size="lg"
+                    type="submit"
+                    variant="default"
+                  >
+                    {isSubmitting ? 'Sending…' : submitButtonLabel}
+                  </Button>
+                </form>
+              )}
+            </FormProvider>
+          </div>
+
+          {/* Full privacy wording, under the card so it does not push the submit button down */}
+          {!hasSubmitted && (
+            <p className="mt-4 text-sm text-muted-foreground">
+              If you send a message, antidata.net stores your name and email address to reply to you
+              and to contact you about new projects and services. You can withdraw your consent at
+              any time. See{' '}
               <Link className="underline underline-offset-4" href="/data-protection">
                 Data Protection
               </Link>
               .
             </p>
-          </div>
-        </div>
-
-        {/* Same frosted card as the call-to-action block, around both the form and the confirmation */}
-        <div className="rounded-lg border border-white/60 bg-white/65 p-5 text-card-foreground shadow-sm backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-black/45 sm:p-6 md:p-8 lg:col-span-2 lg:col-start-2">
-          <FormProvider {...formMethods}>
-            {hasSubmitted && confirmationType === 'message' && (
-              <div
-                aria-live="polite"
-                className="outline-none"
-                ref={successRef}
-                role="status"
-                tabIndex={-1}
-              >
-                <div className="mb-4 flex items-center gap-3">
-                  <CircleCheck aria-hidden="true" className="size-8 shrink-0 text-brand" />
-                  <h2 className="text-2xl font-medium tracking-tight md:text-3xl">Message sent</h2>
-                </div>
-                {confirmationMessage && (
-                  <RichText
-                    className="text-muted-foreground [&_*]:font-normal"
-                    data={confirmationMessage}
-                    enableGutter={false}
-                  />
-                )}
-
-                {/* Not a dead end: somewhere useful to go next */}
-                <div className="mt-10 flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center">
-                  <Link
-                    className={cn(buttonVariants({ size: 'lg', variant: 'default' }))}
-                    href="/"
-                  >
-                    <ArrowLeft aria-hidden="true" />
-                    Back
-                  </Link>
-                  <Link
-                    className={cn(buttonVariants({ size: 'lg', variant: 'outline' }))}
-                    href="/portfolio"
-                  >
-                    See my work
-                  </Link>
-                </div>
-              </div>
-            )}
-
-            {!hasSubmitted && (
-              <form id={formID} noValidate onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-6">
-                  {formFromProps &&
-                    formFromProps.fields &&
-                    formFromProps.fields?.map((field, index) => {
-                      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                      const Field: React.FC<any> = fields?.[field.blockType as keyof typeof fields]
-                      if (Field) {
-                        return (
-                          <div className="mb-6 last:mb-0" key={index}>
-                            <Field
-                              form={formFromProps}
-                              {...field}
-                              {...formMethods}
-                              control={control}
-                              errors={errors}
-                              register={register}
-                            />
-                          </div>
-                        )
-                      }
-                      return null
-                    })}
-                </div>
-
-                {/* Honeypot: invisible to people, tempting to bots. Anything typed here is dropped. */}
-                <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-                  <label htmlFor={`${formID}-website`}>Leave this field empty</label>
-                  <input
-                    autoComplete="off"
-                    id={`${formID}-website`}
-                    name="website"
-                    ref={honeypot}
-                    tabIndex={-1}
-                    type="text"
-                  />
-                </div>
-
-                <div className="mb-6">
-                  <div className="flex items-start gap-3">
-                    <Checkbox
-                      aria-describedby={consentMissing ? 'consent-error' : undefined}
-                      aria-invalid={consentMissing}
-                      checked={consent}
-                      className="mt-0.5 size-5"
-                      id={`${formID}-consent`}
-                      onCheckedChange={(checked) => {
-                        setConsent(checked === true)
-                        if (checked === true) setConsentMissing(false)
-                      }}
-                    />
-                    <Label
-                      className="text-sm font-normal leading-snug text-muted-foreground"
-                      htmlFor={`${formID}-consent`}
-                    >
-                      <span className="required">
-                        * <span className="sr-only">(required)</span>
-                      </span>
-                      I agree to this use of my name and email address.
-                    </Label>
-                  </div>
-                  {consentMissing && (
-                    <div className="mt-2 text-sm text-red-500" id="consent-error" role="alert">
-                      Please tick the box to send your message.
-                    </div>
-                  )}
-                </div>
-
-                {TURNSTILE_SITE_KEY && (
-                  <Turnstile
-                    onToken={setTurnstileToken}
-                    resetKey={turnstileReset}
-                    siteKey={TURNSTILE_SITE_KEY}
-                  />
-                )}
-
-                {error && (
-                  <div
-                    className="mb-4 rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm"
-                    role="alert"
-                  >
-                    {error.message}
-                  </div>
-                )}
-
-                <Button
-                  className="w-full sm:w-auto sm:min-w-48"
-                  disabled={isSubmitting || !canSubmit}
-                  form={formID}
-                  size="lg"
-                  type="submit"
-                  variant="default"
-                >
-                  {isSubmitting ? 'Sending…' : submitButtonLabel}
-                </Button>
-              </form>
-            )}
-          </FormProvider>
+          )}
         </div>
       </div>
     </div>
