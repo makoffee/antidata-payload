@@ -3,14 +3,16 @@ import type { FormFieldBlock, Form as FormType } from '@payloadcms/plugin-form-b
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { useForm, FormProvider } from 'react-hook-form'
 import RichText from '@/components/RichText'
 import { Button } from '@/components/ui/button'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
-import { getClientSideURL } from '@/utilities/getURL'
+import { Turnstile } from './Turnstile'
+
+const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
 
 export type FormBlockType = {
   blockName?: string
@@ -47,11 +49,37 @@ export const FormBlock: React.FC<
   const [error, setError] = useState<{ message: string; status?: string } | undefined>()
   const router = useRouter()
 
+  // Anti-spam: a signed page-load token, a honeypot field, and the Turnstile check.
+  const pageToken = useRef<string | undefined>(undefined)
+  const honeypot = useRef<HTMLInputElement>(null)
+  const [turnstileToken, setTurnstileToken] = useState<string | null>(null)
+  const [turnstileReset, setTurnstileReset] = useState(0)
+
+  const loadToken = useCallback(async (): Promise<string | undefined> => {
+    try {
+      const res = await fetch('/next/contact/token', { cache: 'no-store' })
+      const json = (await res.json()) as { token?: string }
+      pageToken.current = json.token
+    } catch {
+      pageToken.current = undefined
+    }
+    return pageToken.current
+  }, [])
+
+  useEffect(() => {
+    void loadToken()
+  }, [loadToken])
+
   const onSubmit = useCallback(
     (data: FormFieldBlock[]) => {
       let loadingTimerID: ReturnType<typeof setTimeout>
       const submitForm = async () => {
         setError(undefined)
+
+        if (TURNSTILE_SITE_KEY && !turnstileToken) {
+          setError({ message: 'Please wait a moment for the spam check to finish, then try again.' })
+          return
+        }
 
         const dataToSend = Object.entries(data).map(([name, value]) => ({
           field: name,
@@ -64,10 +92,13 @@ export const FormBlock: React.FC<
         }, 1000)
 
         try {
-          const req = await fetch(`${getClientSideURL()}/api/form-submissions`, {
+          const req = await fetch('/next/contact', {
             body: JSON.stringify({
               form: formID,
               submissionData: dataToSend,
+              token: pageToken.current ?? (await loadToken()),
+              turnstileToken,
+              website: honeypot.current?.value ?? '',
             }),
             headers: {
               'Content-Type': 'application/json',
@@ -75,17 +106,19 @@ export const FormBlock: React.FC<
             method: 'POST',
           })
 
-          const res = await req.json()
+          const res = (await req.json()) as { code?: string; message?: string }
 
           clearTimeout(loadingTimerID)
 
           if (req.status >= 400) {
             setIsLoading(false)
 
-            setError({
-              message: res.errors?.[0]?.message || 'Internal Server Error',
-              status: res.status,
-            })
+            setError({ message: res.message || 'Something went wrong. Please try again later.' })
+
+            // Tokens work once: get fresh ones for the next attempt
+            if (res.code === 'token') void loadToken()
+            setTurnstileToken(null)
+            setTurnstileReset((n) => n + 1)
 
             return
           }
@@ -111,7 +144,7 @@ export const FormBlock: React.FC<
 
       void submitForm()
     },
-    [router, formID, redirect, confirmationType],
+    [router, formID, redirect, confirmationType, turnstileToken, loadToken],
   )
 
   return (
@@ -125,7 +158,11 @@ export const FormBlock: React.FC<
             <RichText data={confirmationMessage} />
           )}
           {isLoading && !hasSubmitted && <p>Loading, please wait...</p>}
-          {error && <div>{`${error.status || '500'}: ${error.message || ''}`}</div>}
+          {error && (
+            <div className="mb-4" role="alert">
+              {error.message}
+            </div>
+          )}
           {!hasSubmitted && (
             <form id={formID} onSubmit={handleSubmit(onSubmit)}>
               <div className="mb-4 last:mb-0">
@@ -152,7 +189,28 @@ export const FormBlock: React.FC<
                   })}
               </div>
 
-              <Button form={formID} type="submit" variant="default">
+              {/* Honeypot: invisible to people, tempting to bots. Anything typed here is dropped. */}
+              <div aria-hidden="true" className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+                <label htmlFor={`${formID}-website`}>Leave this field empty</label>
+                <input
+                  autoComplete="off"
+                  id={`${formID}-website`}
+                  name="website"
+                  ref={honeypot}
+                  tabIndex={-1}
+                  type="text"
+                />
+              </div>
+
+              {TURNSTILE_SITE_KEY && (
+                <Turnstile
+                  onToken={setTurnstileToken}
+                  resetKey={turnstileReset}
+                  siteKey={TURNSTILE_SITE_KEY}
+                />
+              )}
+
+              <Button className="mt-6" form={formID} type="submit" variant="default">
                 {submitButtonLabel}
               </Button>
               <p className="mt-4 text-sm text-muted-foreground">

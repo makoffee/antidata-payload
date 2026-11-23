@@ -12,6 +12,7 @@ import { searchFields } from '@/search/fieldOverrides'
 import { beforeSyncWithSearch } from '@/search/beforeSync'
 
 import { Page, Post, Project } from '@/payload-types'
+import { guardContactEmails } from '@/utilities/contactEmailGuard'
 import { getServerSideURL } from '@/utilities/getURL'
 import { getDocPath } from '@/utilities/site'
 
@@ -66,6 +67,14 @@ export const plugins: Plugin[] = [
     fields: {
       payment: false,
     },
+    // Submissions are created only by /next/contact (validated, rate limited, bot-checked).
+    // The plugin's default lets anyone on the internet POST to /api/form-submissions.
+    formSubmissionOverrides: {
+      access: {
+        create: () => false,
+      },
+    },
+    beforeEmail: guardContactEmails,
     formOverrides: {
       fields: ({ defaultFields }) => {
         return defaultFields.map((field) => {
