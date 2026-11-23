@@ -166,7 +166,8 @@ export const FormBlock: React.FC<
           </div>
         )}
 
-        <div className="lg:col-span-2 lg:col-start-2">
+        {/* Same frosted card as the call-to-action block, around both the form and the confirmation */}
+        <div className="rounded-lg border border-white/60 bg-white/65 p-5 text-card-foreground shadow-sm backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-black/45 sm:p-6 md:p-8 lg:col-span-2 lg:col-start-2">
           <FormProvider {...formMethods}>
             {hasSubmitted && confirmationType === 'message' && (
               <div
