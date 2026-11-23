@@ -167,11 +167,24 @@ export const FormBlock: React.FC<
     // and the form the right two thirds (same 12-column gap as the Content block). Below that it is one full-width column.
     <div className="container my-16">
       <div className="grid gap-x-16 gap-y-10 lg:grid-cols-3">
-        {enableIntro && introContent && (
-          <div className="lg:col-span-1">
-            <RichText data={introContent} enableGutter={false} />
+        <div className="lg:col-span-1">
+          {enableIntro && introContent && <RichText data={introContent} enableGutter={false} />}
+
+          {/* The full privacy wording lives here, so the form itself stays short. On small screens
+              this column sits above the form, so it is read before the checkbox. */}
+          <div className={cn('text-sm text-muted-foreground', enableIntro && introContent && 'mt-8')}>
+            <p className="mb-1 font-medium text-foreground">How your details are used</p>
+            <p>
+              If you send a message, antidata.net stores your name and email address to reply to
+              you and to contact you about new projects and services. You can withdraw your consent
+              at any time. See{' '}
+              <Link className="underline underline-offset-4" href="/data-protection">
+                Data Protection
+              </Link>
+              .
+            </p>
           </div>
-        )}
+        </div>
 
         {/* Same frosted card as the call-to-action block, around both the form and the confirmation */}
         <div className="rounded-lg border border-white/60 bg-white/65 p-5 text-card-foreground shadow-sm backdrop-blur-xl backdrop-saturate-150 dark:border-white/10 dark:bg-black/45 sm:p-6 md:p-8 lg:col-span-2 lg:col-start-2">
@@ -217,7 +230,7 @@ export const FormBlock: React.FC<
 
             {!hasSubmitted && (
               <form id={formID} noValidate onSubmit={handleSubmit(onSubmit)}>
-                <div className="mb-8">
+                <div className="mb-6">
                   {formFromProps &&
                     formFromProps.fields &&
                     formFromProps.fields?.map((field, index) => {
@@ -254,7 +267,7 @@ export const FormBlock: React.FC<
                   />
                 </div>
 
-                <div className="mb-8">
+                <div className="mb-6">
                   <div className="flex items-start gap-3">
                     <Checkbox
                       aria-describedby={consentMissing ? 'consent-error' : undefined}
@@ -274,13 +287,7 @@ export const FormBlock: React.FC<
                       <span className="required">
                         * <span className="sr-only">(required)</span>
                       </span>
-                      I agree that antidata.net may store my name and email address to reply to my
-                      message and to contact me about new projects and services. I can withdraw my
-                      consent at any time. See{' '}
-                      <Link className="underline underline-offset-4" href="/data-protection">
-                        Data Protection
-                      </Link>
-                      .
+                      I agree to this use of my name and email address.
                     </Label>
                   </div>
                   {consentMissing && (

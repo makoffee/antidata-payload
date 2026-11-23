@@ -10,7 +10,7 @@ export const MAX_BODY_BYTES = 20_000
 
 // Proof of consent, stored with every submission. Bump the version when the checkbox wording
 // in src/blocks/Form/Component.tsx changes.
-export const CONSENT_VERSION = 'v1'
+export const CONSENT_VERSION = 'v2'
 export const consentEntry = (now: Date = new Date()): { field: string; value: string } => ({
   field: 'gdpr-consent',
   value: `Agreed ${now.toISOString()} (wording ${CONSENT_VERSION}: store name and email to reply and for contact about new projects and services)`,
