@@ -191,16 +191,16 @@ export const FormBlock: React.FC<
                 )}
 
                 {/* Not a dead end: somewhere useful to go next */}
-                <div className="mt-10 flex flex-col-reverse gap-3 border-t border-border pt-8 sm:flex-row sm:items-center">
+                <div className="mt-10 flex flex-col gap-3 border-t border-border pt-8 sm:flex-row sm:items-center">
                   <Link
-                    className={cn(buttonVariants({ size: 'lg', variant: 'ghost' }))}
+                    className={cn(buttonVariants({ size: 'lg', variant: 'default' }))}
                     href="/"
                   >
                     <ArrowLeft aria-hidden="true" />
                     Back
                   </Link>
                   <Link
-                    className={cn(buttonVariants({ size: 'lg', variant: 'default' }))}
+                    className={cn(buttonVariants({ size: 'lg', variant: 'outline' }))}
                     href="/portfolio"
                   >
                     See my work
