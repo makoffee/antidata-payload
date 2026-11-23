@@ -54,7 +54,14 @@ export const RenderBlocks: React.FC<{
 
             if (Block) {
               return (
-                <div className="my-16 scroll-mt-8" id={anchorFor(block)} key={index}>
+                <div
+                  // The form sits right under the page heading; the hero's own bottom margin is the gap
+                  className={
+                    blockType === 'formBlock' ? 'mt-0 mb-16 scroll-mt-8' : 'my-16 scroll-mt-8'
+                  }
+                  id={anchorFor(block)}
+                  key={index}
+                >
                   {selfRevealing.has(blockType) ? (
                     // @ts-expect-error there may be some mismatch between the expected types here
                     <Block {...block} disableInnerContainer />
