@@ -25,7 +25,14 @@ export const Text: React.FC<
           </span>
         )}
       </Label>
-      <Input defaultValue={defaultValue} id={name} type="text" {...register(name, { required })} />
+      <Input
+        autoComplete={/name/i.test(name) ? 'name' : undefined}
+        className="mt-2 h-12 md:text-base"
+        defaultValue={defaultValue}
+        id={name}
+        type="text"
+        {...register(name, { required: required ? `${label || 'This field'} is required` : false })}
+      />
       {errors[name] && <Error name={name} />}
     </Width>
   )
