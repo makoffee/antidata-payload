@@ -113,6 +113,9 @@ export default buildConfig({
   globals: [Header, Footer, Appearance],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
+  // Nothing on the site uses GraphQL (admin and frontend use REST and the Local API), so switch it
+  // off: one less public surface for scanners.
+  graphQL: { disable: true },
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
