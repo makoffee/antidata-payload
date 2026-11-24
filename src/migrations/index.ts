@@ -19,6 +19,7 @@ import * as migration_20261116_085004_user_avatar from './20261116_085004_user_a
 import * as migration_20261116_104527_admin_branding from './20261116_104527_admin_branding';
 import * as migration_20261116_105422_admin_branding_two_fields from './20261116_105422_admin_branding_two_fields';
 import * as migration_20261124_205531_security_settings_ from './20261124_205531_security_settings_';
+import * as migration_20261124_210539_payload_upgrade from './20261124_210539_payload_upgrade';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20261124_205531_security_settings_.up,
     down: migration_20261124_205531_security_settings_.down,
-    name: '20261124_205531_security_settings_'
+    name: '20261124_205531_security_settings_',
+  },
+  {
+    up: migration_20261124_210539_payload_upgrade.up,
+    down: migration_20261124_210539_payload_upgrade.down,
+    name: '20261124_210539_payload_upgrade'
   },
 ];
