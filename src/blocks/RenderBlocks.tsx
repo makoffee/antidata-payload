@@ -57,7 +57,7 @@ export const RenderBlocks: React.FC<{
                 <div
                   // The form sits right under the page heading; the hero's own bottom margin is the gap
                   className={
-                    blockType === 'formBlock' ? 'mt-0 mb-16 scroll-mt-8' : 'my-16 scroll-mt-8'
+                    blockType === 'formBlock' ? '-mt-4 mb-16 scroll-mt-8' : 'my-16 scroll-mt-8'
                   }
                   id={anchorFor(block)}
                   key={index}
