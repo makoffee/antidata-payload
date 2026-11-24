@@ -14,6 +14,7 @@ import { cn } from '@/utilities/ui'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
+import { DotMatrixWave } from '@/components/DotMatrixWave'
 import { Turnstile } from './Turnstile'
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
@@ -326,7 +327,14 @@ export const FormBlock: React.FC<
                     type="submit"
                     variant="default"
                   >
-                    {isSubmitting ? 'Sending…' : submitButtonLabel}
+                    {isSubmitting ? (
+                      <>
+                        <DotMatrixWave className="size-6" />
+                        Sending…
+                      </>
+                    ) : (
+                      submitButtonLabel
+                    )}
                   </Button>
                 </form>
               )}
