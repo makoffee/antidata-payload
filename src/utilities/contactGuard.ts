@@ -1,5 +1,7 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
 
+import type { Payload } from 'payload'
+
 import type { Form } from '@/payload-types'
 
 // Server-side checks for the contact form. Used by /next/contact (the only way to create a
@@ -15,6 +17,64 @@ export const consentEntry = (now: Date = new Date()): { field: string; value: st
   field: 'gdpr-consent',
   value: `Agreed ${now.toISOString()} (wording ${CONSENT_VERSION}: store name and email to reply and for contact about new projects and services)`,
 })
+
+// ---------------------------------------------------------------------------------------------
+// Switches managed in the admin (Site settings > Security). Every default is "protection on", and
+// that is also what applies if the settings cannot be read.
+// ---------------------------------------------------------------------------------------------
+
+export type SecuritySettings = {
+  contentScreening: 'drop' | 'off' | 'quarantine'
+  honeypot: boolean
+  maxPerAddressPerDay: number
+  maxPerHour: number
+  minFillSeconds: number
+  paused: boolean
+  rateLimit: boolean
+  spamFilter: boolean
+  turnstile: boolean
+}
+
+export const DEFAULT_SECURITY: SecuritySettings = {
+  contentScreening: 'quarantine',
+  honeypot: true,
+  maxPerAddressPerDay: 3,
+  maxPerHour: 20,
+  minFillSeconds: 3,
+  paused: false,
+  rateLimit: true,
+  spamFilter: true,
+  turnstile: true,
+}
+
+export const getSecuritySettings = async (payload: Payload): Promise<SecuritySettings> => {
+  try {
+    const global = await payload.findGlobal({ slug: 'security', depth: 0, overrideAccess: true })
+    const form = global.contactForm ?? {}
+    const d = DEFAULT_SECURITY
+    const number = (value: unknown, fallback: number): number =>
+      typeof value === 'number' && Number.isFinite(value) ? value : fallback
+    return {
+      contentScreening:
+        form.contentScreening === 'drop' ||
+        form.contentScreening === 'off' ||
+        form.contentScreening === 'quarantine'
+          ? form.contentScreening
+          : d.contentScreening,
+      honeypot: form.honeypot ?? d.honeypot,
+      maxPerAddressPerDay: number(form.maxPerAddressPerDay, d.maxPerAddressPerDay),
+      maxPerHour: number(form.maxPerHour, d.maxPerHour),
+      minFillSeconds: number(form.minFillSeconds, d.minFillSeconds),
+      paused: form.paused ?? d.paused,
+      rateLimit: form.rateLimit ?? d.rateLimit,
+      spamFilter: form.spamFilter ?? d.spamFilter,
+      turnstile: form.turnstile ?? d.turnstile,
+    }
+  } catch {
+    // Table missing (migration not run yet) or database hiccup: fail safe, protections on
+    return DEFAULT_SECURITY
+  }
+}
 
 const MIN_AGE_MS = 3_000 // a human cannot fill in the form faster than this
 const MAX_AGE_MS = 60 * 60 * 1000 // a form left open longer than an hour must be reloaded
@@ -37,7 +97,11 @@ export const issueToken = (now: number = Date.now()): string => {
 
 export type TokenResult = 'ok' | 'invalid' | 'expired' | 'too-fast'
 
-export const checkToken = (token: unknown, now: number = Date.now()): TokenResult => {
+export const checkToken = (
+  token: unknown,
+  now: number = Date.now(),
+  minAgeMs: number = MIN_AGE_MS,
+): TokenResult => {
   if (typeof token !== 'string') return 'invalid'
   const [timestamp, signature, ...rest] = token.split('.')
   if (!timestamp || !signature || rest.length > 0 || !/^\d{10,15}$/.test(timestamp)) {
@@ -50,7 +114,7 @@ export const checkToken = (token: unknown, now: number = Date.now()): TokenResul
 
   const age = now - Number(timestamp)
   if (age < 0) return 'invalid'
-  if (age < MIN_AGE_MS) return 'too-fast'
+  if (age < minAgeMs) return 'too-fast'
   if (age > MAX_AGE_MS) return 'expired'
   return 'ok'
 }
@@ -87,7 +151,7 @@ export const verifyTurnstile = async (token: unknown): Promise<boolean> => {
 type FormField = NonNullable<Form['fields']>[number]
 export type SubmissionEntry = { field: string; value: string }
 export type ValidationResult =
-  { ok: true; data: SubmissionEntry[] } | { ok: false; message: string }
+  { ok: true; data: SubmissionEntry[]; hiddenCharacters: number } | { ok: false; message: string }
 
 // Control characters (incl. CR/LF for single-line fields) never belong in a contact message.
 // Built from code points so the source file holds no raw control characters.
@@ -99,6 +163,14 @@ const controlChars = (keepNewlines: boolean): RegExp => {
 }
 const CONTROL_ALL = controlChars(false)
 const CONTROL_KEEP_NEWLINES = controlChars(true)
+// Invisible characters that can hide instructions or text from a human reader but not from a
+// program or an AI: zero-width space, word joiner and invisible operators, byte-order mark,
+// bidirectional overrides, Unicode "tag" characters and supplementary variation selectors.
+// Joiners used by emoji and by some scripts (U+200C, U+200D) and emoji selectors (U+FE0F) stay.
+const HIDDEN_CHARS = new RegExp(
+  '[\\u200B\\u2060-\\u2064\\uFEFF\\u202A-\\u202E\\u2066-\\u2069\\u{E0000}-\\u{E007F}\\u{E0100}-\\u{E01EF}]',
+  'gu',
+)
 const EMAIL_PATTERN = /^[^\s@<>(),;:"[\]\\]+@[^\s@<>(),;:"[\]\\]+\.[^\s@<>(),;:"[\]\\]{2,}$/
 
 export const isValidEmail = (value: string): boolean =>
@@ -123,6 +195,7 @@ export const validateSubmission = (form: Form, input: unknown): ValidationResult
   }
 
   const data: SubmissionEntry[] = []
+  let hiddenCharacters = 0
 
   for (const field of form.fields ?? []) {
     if (field.blockType === 'message') continue
@@ -142,7 +215,10 @@ export const validateSubmission = (form: Form, input: unknown): ValidationResult
         return { ok: false, message: 'Please check the form and try again.' }
       }
       const multiline = field.blockType === 'textarea'
-      value = String(raw ?? '')
+      const original = String(raw ?? '')
+      hiddenCharacters += original.match(HIDDEN_CHARS)?.length ?? 0
+      value = original
+        .replace(HIDDEN_CHARS, '')
         .normalize('NFC')
         .replace(multiline ? CONTROL_KEEP_NEWLINES : CONTROL_ALL, '')
         .trim()
@@ -183,7 +259,7 @@ export const validateSubmission = (form: Form, input: unknown): ValidationResult
   }
 
   if (data.length === 0) return { ok: false, message: 'Please fill in the form.' }
-  return { ok: true, data }
+  return { hiddenCharacters, ok: true, data }
 }
 
 // ---------------------------------------------------------------------------------------------
@@ -191,7 +267,8 @@ export const validateSubmission = (form: Form, input: unknown): ValidationResult
 // a bot learns nothing, and nothing is stored.
 // ---------------------------------------------------------------------------------------------
 
-const LINK_PATTERN = /(https?:\/\/|www\.|\b[a-z0-9-]+\.(?:com|net|org|ru|cn|xyz|top|info|biz|site|online|shop|click)\b\/)/gi
+const LINK_PATTERN =
+  /(https?:\/\/|www\.|\b[a-z0-9-]+\.(?:com|net|org|ru|cn|xyz|top|info|biz|site|online|shop|click)\b\/)/gi
 
 // Random strings like "BgyOFNBdNpwjzFMYWg": one long word with many lower→upper jumps
 const looksRandom = (value: string): boolean => {
@@ -231,3 +308,42 @@ export const isSpam = (data: SubmissionEntry[]): { spam: boolean; signals: strin
   const signals = spamSignals(data)
   return { signals, spam: signals.length >= 2 }
 }
+
+// ---------------------------------------------------------------------------------------------
+// Content screening: text that is code, or is written to instruct a program or an AI that reads
+// the message later. Submissions are only ever stored and shown as plain text, so this is a second
+// line of defense, mainly so nobody (or no tool) is handed hostile text by accident.
+// ---------------------------------------------------------------------------------------------
+
+const SCREEN_PATTERNS: [string, RegExp][] = [
+  // Markup and script
+  ['html', /<\s*\/?\s*[a-z!][^>]*>/i],
+  [
+    'script',
+    /(javascript|vbscript)\s*:|data\s*:\s*text\/html|\bon(?:error|load|click|mouseover|focus)\s*=/i,
+  ],
+  // Template and expression markers
+  ['template', /\{\{|\}\}|\$\{|<%|%>|\{%/],
+  // Chat-template control tokens and role headers
+  ['chat-tokens', /<\|?\s*(?:im_start|im_end|endoftext|system|assistant)\s*\|?>|\[\/?INST\]/i],
+  ['role-header', /^\s*(?:system|assistant|developer)\s*:/im],
+  // Attempts to instruct an AI
+  [
+    'ai-instructions',
+    /\b(?:ignore|disregard|forget|override)\s+(?:all\s+|any\s+|the\s+|your\s+|my\s+)?(?:previous|prior|above|earlier|preceding|system|safety)\s+(?:instructions?|prompts?|messages?|rules|guidelines)|\b(?:new|updated|real)\s+instructions?\s*:|\b(?:reveal|print|show|repeat|output)\s+(?:your|the)\s+(?:system\s+prompt|hidden|secret|instructions)|\bdo\s+not\s+(?:tell|inform|mention|alert)\s+the\s+(?:user|human|owner)|\bwhen\s+(?:you|an?\s+(?:ai|assistant|llm|model|agent))\s+(?:read|see|process|summari[sz]e|review|inspect)s?\s+this\b|\byou\s+are\s+now\s+(?:an?\s+)?(?:ai|assistant|admin|developer|jailbroken)/i,
+  ],
+]
+
+export const screenContent = (data: SubmissionEntry[], hiddenCharacters: number): string[] => {
+  const reasons = new Set<string>()
+  if (hiddenCharacters > 0) reasons.add('hidden-characters')
+  for (const { value } of data) {
+    for (const [reason, pattern] of SCREEN_PATTERNS) {
+      if (pattern.test(value)) reasons.add(reason)
+    }
+  }
+  return [...reasons]
+}
+
+// Marker stored with a quarantined submission; the email guard skips notifications for it.
+export const SECURITY_FLAG_FIELD = 'security-flag'

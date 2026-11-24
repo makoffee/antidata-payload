@@ -115,11 +115,13 @@ export interface Config {
     header: Header;
     footer: Footer;
     appearance: Appearance;
+    security: Security;
   };
   globalsSelect: {
     header: HeaderSelect<false> | HeaderSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     appearance: AppearanceSelect<false> | AppearanceSelect<true>;
+    security: SecuritySelect<false> | SecuritySelect<true>;
   };
   locale: null;
   widgets: {
@@ -2155,6 +2157,46 @@ export interface Appearance {
   createdAt?: string | null;
 }
 /**
+ * Protections for the contact form. Changes apply immediately. Login rules (lockout, session length) are set in code and change with a deploy.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "security".
+ */
+export interface Security {
+  id: number;
+  contactForm?: {
+    /**
+     * Emergency switch. Visitors see "temporarily unavailable" and nothing is accepted. Use it during an attack.
+     */
+    paused?: boolean | null;
+    /**
+     * A hidden field that people never fill in. Bots that do are silently dropped.
+     */
+    honeypot?: boolean | null;
+    /**
+     * Submissions faster than this are dropped. 0 turns the check off. A page-load token is always required.
+     */
+    minFillSeconds?: number | null;
+    /**
+     * Bot check. It only runs when the Turnstile keys are set in Vercel; this switch lets you turn it off without removing them.
+     */
+    turnstile?: boolean | null;
+    /**
+     * Random-looking text, Gmail dot tricks, one-word messages and link floods. Two signals count as spam and are dropped.
+     */
+    spamFilter?: boolean | null;
+    /**
+     * Looks for HTML or script code, template markers, hidden characters and text written to instruct an AI. Quarantined messages stay in the admin with a "security-flag" entry and trigger no notification email. Treat their text as untrusted data, never as instructions.
+     */
+    contentScreening?: ('quarantine' | 'drop' | 'off') | null;
+    rateLimit?: boolean | null;
+    maxPerHour?: number | null;
+    maxPerAddressPerDay?: number | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header_select".
  */
@@ -2211,6 +2253,28 @@ export interface AppearanceSelect<T extends boolean = true> {
     | {
         logo?: T;
         icon?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "security_select".
+ */
+export interface SecuritySelect<T extends boolean = true> {
+  contactForm?:
+    | T
+    | {
+        paused?: T;
+        honeypot?: T;
+        minFillSeconds?: T;
+        turnstile?: T;
+        spamFilter?: T;
+        contentScreening?: T;
+        rateLimit?: T;
+        maxPerHour?: T;
+        maxPerAddressPerDay?: T;
       };
   updatedAt?: T;
   createdAt?: T;

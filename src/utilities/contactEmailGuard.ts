@@ -1,6 +1,6 @@
 import type { BeforeEmail } from '@payloadcms/plugin-form-builder/types'
 
-import { isValidEmail } from '@/utilities/contactGuard'
+import { isValidEmail, SECURITY_FLAG_FIELD } from '@/utilities/contactGuard'
 
 // Runs before the plugin sends a notification for a form submission.
 // - A recipient (to/cc/bcc) that comes from submitted data ({{email}}) would let a visitor make the
@@ -9,6 +9,13 @@ import { isValidEmail } from '@/utilities/contactGuard'
 const oneLine = (value: string): string => value.replace(/[\r\n]+/g, ' ').trim()
 
 export const guardContactEmails: BeforeEmail = async (emails, { data, req }) => {
+  // A quarantined submission stays in the admin for review but triggers no email
+  const submitted = Array.isArray(data?.submissionData) ? data.submissionData : []
+  if (submitted.some((entry: { field?: string }) => entry?.field === SECURITY_FLAG_FIELD)) {
+    req.payload.logger.info('contact form: email skipped (quarantined submission)')
+    return []
+  }
+
   const form = await req.payload.findByID({
     id: data.form,
     collection: 'forms',
