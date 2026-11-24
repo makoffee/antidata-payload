@@ -14,6 +14,7 @@ import { cn } from '@/utilities/ui'
 import type { DefaultTypedEditorState } from '@payloadcms/richtext-lexical'
 
 import { fields } from './fields'
+import { DotMatrixSpinner } from '@/components/DotMatrixSpinner'
 import { Turnstile } from './Turnstile'
 
 const TURNSTILE_SITE_KEY = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY
@@ -311,14 +312,57 @@ export const FormBlock: React.FC<
                   )}
 
                   <Button
-                    className="w-full sm:w-auto sm:min-w-48"
+                    className={cn(
+                      'w-full border transition-[background-color,color,border-color,box-shadow] duration-300 ease-out disabled:opacity-100 sm:w-auto sm:min-w-48',
+                      canSubmit
+                        ? // Ready: black with brand text in light mode, brand with dark text in dark mode
+                          'border-transparent bg-black text-brand hover:bg-black/85 dark:bg-brand dark:text-brand-foreground dark:hover:bg-brand/90'
+                        : // Not ready: quiet outline with muted text
+                          'border-foreground/25 bg-transparent text-muted-foreground shadow-none',
+                      isSubmitting && 'opacity-70',
+                    )}
                     disabled={isSubmitting || !canSubmit}
                     form={formID}
                     size="lg"
                     type="submit"
                     variant="default"
                   >
-                    {isSubmitting ? 'Sending…' : submitButtonLabel}
+                    {/* The spinner slot grows from nothing and the two labels cross-fade in the same spot, so the
+                        button never jumps when sending starts or fails */}
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'inline-flex shrink-0 overflow-hidden transition-[width,margin,opacity] duration-300 ease-out',
+                        isSubmitting ? 'w-6 opacity-100' : '-mr-2 w-0 opacity-0',
+                      )}
+                    >
+                      <DotMatrixSpinner
+                        className={cn(
+                          'size-6 shrink-0',
+                          !isSubmitting && '[&_.dot-spinner-lit]:[animation-play-state:paused]',
+                        )}
+                      />
+                    </span>
+                    <span className="grid">
+                      <span
+                        aria-hidden={isSubmitting}
+                        className={cn(
+                          'col-start-1 row-start-1 transition-opacity duration-300 ease-out',
+                          isSubmitting && 'opacity-0',
+                        )}
+                      >
+                        {submitButtonLabel}
+                      </span>
+                      <span
+                        aria-hidden={!isSubmitting}
+                        className={cn(
+                          'col-start-1 row-start-1 transition-opacity duration-300 ease-out',
+                          !isSubmitting && 'opacity-0',
+                        )}
+                      >
+                        Sending…
+                      </span>
+                    </span>
                   </Button>
                 </form>
               )}
