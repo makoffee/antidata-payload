@@ -11,6 +11,7 @@ import { Posts } from './collections/Posts'
 import { Projects } from './collections/Projects'
 import { Users } from './collections/Users'
 import { Appearance } from './Appearance/config'
+import { Security } from './Security/config'
 import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -110,7 +111,7 @@ export default buildConfig({
         defaultFromName: 'antidata.net',
       })
     : undefined,
-  globals: [Header, Footer, Appearance],
+  globals: [Header, Footer, Appearance, Security],
   secret: process.env.PAYLOAD_SECRET,
   sharp,
   // Nothing on the site uses GraphQL (admin and frontend use REST and the Local API), so switch it
