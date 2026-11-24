@@ -327,14 +327,42 @@ export const FormBlock: React.FC<
                     type="submit"
                     variant="default"
                   >
-                    {isSubmitting ? (
-                      <>
-                        <DotMatrixSpinner className="size-6" />
+                    {/* The spinner slot grows from nothing and the two labels cross-fade in the same spot, so the
+                        button never jumps when sending starts or fails */}
+                    <span
+                      aria-hidden="true"
+                      className={cn(
+                        'inline-flex shrink-0 overflow-hidden transition-[width,margin,opacity] duration-300 ease-out',
+                        isSubmitting ? 'w-6 opacity-100' : '-mr-2 w-0 opacity-0',
+                      )}
+                    >
+                      <DotMatrixSpinner
+                        className={cn(
+                          'size-6 shrink-0',
+                          !isSubmitting && '[&_.dot-spinner-lit]:[animation-play-state:paused]',
+                        )}
+                      />
+                    </span>
+                    <span className="grid">
+                      <span
+                        aria-hidden={isSubmitting}
+                        className={cn(
+                          'col-start-1 row-start-1 transition-opacity duration-300 ease-out',
+                          isSubmitting && 'opacity-0',
+                        )}
+                      >
+                        {submitButtonLabel}
+                      </span>
+                      <span
+                        aria-hidden={!isSubmitting}
+                        className={cn(
+                          'col-start-1 row-start-1 transition-opacity duration-300 ease-out',
+                          !isSubmitting && 'opacity-0',
+                        )}
+                      >
                         Sending…
-                      </>
-                    ) : (
-                      submitButtonLabel
-                    )}
+                      </span>
+                    </span>
                   </Button>
                 </form>
               )}
