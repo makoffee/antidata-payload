@@ -53,6 +53,25 @@ const nextConfig: NextConfig = {
 
     return webpackConfig
   },
+  // Security headers on every response
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [
+          // Browsers use HTTPS only for this site for a year
+          { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
+          // Other sites cannot put the site or the admin in a frame (clickjacking); the admin's
+          // own live preview is same-origin, so it still works
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          // Files are used as the type the server says they are
+          { key: 'X-Content-Type-Options', value: 'nosniff' },
+          { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+          { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
+        ],
+      },
+    ]
+  },
   reactStrictMode: true,
   redirects,
   turbopack: {
