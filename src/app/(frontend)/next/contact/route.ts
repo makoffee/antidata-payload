@@ -54,6 +54,11 @@ export async function POST(request: Request): Promise<Response> {
   // Switches from the admin (Site settings > Security); protections default to on
   const settings = await getSecuritySettings(payload)
 
+  // What a flagged submission gets back (Security settings > "When a submission is rejected"):
+  // an honest error (default; bots tend to move on and people can recover) or a pretend success.
+  const rejectWith = (status: number, message: string): Response =>
+    settings.botResponse === 'pretend' ? fakeSuccess() : fail(message, status)
+
   if (settings.paused) {
     return fail('The contact form is temporarily unavailable. Please try again later.', 503)
   }
@@ -65,13 +70,13 @@ export async function POST(request: Request): Promise<Response> {
     body[HONEYPOT_FIELD] !== ''
   ) {
     logger.info('contact form: dropped (honeypot)')
-    return fakeSuccess()
+    return rejectWith(403, 'Something went wrong. Please try again later.')
   }
 
   const tokenResult = checkToken(body.token, Date.now(), settings.minFillSeconds * 1000)
   if (tokenResult === 'too-fast') {
     logger.info('contact form: dropped (too fast)')
-    return fakeSuccess()
+    return rejectWith(429, 'That was quick. Please check your message and send it again.')
   }
   if (tokenResult !== 'ok') {
     return fail('The form expired. Please reload the page and try again.', 400, 'token')
@@ -104,7 +109,10 @@ export async function POST(request: Request): Promise<Response> {
     const { signals, spam } = isSpam(validation.data)
     if (spam) {
       logger.info(`contact form: dropped (spam: ${signals.join(', ')})`)
-      return fakeSuccess()
+      return rejectWith(
+        400,
+        'We could not send your message. Please try again, or contact us another way.',
+      )
     }
   }
 
@@ -115,7 +123,10 @@ export async function POST(request: Request): Promise<Response> {
     if (reasons.length > 0) {
       if (settings.contentScreening === 'drop') {
         logger.info(`contact form: dropped (content: ${reasons.join(', ')})`)
-        return fakeSuccess()
+        return rejectWith(
+          400,
+          'We could not send your message. Please try again, or contact us another way.',
+        )
       }
       // Quarantine: keep it for review, mark it, and send no notification email
       logger.info(`contact form: quarantined (content: ${reasons.join(', ')})`)
@@ -158,7 +169,10 @@ export async function POST(request: Request): Promise<Response> {
     })
     if (fromAddress >= settings.maxPerAddressPerDay) {
       logger.info('contact form: dropped (address limit)')
-      return fakeSuccess()
+      return rejectWith(
+        429,
+        'You have already sent several messages today. Please try again tomorrow.',
+      )
     }
   }
 

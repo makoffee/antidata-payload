@@ -2182,6 +2182,10 @@ export interface Security {
      * Looks for HTML or script code, template markers, hidden characters and text written to instruct an AI. Quarantined messages stay in the admin with a "security-flag" entry and trigger no notification email. Treat their text as untrusted data, never as instructions.
      */
     contentScreening?: ('quarantine' | 'drop' | 'off') | null;
+    /**
+     * Applies to the honeypot, speed check, spam scoring, content "drop" and per-address limit. An error lets a real person try again and tells most bots to move on. "Pretend it worked" hides the filter from attackers, but a real message that is wrongly rejected is lost with no sign of it.
+     */
+    botResponse?: ('reject' | 'pretend') | null;
     rateLimit?: boolean | null;
     maxPerHour?: number | null;
     maxPerAddressPerDay?: number | null;
@@ -2265,6 +2269,7 @@ export interface SecuritySelect<T extends boolean = true> {
         turnstile?: T;
         spamFilter?: T;
         contentScreening?: T;
+        botResponse?: T;
         rateLimit?: T;
         maxPerHour?: T;
         maxPerAddressPerDay?: T;

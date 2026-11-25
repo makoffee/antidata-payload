@@ -91,6 +91,20 @@ export const Security: GlobalConfig = {
           },
         },
         {
+          name: 'botResponse',
+          type: 'select',
+          label: 'When a submission is rejected',
+          defaultValue: 'reject',
+          options: [
+            { label: 'Show an error (recommended)', value: 'reject' },
+            { label: 'Pretend it worked', value: 'pretend' },
+          ],
+          admin: {
+            description:
+              'Applies to the honeypot, speed check, spam scoring, content "drop" and per-address limit. An error lets a real person try again and tells most bots to move on. "Pretend it worked" hides the filter from attackers, but a real message that is wrongly rejected is lost with no sign of it.',
+          },
+        },
+        {
           name: 'rateLimit',
           type: 'checkbox',
           label: 'Rate limits',

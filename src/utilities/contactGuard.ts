@@ -24,6 +24,7 @@ export const consentEntry = (now: Date = new Date()): { field: string; value: st
 // ---------------------------------------------------------------------------------------------
 
 export type SecuritySettings = {
+  botResponse: 'pretend' | 'reject'
   contentScreening: 'drop' | 'off' | 'quarantine'
   honeypot: boolean
   maxPerAddressPerDay: number
@@ -36,6 +37,7 @@ export type SecuritySettings = {
 }
 
 export const DEFAULT_SECURITY: SecuritySettings = {
+  botResponse: 'reject',
   contentScreening: 'quarantine',
   honeypot: true,
   maxPerAddressPerDay: 3,
@@ -55,6 +57,7 @@ export const getSecuritySettings = async (payload: Payload): Promise<SecuritySet
     const number = (value: unknown, fallback: number): number =>
       typeof value === 'number' && Number.isFinite(value) ? value : fallback
     return {
+      botResponse: form.botResponse === 'pretend' ? 'pretend' : 'reject',
       contentScreening:
         form.contentScreening === 'drop' ||
         form.contentScreening === 'off' ||
