@@ -20,6 +20,7 @@ import * as migration_20261116_104527_admin_branding from './20261116_104527_adm
 import * as migration_20261116_105422_admin_branding_two_fields from './20261116_105422_admin_branding_two_fields';
 import * as migration_20261124_205531_security_settings_ from './20261124_205531_security_settings_';
 import * as migration_20261124_210539_payload_upgrade from './20261124_210539_payload_upgrade';
+import * as migration_20261125_010028_bot_response from './20261125_010028_bot_response';
 
 export const migrations = [
   {
@@ -130,6 +131,11 @@ export const migrations = [
   {
     up: migration_20261124_210539_payload_upgrade.up,
     down: migration_20261124_210539_payload_upgrade.down,
-    name: '20261124_210539_payload_upgrade'
+    name: '20261124_210539_payload_upgrade',
+  },
+  {
+    up: migration_20261125_010028_bot_response.up,
+    down: migration_20261125_010028_bot_response.down,
+    name: '20261125_010028_bot_response'
   },
 ];
