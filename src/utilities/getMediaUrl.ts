@@ -12,6 +12,16 @@ import { getClientSideURL } from '@/utilities/getURL'
 const MEDIA_ROUTE = '/api/media/file/'
 const STATIC_MEDIA = '/media/'
 
+// The database can hold a filename in decomposed Unicode (e + combining accent) while the file in
+// git is precomposed (é), and the CDN matches bytes exactly, so the request 404s. Normalize to NFC.
+const normalizeName = (encoded: string): string => {
+  try {
+    return encodeURIComponent(decodeURIComponent(encoded).normalize('NFC'))
+  } catch {
+    return encoded
+  }
+}
+
 export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | null): string => {
   if (!url) return ''
 
@@ -26,7 +36,7 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
 
   // Payload media path -> static file (the path segment is already URL-encoded)
   if (url.startsWith(MEDIA_ROUTE)) {
-    const local = `${STATIC_MEDIA}${url.slice(MEDIA_ROUTE.length)}`
+    const local = `${STATIC_MEDIA}${normalizeName(url.slice(MEDIA_ROUTE.length))}`
     return cacheTag ? `${local}?${cacheTag}` : local
   }
 
