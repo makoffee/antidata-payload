@@ -11,6 +11,14 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
   ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
   : process.env.__NEXT_PRIVATE_ORIGIN || 'http://localhost:3000'
 
+// The live site is read-only: pages are built from the database at deploy time, and content is
+// edited only in the local admin (npm run dev). On the production deploy the admin, the REST API
+// and the draft-preview routes are closed. Set ALLOW_LIVE_ADMIN=1 in Vercel to reopen them
+// temporarily. /api/media/file stays open while images are still served from Blob through it.
+const LIVE_READ_ONLY =
+  process.env.VERCEL_ENV === 'production' && process.env.ALLOW_LIVE_ADMIN !== '1'
+const BLOCKED = '/not-found-blocked'
+
 const nextConfig: NextConfig = {
   images: {
     qualities: [100],
@@ -73,7 +81,23 @@ const nextConfig: NextConfig = {
     ]
   },
   reactStrictMode: true,
-  redirects,
+  redirects: async () => [
+    ...((await redirects?.()) ?? []),
+    ...(LIVE_READ_ONLY
+      ? [{ source: '/admin/:path*', destination: '/', permanent: false }]
+      : []),
+  ],
+  rewrites: async () => ({
+    beforeFiles: LIVE_READ_ONLY
+      ? [
+          { source: '/api/:path((?!media/file/).*)', destination: BLOCKED },
+          { source: '/next/preview', destination: BLOCKED },
+          { source: '/next/exit-preview', destination: BLOCKED },
+        ]
+      : [],
+    afterFiles: [],
+    fallback: [],
+  }),
   turbopack: {
     root: path.resolve(dirname),
   },

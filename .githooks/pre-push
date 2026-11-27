@@ -1,9 +1,0 @@
-#!/bin/sh
-# Refuse pushes to main from this checkout: production is released by merging a pull request on GitHub.
-while read local_ref local_sha remote_ref remote_sha; do
-  if [ "$remote_ref" = "refs/heads/main" ] && [ "$ALLOW_MAIN" != "1" ]; then
-    echo "Blocked: don't push to main. Push dev and open a pull request dev -> main on GitHub."
-    echo "Override once with ALLOW_MAIN=1."
-    exit 1
-  fi
-done

@@ -7,9 +7,7 @@
   "scripts": {
     "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
     "postbuild": "next-sitemap --config next-sitemap.config.cjs",
-    "prepare": "git config core.hooksPath .githooks || true",
-    "check:db": "node --env-file-if-exists=.env.local scripts/check-dev-db.mjs",
-    "predev": "npm run check:db && find .next -mindepth 1 -maxdepth 1 ! -name cache -exec rm -rf {} + 2>/dev/null; rm -rf .next/cache/webpack .next/cache/swc 2>/dev/null; mkdir -p .next && xattr -w com.dropbox.ignored 1 .next node_modules 2>/dev/null || true",
+    "predev": "find .next -mindepth 1 -maxdepth 1 ! -name cache -exec rm -rf {} + 2>/dev/null; rm -rf .next/cache/webpack .next/cache/swc 2>/dev/null; mkdir -p .next && xattr -w com.dropbox.ignored 1 .next node_modules 2>/dev/null || true",
     "dev": "cross-env WATCHPACK_POLLING=true NODE_OPTIONS=--no-deprecation next dev --webpack",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && npm run build && npm start",
     "generate:importmap": "cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap",
@@ -19,15 +17,15 @@
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
     "reinstall": "rm -rf node_modules package-lock.json && npm install",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
-    "ci": "if [ \"$VERCEL_ENV\" != \"production\" ]; then node scripts/check-dev-db.mjs --strict; fi && payload migrate && npm run build",
-    "media:verify": "npm run check:db && node --env-file=.env.local scripts/media-verify.mjs",
-    "media:restore": "npm run check:db && node --env-file=.env.local scripts/media-restore.mjs",
-    "sync:media": "npm run check:db && node --env-file=.env.local scripts/sync-media.mjs",
+    "ci": "payload migrate && npm run build",
+    "media:verify": "node --env-file=.env.local scripts/media-verify.mjs",
+    "media:restore": "node --env-file=.env.local scripts/media-restore.mjs",
+    "sync:media": "node --env-file=.env.local scripts/sync-media.mjs",
     "backup": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/backup.ts",
     "typecheck": "tsc --noEmit",
-    "migrate:create": "npm run check:db && cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
-    "migrate": "npm run check:db && cross-env NODE_OPTIONS=--no-deprecation payload migrate",
-    "migrate:status": "npm run check:db && cross-env NODE_OPTIONS=--no-deprecation payload migrate:status"
+    "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
+    "migrate": "cross-env NODE_OPTIONS=--no-deprecation payload migrate",
+    "migrate:status": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:status"
   },
   "dependencies": {
     "@payloadcms/admin-bar": "3.94.2",

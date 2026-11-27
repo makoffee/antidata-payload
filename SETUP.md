@@ -1,36 +1,29 @@
-# Setting up a new site from this boilerplate
+# Setting up this site
 
-Goal: production stays stable; `dev` and local can break freely. Free-tier friendly.
+Goal: a static portfolio on Vercel Hobby with near-zero cost. One Neon database, edited only locally.
 
-## 1. Git
-- Branches: `main` (production) and `dev` (day-to-day). Merge `dev` → `main` with a GitHub pull request.
-- Optional: GitHub → Settings → Branches → protect `main` (require a pull request).
-- Vercel → Settings → Git: production branch is `main`. Other branches get preview deploys.
-
-- `npm install` sets `core.hooksPath=.githooks` (the `prepare` script); the hooks block commits and pushes on `main`.
+## 1. Git and Vercel
+- One branch, `main`. Vercel → Settings → Git: production branch is `main`.
+- `vercel.json` turns off preview deploys for `dev` (`git.deploymentEnabled`). Don't enable previews: they would build against the single database.
 
 ## 2. Database (Neon, via Vercel Storage)
-- Create a Neon database in Vercel Storage and connect it to the project (Production).
-- In the Neon console create a branch `dev` from `main`, **Auto-delete: Never**.
-- Reset `dev` from `main` any time for fresh data (Branches → `dev` → Reset from parent).
+- One Neon database connected to the project (Production). Keep it on the free plan; it suspends when idle.
+- Before risky schema work create a Neon branch from `main` (set an expiry) as a safety net, and delete it afterwards.
 
 ## 3. Environment variables
-Vercel → Settings → Environment Variables:
-
-| Variable | Production | Preview |
+| Variable | Production (Vercel) | Local `.env.local` |
 |---|---|---|
-| `POSTGRES_URL` | Neon `main` (pooled) | Neon `dev` (pooled) |
-| `PRODUCTION_DB_HOST` | not needed | host fragment of the production string, e.g. `ep-xxxx-xxxx` |
-| `BLOB_READ_WRITE_TOKEN` | Blob store token | **leave unset**. Never give Preview the production token: a preview admin could overwrite or delete production media (and its reads would count against the Blob quota). |
-| `NEXT_PUBLIC_BLOB_BASE_URL` | `https://<store-id>.public.blob.vercel-storage.com` | same value (previews then show production images read-only, with no token). Leave unset locally. |
-| `PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `RESEND_API_KEY` | set | set |
+| `POSTGRES_URL` | Neon `main` (pooled) | the same string |
+| `BLOB_READ_WRITE_TOKEN` | Blob store token (until media moves to `public/media`) | **leave unset** |
+| `NEXT_PUBLIC_BLOB_BASE_URL` | `https://<store-id>.public.blob.vercel-storage.com` | leave unset |
+| `PAYLOAD_SECRET`, `PREVIEW_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `RESEND_API_KEY` | set | set |
 
-Local `.env.local` (copy `.env.example`): `POSTGRES_URL` = Neon `dev`, `PRODUCTION_DB_HOST` = production host fragment, **no** `BLOB_READ_WRITE_TOKEN` (`npm run dev` refuses to start if one is set). Then `npm run sync:media` once to copy the images the database lists into `public/media`.
+`CRON_SECRET` and `PRODUCTION_DB_HOST` are no longer used and can be removed from Vercel.
 
-## 4. Safety checks (already in the repo)
-- `scripts/check-dev-db.mjs` runs before `npm run dev` and `npm run migrate*`, and on preview builds (`npm run ci`). It fails if `POSTGRES_URL` is the production host.
-- `npm run ci` (Vercel build) runs `payload migrate` then the build: previews migrate `dev`, production migrates `main`.
+## 4. Safety (already in the repo)
+- `next.config.ts` closes `/admin`, `/api/**` (except media) and the preview routes on the production deploy (`ALLOW_LIVE_ADMIN=1` reopens them).
+- `npm run ci` (Vercel build) runs `payload migrate` then the build.
 - No seed, `push: false`: schema changes only through `npm run migrate:create`.
 
 ## 5. First run
-`npm install`, `npm run dev`, create the first admin user on the `dev` database, then create the same user on the live site.
+`npm install`, `npm run dev`, create the first admin user locally (it is stored in the shared database).

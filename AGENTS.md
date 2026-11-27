@@ -1,29 +1,21 @@
 # antidata.net: Payload CMS project rules
 
-Payload 3.80 + Next.js, Neon Postgres, Vercel Blob, Node 24, npm only. Read `WORKFLOW.md` for the day-to-day process.
+Payload 3.94 + Next.js 16, Neon Postgres, Vercel Blob (moving to `public/media`), Node 24, npm only. Read `WORKFLOW.md` for the day-to-day process.
 Generic Payload reference lives in `.cursor/rules/` (collections, fields, hooks, access control, queries, components...). Open the relevant file only when needed. Docs: https://payloadcms.com/docs
 
 ## Git workflow (read first)
 
-- **Work only on the `dev` branch.** Run `git branch --show-current` before committing; if it says `main`, run `git checkout dev` first. Never commit, merge or push to `main`.
-- **`main` is production.** The user merges `dev` into `main` by hand, through a GitHub pull request, when they want a production build. Do not open, merge or force that PR yourself.
-- `dev` pushes get a Vercel preview deploy (Neon `dev` database). Claude cannot `git push` (no SSH); ask the user to run `! git push origin dev`.
-- Git hooks in `.githooks/` block commits and pushes on `main` (`core.hooksPath`, set by `npm install`). Don't bypass them with `ALLOW_MAIN=1` or `--no-verify` unless the user says to.
+- **Single-person site, one branch.** Commit to `main`. No preview deploys (`vercel.json`), so there is no `dev` workflow.
+- Claude cannot `git push` (no SSH); ask the user to run `! git push origin main`. A push to `main` builds the live site, so don't push or merge on your own.
+- Never run `vercel env pull` (it overwrites `.env.local`).
 
 ## Project-specific rules
 
-- **Three environments.** Production (`main` branch) uses Neon `main` + Vercel Blob. Preview (`dev` branch) and local dev both use the Neon `dev` branch; local has no Blob token, so uploads go to disk. Local work does not touch production data. `npm run dev` / `migrate*` refuse to run if `POSTGRES_URL` is the production host (`scripts/check-dev-db.mjs`, `PRODUCTION_DB_HOST`).
-- **Never seed, never re-enable `push`** on the db adapter. Schema changes go through migrations only. ("Seed" means the template's demo-content seed, which overwrites real content. Copying media files between storage and `public/media` is not seeding.)
-- **Schema changes** (adding fields is preferred; a rename or removal deletes content in whichever DB it runs on, so warn first):
-  1. Edit the collection or global.
-  2. `npm run migrate:create -- name`, then the user runs `npm run migrate` (applies to the Neon `dev` DB), then `npm run generate:types`.
-  3. Test on local and on the `dev` preview.
-  4. Before merging the PR, ask the user to create a Neon branch from `main` (production safety net; `npm run backup` only saves the `dev` DB).
-  5. Merging to `main` runs the migration on production.
-- Every Vercel build runs `payload migrate` (`npm run ci`): previews migrate the Neon `dev` branch, the production build (merge to `main`) migrates production. Preview builds first run the guard and fail if `POSTGRES_URL` is the production host or `PRODUCTION_DB_HOST` is unset.
-- Agents cannot `git push` (no SSH key in the sandbox). The user runs `! git push origin dev`, and runs `npm run migrate` (dev DB) too. Agents may commit to `dev` locally.
-- Never run `vercel env pull` (it overwrites `.env.local`).
-- Scripts that upload media: pass a fresh `context` object on every Local API call. Run locally they write to disk and the `dev` DB (no Blob token). A bulk upload that must reach production Blob needs the user's explicit approval and a temporary token.
+- **The live site is read-only and static.** Content is edited only in the local admin (`npm run dev`), which writes to the one Neon database. The live deploy closes `/admin`, `/api/**` (except `/api/media/file/**`) and the preview routes (`LIVE_READ_ONLY` in `next.config.ts`). Pages are built at deploy time and revalidate only on publish; do not add `revalidate = N` timers, crons or anything that wakes the database on a schedule. Neon compute is the thing to protect.
+- **Local dev uses the production database.** Treat every local write as live data. Take `npm run backup` before bulk work.
+- **Never seed, never re-enable `push`** on the db adapter. Schema changes go through migrations only. ("Seed" means the template's demo-content seed, which overwrites real content.)
+- **Schema changes:** only add fields (a rename or removal deletes content, warn first and ask for a Neon branch from `main`). Edit the collection, `npm run migrate:create -- name`, the user runs `npm run migrate`, then `npm run generate:types` and `npm run typecheck`. The deploy runs `payload migrate` too.
+- Scripts that upload media: pass a fresh `context` object on every Local API call. Local uploads go to `public/media` (no Blob token locally). Don't upload until media is moved to `public/media`; a bulk upload to Blob needs the user's explicit approval and a temporary token.
 - After editing components run `npm run generate:importmap`. After schema changes run `npm run generate:types`. Validate with `npm run typecheck`.
 
 ## Payload security rules (always)
