@@ -44,6 +44,8 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
   const { slug, title, summary, coverImage, storyImage, client } = project
   const story = storyImage && typeof storyImage === 'object' ? storyImage : null
   const cover = coverImage && typeof coverImage === 'object' ? coverImage : null
+  // A custom tall image replaces the cover but gets the exact same treatment
+  const art = story ?? cover
   const cardSize = '(max-width: 640px) 78vw, (max-width: 1024px) 45vw, 25vw'
   const zoom = 'transition-transform duration-700 ease-out group-hover:scale-105'
 
@@ -52,34 +54,23 @@ const ProjectStoryCard: React.FC<{ project: ProjectCardData; priority?: boolean 
       className="group relative isolate block aspect-[3/4] overflow-hidden rounded-2xl bg-neutral-900 focus-visible:outline-2 focus-visible:outline-offset-2"
       href={`/portfolio/${slug}`}
     >
-      {story ? (
-        // A purpose-made tall image fills the whole card
-        <Media
-          fill
-          imgClassName={cn('object-cover', zoom)}
-          priority={priority}
-          resource={story}
-          size={cardSize}
-        />
-      ) : (
-        cover && (
-          <>
-            {/* "App of the Day" style: a heavily blurred copy colours the card… */}
-            <div aria-hidden className="absolute inset-0 -z-10 scale-150 blur-3xl saturate-150">
-              <Media fill imgClassName="object-cover" resource={cover} size="160px" />
-            </div>
-            {/* …and the artwork sits in a square safe zone that dissolves into it */}
-            <div className="absolute inset-x-0 top-0 aspect-square overflow-hidden [mask-image:linear-gradient(to_bottom,black_60%,transparent)]">
-              <Media
-                fill
-                imgClassName={cn('object-cover', zoom)}
-                priority={priority}
-                resource={cover}
-                size={cardSize}
-              />
-            </div>
-          </>
-        )
+      {art && (
+        <>
+          {/* "App of the Day" style: a heavily blurred copy colours the card… */}
+          <div aria-hidden className="absolute inset-0 -z-10 scale-150 blur-3xl saturate-150">
+            <Media fill imgClassName="object-cover" resource={art} size="160px" />
+          </div>
+          {/* …and the artwork sits in a square safe zone that dissolves into it */}
+          <div className="absolute inset-x-0 top-0 aspect-square overflow-hidden [mask-image:linear-gradient(to_bottom,black_60%,transparent)]">
+            <Media
+              fill
+              imgClassName={cn('object-cover', story && 'object-top', zoom)}
+              priority={priority}
+              resource={art}
+              size={cardSize}
+            />
+          </div>
+        </>
       )}
       {/* Keeps the text readable on any colour */}
       <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
