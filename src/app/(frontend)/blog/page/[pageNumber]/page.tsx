@@ -10,7 +10,6 @@ import PageClient from './page.client'
 import { SITE_NAME } from '@/utilities/site'
 import { notFound } from 'next/navigation'
 
-export const revalidate = 60
 
 type Args = {
   params: Promise<{

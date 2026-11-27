@@ -1,9 +1,8 @@
 {
   "buildCommand": "npm run ci",
-  "crons": [
-    {
-      "path": "/api/payload-jobs/run",
-      "schedule": "0 0 * * *"
+  "git": {
+    "deploymentEnabled": {
+      "dev": false
     }
-  ]
+  }
 }

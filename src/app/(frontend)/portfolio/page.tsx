@@ -10,7 +10,6 @@ import { SITE_NAME } from '@/utilities/site'
 import PageClient from './page.client'
 
 export const dynamic = 'force-static'
-export const revalidate = 60
 
 export default async function Page() {
   const payload = await getPayload({ config: configPromise })
