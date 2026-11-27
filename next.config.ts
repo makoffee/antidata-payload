@@ -25,7 +25,7 @@ const nextConfig: NextConfig = {
     // Optimized variants are kept for a year (the default is a few hours). Media URLs carry
     // ?<updatedAt>, so replacing a file still shows the new one. Fewer widths means fewer variants.
     minimumCacheTTL: 31536000,
-    deviceSizes: [640, 1080, 1920, 3840],
+    deviceSizes: [640, 1080, 1920],
     // Media is served as static files at /media/<name>?<updatedAt>; the query is a cache-buster, so
     // allow any query there. Other local images: no query.
     localPatterns: [{ pathname: '/media/**' }, { pathname: '/**', search: '' }],
