@@ -17,7 +17,6 @@ import { Header } from './Header/config'
 import { plugins } from './plugins'
 import { defaultLexical } from '@/fields/defaultLexical'
 import { getServerSideURL } from './utilities/getURL'
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
 import { resendAdapter } from '@payloadcms/email-resend'
 
 const filename = fileURLToPath(import.meta.url)
@@ -82,26 +81,7 @@ export default buildConfig({
   }),
   collections: [Projects, Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
-  plugins: [
-    ...plugins,
-    vercelBlobStorage({
-      enabled: Boolean(process.env.BLOB_READ_WRITE_TOKEN),
-      collections: {
-        media: true,
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN,
-      // One-year cache on /api/media/file/*. The plugin default is 0, which sends every request
-      // (and every Next image-optimizer refresh) through to Blob: 2 simple operations each, and the
-      // cause of the free tier running out in Nov 2026. URLs carry ?<updatedAt>, so a replaced
-      // file still busts the cache.
-      cacheControlMaxAge: 31536000,
-      // Bypass Vercel's 4.5MB serverless upload limit; files go straight to Blob.
-      clientUploads: true,
-      // No addRandomSuffix: with clientUploads, Payload re-fetches the file by its original name
-      // and a suffixed blob can't be found, so every admin upload fails. Payload already makes
-      // filenames unique (logo-1.svg) because local and live share one database.
-    }),
-  ],
+  plugins: [...plugins],
   // Contact form notifications and admin emails go out through Resend (EU region). Without a key,
   // e.g. on a fresh local checkout, Payload just logs emails to the console instead.
   email: process.env.RESEND_API_KEY

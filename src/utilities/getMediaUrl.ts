@@ -6,13 +6,11 @@ import { getClientSideURL } from '@/utilities/getURL'
  * @param cacheTag Optional cache tag to append to the URL
  * @returns Properly formatted URL with cache tag if provided
  */
-// When set (e.g. https://<store>.public.blob.vercel-storage.com), Payload media paths become direct
-// public Blob URLs: the browser and Next's image optimizer read Blob's own CDN, which only counts a
-// Blob operation on a cache miss. Without it, images go through Payload's /api/media/file route
-// (2 Blob operations per request that reaches it) or, locally, the files in public/media. The value is
-// inlined at build time, so the server and the browser always agree. Unset locally on purpose.
-const BLOB_BASE_URL = process.env.NEXT_PUBLIC_BLOB_BASE_URL?.replace(/\/$/, '')
+// Media files are committed to public/media and served by Vercel's CDN as static files at
+// /media/<name>. Payload still stores and returns /api/media/file/<name> in the database; this
+// turns that into the static path. (/api is closed on the live site, so the stored path would 404.)
 const MEDIA_ROUTE = '/api/media/file/'
+const STATIC_MEDIA = '/media/'
 
 export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | null): string => {
   if (!url) return ''
@@ -26,17 +24,15 @@ export const getMediaUrl = (url: string | null | undefined, cacheTag?: string | 
     return cacheTag ? `${url}?${cacheTag}` : url
   }
 
-  // Payload media path -> direct Blob URL (the path segment is already URL-encoded, and the Blob
-  // key is the same filename)
-  if (BLOB_BASE_URL && url.startsWith(MEDIA_ROUTE)) {
-    const direct = `${BLOB_BASE_URL}/${url.slice(MEDIA_ROUTE.length)}`
-    return cacheTag ? `${direct}?${cacheTag}` : direct
+  // Payload media path -> static file (the path segment is already URL-encoded)
+  if (url.startsWith(MEDIA_ROUTE)) {
+    const local = `${STATIC_MEDIA}${url.slice(MEDIA_ROUTE.length)}`
+    return cacheTag ? `${local}?${cacheTag}` : local
   }
 
-  // Keep Payload's own paths (/api/media/file/...) relative. Prepending a domain made the server
-  // (Vercel's production URL) and the browser (window.location) disagree after a domain change,
-  // and Next's optimizer then rejected the browser's version, so images vanished on hydration.
-  // Relative paths are the same everywhere and need no remotePatterns entry.
+  // Other relative paths stay relative. Prepending a domain made the server (Vercel's production
+  // URL) and the browser (window.location) disagree after a domain change, and Next's optimizer
+  // then rejected the browser's version, so images vanished on hydration.
   if (url.startsWith('/')) {
     return cacheTag ? `${url}?${cacheTag}` : url
   }

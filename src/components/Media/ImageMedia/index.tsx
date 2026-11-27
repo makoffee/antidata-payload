@@ -33,8 +33,8 @@ const { breakpoints } = cssVariables
  *
  * Only add `loader` if using external CDNs with custom transforms.
  *
- * Here: with NEXT_PUBLIC_BLOB_BASE_URL set, getMediaUrl returns a direct Blob URL (host already
- * allowed in next.config.ts, and identical on server and browser because the env var is inlined).
+ * Here: getMediaUrl turns Payload's /api/media/file/<name> into the static /media/<name> (allowed in
+ * next.config.ts localPatterns).
  */
 
 export const ImageMedia: React.FC<MediaProps> = (props) => {

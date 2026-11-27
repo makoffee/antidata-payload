@@ -14,14 +14,12 @@ Goal: a static portfolio on Vercel Hobby with near-zero cost. One Neon database,
 | Variable | Production (Vercel) | Local `.env.local` |
 |---|---|---|
 | `POSTGRES_URL` | Neon `main` (pooled) | the same string |
-| `BLOB_READ_WRITE_TOKEN` | Blob store token (until media moves to `public/media`) | **leave unset** |
-| `NEXT_PUBLIC_BLOB_BASE_URL` | `https://<store-id>.public.blob.vercel-storage.com` | leave unset |
 | `PAYLOAD_SECRET`, `PREVIEW_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `RESEND_API_KEY` | set | set |
 
-`CRON_SECRET` and `PRODUCTION_DB_HOST` are no longer used and can be removed from Vercel.
+`CRON_SECRET`, `PRODUCTION_DB_HOST`, `BLOB_READ_WRITE_TOKEN` and `NEXT_PUBLIC_BLOB_BASE_URL` are no longer used and can be removed from Vercel.
 
 ## 4. Safety (already in the repo)
-- `next.config.ts` closes `/admin`, `/api/**` (except media) and the preview routes on the production deploy (`ALLOW_LIVE_ADMIN=1` reopens them).
+- `next.config.ts` closes `/admin`, `/api/**` and the preview routes on the production deploy (`ALLOW_LIVE_ADMIN=1` reopens them).
 - `npm run ci` (Vercel build) runs `payload migrate` then the build.
 - No seed, `push: false`: schema changes only through `npm run migrate:create`.
 

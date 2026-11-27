@@ -43,8 +43,7 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
-    // Fallback when BLOB_READ_WRITE_TOKEN is unset. The Vercel Blob plugin
-    // sets disableLocalStorage when the token is present, so files go to Blob.
+    // Uploads (local admin only) are written here and committed; Vercel serves them at /media/<name>.
     staticDir: path.resolve(dirname, '../../public/media'),
     adminThumbnail: 'thumbnail',
     focalPoint: true,

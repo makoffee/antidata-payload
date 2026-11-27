@@ -1,7 +1,7 @@
 {
   "name": "antidata-net",
   "version": "1.0.0",
-  "description": "antidata.net: Payload CMS website (Next.js, Neon Postgres, Vercel Blob)",
+  "description": "antidata.net: Payload CMS website (Next.js, Neon Postgres)",
   "license": "MIT",
   "type": "module",
   "scripts": {
@@ -19,8 +19,6 @@
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "ci": "payload migrate && npm run build",
     "media:verify": "node --env-file=.env.local scripts/media-verify.mjs",
-    "media:restore": "node --env-file=.env.local scripts/media-restore.mjs",
-    "sync:media": "node --env-file=.env.local scripts/sync-media.mjs",
     "backup": "cross-env NODE_OPTIONS=--no-deprecation payload run src/scripts/backup.ts",
     "typecheck": "tsc --noEmit",
     "migrate:create": "cross-env NODE_OPTIONS=--no-deprecation payload migrate:create",
@@ -39,7 +37,6 @@
     "@payloadcms/plugin-search": "3.94.2",
     "@payloadcms/plugin-seo": "3.94.2",
     "@payloadcms/richtext-lexical": "3.93.0",
-    "@payloadcms/storage-vercel-blob": "3.93.0",
     "@payloadcms/ui": "3.93.0",
     "@radix-ui/react-checkbox": "^1.0.4",
     "@radix-ui/react-label": "^2.0.2",

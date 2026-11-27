@@ -32,7 +32,6 @@ import { AdminLogo as AdminLogo_5fee7b1d7887f8ee4c45775348e4cb18 } from '@/compo
 import { default as default_d2e5e8cdcf265e3c61c4d683161d9698 } from '@/components/AdminDashboard'
 import { default as default_8a7ab0eb7ab5c511aba12e68480bfe5e } from '@/components/BeforeLogin'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
-import { VercelBlobClientUploadHandler as VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e } from '@payloadcms/storage-vercel-blob/client'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
@@ -69,6 +68,5 @@ export const importMap = {
   "@/components/AdminBrand#AdminLogo": AdminLogo_5fee7b1d7887f8ee4c45775348e4cb18,
   "@/components/AdminDashboard#default": default_d2e5e8cdcf265e3c61c4d683161d9698,
   "@/components/BeforeLogin#default": default_8a7ab0eb7ab5c511aba12e68480bfe5e,
-  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1,
-  "@payloadcms/storage-vercel-blob/client#VercelBlobClientUploadHandler": VercelBlobClientUploadHandler_16c82c5e25f430251a3e3ba57219ff4e
+  "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

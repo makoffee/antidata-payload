@@ -1,10 +1,11 @@
 import type { Appearance } from '@/payload-types'
 
 import { getCachedGlobal } from '@/utilities/getGlobals'
+import { getMediaUrl } from '@/utilities/getMediaUrl'
 
 const urlOf = (media: unknown): string | null =>
   media && typeof media === 'object' && 'url' in media && typeof media.url === 'string'
-    ? media.url
+    ? getMediaUrl(media.url)
     : null
 
 // Logo and icon uploaded in Site settings → Appearance (null = use the built-in artwork)

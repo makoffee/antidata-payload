@@ -14,7 +14,7 @@ const NEXT_PUBLIC_SERVER_URL = process.env.VERCEL_PROJECT_PRODUCTION_URL
 // The live site is read-only: pages are built from the database at deploy time, and content is
 // edited only in the local admin (npm run dev). On the production deploy the admin, the REST API
 // and the draft-preview routes are closed. Set ALLOW_LIVE_ADMIN=1 in Vercel to reopen them
-// temporarily. /api/media/file stays open while images are still served from Blob through it.
+// temporarily. Media is static files in public/media, so nothing on the live site needs /api.
 const LIVE_READ_ONLY =
   process.env.VERCEL_ENV === 'production' && process.env.ALLOW_LIVE_ADMIN !== '1'
 const BLOCKED = '/not-found-blocked'
@@ -22,14 +22,13 @@ const BLOCKED = '/not-found-blocked'
 const nextConfig: NextConfig = {
   images: {
     qualities: [100],
-    // Optimized variants are kept for a year (the default is a few hours), so each width is read
-    // from Blob once, not again every few hours. Media URLs carry ?<updatedAt>, so replacing a
-    // file still shows the new one. Fewer widths means fewer variants to generate and cache.
+    // Optimized variants are kept for a year (the default is a few hours). Media URLs carry
+    // ?<updatedAt>, so replacing a file still shows the new one. Fewer widths means fewer variants.
     minimumCacheTTL: 31536000,
     deviceSizes: [640, 1080, 1920, 3840],
-    // Payload media is served relative (/api/media/file/x.jpg?<updatedAt>, see getMediaUrl); the
-    // query is a cache-buster, so allow any query there. Other local images: no query.
-    localPatterns: [{ pathname: '/api/media/file/**' }, { pathname: '/**', search: '' }],
+    // Media is served as static files at /media/<name>?<updatedAt>; the query is a cache-buster, so
+    // allow any query there. Other local images: no query.
+    localPatterns: [{ pathname: '/media/**' }, { pathname: '/**', search: '' }],
     // Next 16 blocks optimizing images from localhost/private IPs; allow it for local dev only
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     remotePatterns: [
@@ -42,14 +41,6 @@ const nextConfig: NextConfig = {
           protocol: url.protocol.replace(':', '') as 'http' | 'https',
         }
       }),
-      {
-        protocol: 'https',
-        hostname: '*.public.blob.vercel-storage.com',
-      },
-      {
-        protocol: 'https',
-        hostname: '*.blob.vercel-storage.com',
-      },
     ],
   },
   webpack: (webpackConfig) => {
@@ -90,7 +81,7 @@ const nextConfig: NextConfig = {
   rewrites: async () => ({
     beforeFiles: LIVE_READ_ONLY
       ? [
-          { source: '/api/:path((?!media/file/).*)', destination: BLOCKED },
+          { source: '/api/:path*', destination: BLOCKED },
           { source: '/next/preview', destination: BLOCKED },
           { source: '/next/exit-preview', destination: BLOCKED },
         ]

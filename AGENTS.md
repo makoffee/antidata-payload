@@ -1,6 +1,6 @@
 # antidata.net: Payload CMS project rules
 
-Payload 3.94 + Next.js 16, Neon Postgres, Vercel Blob (moving to `public/media`), Node 24, npm only. Read `WORKFLOW.md` for the day-to-day process.
+Payload 3.94 + Next.js 16, Neon Postgres, images as static files in `public/media`, Node 24, npm only. Read `WORKFLOW.md` for the day-to-day process.
 Generic Payload reference lives in `.cursor/rules/` (collections, fields, hooks, access control, queries, components...). Open the relevant file only when needed. Docs: https://payloadcms.com/docs
 
 ## Git workflow (read first)
@@ -11,11 +11,11 @@ Generic Payload reference lives in `.cursor/rules/` (collections, fields, hooks,
 
 ## Project-specific rules
 
-- **The live site is read-only and static.** Content is edited only in the local admin (`npm run dev`), which writes to the one Neon database. The live deploy closes `/admin`, `/api/**` (except `/api/media/file/**`) and the preview routes (`LIVE_READ_ONLY` in `next.config.ts`). Pages are built at deploy time and revalidate only on publish; do not add `revalidate = N` timers, crons or anything that wakes the database on a schedule. Neon compute is the thing to protect.
+- **The live site is read-only and static.** Content is edited only in the local admin (`npm run dev`), which writes to the one Neon database. The live deploy closes `/admin`, `/api/**` and the preview routes (`LIVE_READ_ONLY` in `next.config.ts`). Pages are built at deploy time and revalidate only on publish; do not add `revalidate = N` timers, crons or anything that wakes the database on a schedule. Neon compute is the thing to protect.
 - **Local dev uses the production database.** Treat every local write as live data. Take `npm run backup` before bulk work.
 - **Never seed, never re-enable `push`** on the db adapter. Schema changes go through migrations only. ("Seed" means the template's demo-content seed, which overwrites real content.)
 - **Schema changes:** only add fields (a rename or removal deletes content, warn first and ask for a Neon branch from `main`). Edit the collection, `npm run migrate:create -- name`, the user runs `npm run migrate`, then `npm run generate:types` and `npm run typecheck`. The deploy runs `payload migrate` too.
-- Scripts that upload media: pass a fresh `context` object on every Local API call. Local uploads go to `public/media` (no Blob token locally). Don't upload until media is moved to `public/media`; a bulk upload to Blob needs the user's explicit approval and a temporary token.
+- **Media is committed to git** (`public/media`, served at `/media/<name>` by `getMediaUrl`), and the repo is public: only add images meant to be seen. Scripts that upload media: pass a fresh `context` object on every Local API call; uploads land in `public/media` and must be committed.
 - After editing components run `npm run generate:importmap`. After schema changes run `npm run generate:types`. Validate with `npm run typecheck`.
 
 ## Payload security rules (always)
